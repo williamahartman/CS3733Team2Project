@@ -1,8 +1,16 @@
 import javax.swing.*;
 
+/**
+ * This is a baby easy example of a swing app. This can turn into the real launcher for our app proably.
+ */
 public class AppLauncher{
 
-    //We test this method with JUnit in src/test/java/TestPlaceholder.java
+    /**
+     * This method just always returns the name of our team.
+     * We test this method with JUnit in src/test/java/TestPlaceholder.java
+     *
+     * @return The name of our amazing team!
+     */
     public static String getTeamName() {
         return "AZTEC WASH!";
     }

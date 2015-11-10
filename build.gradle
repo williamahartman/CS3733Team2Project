@@ -4,9 +4,7 @@ version '0.01-SUPER_DUPER_EARLY'
 apply plugin: 'java'
 //apply plugin: 'checkstyle'
 
-sourceCompatibility = 1.8
-
-task run(dependsOn: test, type: JavaExec) {
+task run(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'AppLauncher'
     standardInput = System.in

@@ -1,10 +1,10 @@
 import javax.swing.*;
 
 /**
- * This is a baby easy example of a swing app. This can turn into the real launcher for our app proably.
+ * This is a baby easy example of a swing app. This can turn into the real
+ * launcher for our app probably.
  */
 public class AppLauncher{
-
     /**
      * This method just always returns the name of our team.
      * We test this method with JUnit in src/test/java/TestPlaceholder.java
@@ -25,7 +25,7 @@ public class AppLauncher{
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
 
         //Add stuff to the panel
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             JLabel label = new JLabel(getTeamName());
             mainPanel.add(label);
         }

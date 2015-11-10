@@ -2,9 +2,9 @@ group 'AZTEC_WASH'
 version '0.01-SUPER_DUPER_EARLY'
 
 apply plugin: 'java'
-//apply plugin: 'checkstyle'
+apply plugin: 'checkstyle'
 
-task run(type: JavaExec) {
+task run(dependsOn: 'check', type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     main = 'AppLauncher'
     standardInput = System.in

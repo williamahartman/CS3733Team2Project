@@ -50,9 +50,15 @@
             }
 
 ## Project Setup
+- You need to have git installed. Here's a download link: https://git-scm.com/downloads
+
 ### If you are using IntelliJ IDEA:
 - When installing, make sure the Gradle plugin gets installed (it should happen by default)
 - Use the "Checkout from Version Control" option to clone the project.
+    - IntelliJ might complain that it couldn't find git.exe. 
+        - Go to settings->Version Control->git
+        - Set the path to the executable (probably C:\Program Files (x86)\Git or something similar, if you're on Windows)
+        - Now try again, and it should work.
     - This is probably the URL you want to use: https://github.com/williamahartman/CS3733Team2Project.git
     - If you want to use SSH instead: git@github.com:williamahartman/CS3733Team2Project.git
     - IntelliJ should ask you if you want to open the gradle project file right after it finishes cloning the project.

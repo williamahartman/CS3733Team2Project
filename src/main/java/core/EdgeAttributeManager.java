@@ -14,7 +14,7 @@ public class EdgeAttributeManager {
     private Map<EdgeAttribute, Float> attributeModifierValues;
 
     /**
-     * Default constructor
+     * Default constructor.
      */
     public EdgeAttributeManager() {
         attributeModifierValues = new HashMap<EdgeAttribute, Float>();
@@ -28,7 +28,7 @@ public class EdgeAttributeManager {
      * @return The associated modifier, or 1
      */
     public double getModifierFromAttribute(EdgeAttribute edgeAttribute) {
-        if(attributeModifierValues.containsKey(edgeAttribute)) {
+        if (attributeModifierValues.containsKey(edgeAttribute)) {
             return attributeModifierValues.get(edgeAttribute);
         }
 
@@ -36,7 +36,7 @@ public class EdgeAttributeManager {
     }
 
     /**
-     * Associate a new value with an EdgeAttribute
+     * Associate a new value with an EdgeAttribute.
      *
      * @param edgeAttribute The EdgeAttribute the value will be associated with
      * @param modifier The value for the modifier

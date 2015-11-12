@@ -20,12 +20,14 @@ public class Location {
     /**
      * Constructor. This is intended for loading a Location from a file.
      *
-     * @param position The position of the Location on the map (as a fraction of the width and height of the map)
+     * @param position The position of the Location on the map (as a fraction of the width and
+     *                 height of the map)
      * @param floorNumber The floor the Location will be placed on. Should be 0 for outdoor points.
      * @param nameList The list of searchable names for the Location
      * @param edgeList The list of Edges that include the Location as one of their nodes.
      */
-    public Location(Point2D.Double position, int floorNumber, String[] nameList, List<Edge> edgeList) {
+    public Location(Point2D.Double position, int floorNumber, String[] nameList,
+                    List<Edge> edgeList) {
         this.position = position;
         this.floorNumber = floorNumber;
         this.nameList = nameList;
@@ -35,7 +37,8 @@ public class Location {
     /**
      * Constructor.
      *
-     * @param position The position of the Location on the map (as a fraction of the width and height of the map)
+     * @param position The position of the Location on the map (as a fraction of the width and
+     *                 height of the map)
      * @param floorNumber The floor the Location will be placed on. Should be 0 for outdoor points.
      * @param nameList The list of searchable names for the Location
      */
@@ -44,15 +47,15 @@ public class Location {
     }
 
     /**
-     * Returns whether or not any of the associated names for the location INCLUDE the search string.
-     * (as a substring or an equivalent String).
+     * Returns whether or not any of the associated names for the location INCLUDE the search
+     * string (as a substring or an equivalent String).
      *
      * @param searchName The string that is searched for
      * @return Whether or not the searched name is included in the associated names.
      */
     public boolean namesInclude(String searchName) {
-        for(String s: nameList) {
-            if(s.contains(searchName)) {
+        for (String s: nameList) {
+            if (s.contains(searchName)) {
                 return true;
             }
         }
@@ -68,7 +71,8 @@ public class Location {
      * @param edgeAttributes The list of EdgeAttributes that will be applied to the new edge
      */
     public void makeAdjacentTo(Location nextLocation, EdgeAttribute[] edgeAttributes) {
-        System.out.println("(Location.Java line 66) Location: " + nextLocation + " would be added if this were" +
+        System.out.println("(Location.Java line 66) Location: " + nextLocation +
+                " would be added if this were" +
                 " implemented!");
         //todo implement this!
     }
@@ -79,7 +83,8 @@ public class Location {
      * @param toRemove The edge that will be removed from the graph
      */
     public void removeEdge(Edge toRemove) {
-        System.out.println("(Location.Java line 76) Edge: " + toRemove + " would be removed if this were implemented!");
+        System.out.println("(Location.Java line 76) Edge: " + toRemove +
+                " would be removed if this were implemented!");
         //todo implement this!
     }
 
@@ -87,7 +92,8 @@ public class Location {
      * Magically save everything somehow.
      */
     public void saveToDisk() {
-        System.out.println("(Location.Java line 89) Location: " + this + " would be saved to disk if this were" +
+        System.out.println("(Location.Java line 89) Location: " + this +
+                " would be saved to disk if this were" +
                 " implemented!");
         //todo implement this!
     }

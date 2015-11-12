@@ -12,7 +12,7 @@ public class Edge {
     private ArrayList<EdgeAttribute> associatedAttributes;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param node1 The first Location associated with the Edge
      * @param node2 The second Location associated with the Edge
@@ -26,7 +26,7 @@ public class Edge {
 
     /**
      * Calculate the "cost" of moving across this edge, using the modifier values from the
-     * passed EdgeAttributeManager
+     * passed EdgeAttributeManager.
      *
      * @param attributeManager The EdgeAttributeManager that stores modifiers for the graph
      * @return The "cost" of moving across the edge
@@ -36,7 +36,7 @@ public class Edge {
         double cost = node1.getPosition().distance(node2.getPosition());
 
         //Iterate over the associated EdgeAttributes, multiplying the cost by their associated costs
-        for(EdgeAttribute e: associatedAttributes) {
+        for (EdgeAttribute e: associatedAttributes) {
             cost *= attributeManager.getModifierFromAttribute(e);
         }
 
@@ -57,7 +57,8 @@ public class Edge {
      * Magically save everything somehow.
      */
     public void saveToDisk() {
-        System.out.println("(Edge.Java line 60) Edge: " + this + " would be saved to disk if this were implemented!");
+        System.out.println("(Edge.Java line 60) Edge: " + this +
+                " would be saved to disk if this were implemented!");
         //todo implement this!
     }
 

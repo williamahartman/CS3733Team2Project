@@ -1,6 +1,6 @@
 package core;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents an Edge in a LocationGraph. It is associated with two Locations
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Edge {
     private Location node1;
     private Location node2;
-    private ArrayList<EdgeAttribute> associatedAttributes;
+    private List<EdgeAttribute> associatedAttributes;
 
     /**
      * Constructor.
@@ -18,7 +18,7 @@ public class Edge {
      * @param node2 The second Location associated with the Edge
      * @param associatedAttributes The list of EdgeAttributes associated with the Edge
      */
-    public Edge(Location node1, Location node2, ArrayList<EdgeAttribute> associatedAttributes) {
+    public Edge(Location node1, Location node2, List<EdgeAttribute> associatedAttributes) {
         this.node1 = node1;
         this.node2 = node2;
         this.associatedAttributes = associatedAttributes;
@@ -51,6 +51,15 @@ public class Edge {
      */
     public boolean hasAttribute(EdgeAttribute searchAttribute) {
         return associatedAttributes.contains(searchAttribute);
+    }
+
+    /**
+     * Makes the current Edge become associated with a passed EdgeAttribute.
+     *
+     * @param attribute The EdgeAttribute that will be associated with this Edge
+     */
+    public void addAttribute(EdgeAttribute attribute) {
+        associatedAttributes.add(attribute);
     }
 
     /**

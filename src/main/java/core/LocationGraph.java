@@ -16,7 +16,7 @@ public class LocationGraph {
      * Default constructor.
      */
     public LocationGraph() {
-        locationList = new HashSet<Location>();
+        locationList = new HashSet<>();
     }
 
     /**
@@ -25,7 +25,7 @@ public class LocationGraph {
      * @param locationList The list of Locations that will be loaded
      */
     public LocationGraph(Collection<Location> locationList) {
-        this.locationList = new HashSet<Location>();
+        this.locationList = new HashSet<>();
         this.locationList.addAll(locationList);
     }
 
@@ -41,7 +41,7 @@ public class LocationGraph {
      */
     public List<Location> makeAStarRoute(EdgeAttributeManager attributeManager,
                                          Location start, Location destination) {
-        ArrayList<Location> result = new ArrayList<Location>();
+        ArrayList<Location> result = new ArrayList<>();
         result.add(start);
         return result;
     }
@@ -53,7 +53,7 @@ public class LocationGraph {
      * @return The list of Locations whose names contain the search string
      */
     public List<Location> searchLocationByName(String searchString) {
-        ArrayList<Location> result = new ArrayList<Location>();
+        ArrayList<Location> result = new ArrayList<>();
 
         for (Location loc: locationList) {
             if (loc.namesInclude(searchString)) {
@@ -70,10 +70,10 @@ public class LocationGraph {
      *
      * @param searchAttribute The EdgeAttribute whose associated will have EDGE_REMOVED applied.
      */
-    public void filterOutAttribute(EdgeAttribute searchAttribute) {
-        System.out.println("(LocationGraph.Java line 108) all edges with " + searchAttribute +
-                " would be filtered out if this were implemented!");
-        //todo implement this!
+    public void filterOutAttribute(final EdgeAttribute searchAttribute) {
+        List<Edge> edgeList = getAllEdges();
+        edgeList.stream().filter(e -> e.hasAttribute(searchAttribute))
+                         .forEach(e -> e.addAttribute(EdgeAttribute.EDGE_REMOVED));
     }
 
     /**
@@ -87,14 +87,14 @@ public class LocationGraph {
      *                                    of the Map data structure.
      */
     public void addLocation(Location newLocation,
-                            Map<Location, EdgeAttribute[]> adjacentEdgesWithAttributes) {
+                            Map<Location, List<EdgeAttribute>> adjacentEdgesWithAttributes) {
         /*
         Iterate through the passed map, making Edges between the new location and all adjacent
         locations. The new Edges have the attributes associated with the adjacent points through
         the Map data structure.
          */
         for (Location currentAdjacentLocation: adjacentEdgesWithAttributes.keySet()) {
-            EdgeAttribute[] attributes = adjacentEdgesWithAttributes.get(currentAdjacentLocation);
+            List<EdgeAttribute> attributes = adjacentEdgesWithAttributes.get(currentAdjacentLocation);
             newLocation.makeAdjacentTo(currentAdjacentLocation, attributes);
         }
 
@@ -109,16 +109,28 @@ public class LocationGraph {
         System.out.println("(LocationGraph.Java line 99) LocationGraph: " + this +
                 " would be saved to disk if this were implemented!");
         //todo implement this!
+
+        /*
+        Also, as a note to whoever sees this first we need to think about whether the EDGE_REMOVED
+        EdgeAttribute should get saved. My gut reaction is no, but I'm not sure what the best
+        way to implement this is.
+         */
     }
 
     public List<Location> getAllLocations() {
-        return new ArrayList<Location>(locationList);
+        return new ArrayList<>(locationList);
     }
 
     public List<Edge> getAllEdges() {
-        System.out.println("(LocationGraph.Java line 108) all edges would be returned if this " +
-                "were implemented!");
-        //todo implement this!
-        return new ArrayList<Edge>();
+        /*
+        We use a Set to prevent adding an edge multiple times. We just iterate though Locations and
+        their edges to build the list. This is not great since our graph is pretty sparse.
+
+        We maybe right a faster version of this sometime.
+         */
+        HashSet<Edge> edgeSet = new HashSet<>();
+        getAllLocations().forEach(loc -> loc.getEdges().forEach(edgeSet::add));
+
+        return new ArrayList<>(edgeSet);
     }
 }

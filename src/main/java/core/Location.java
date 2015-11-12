@@ -43,7 +43,7 @@ public class Location {
      * @param nameList The list of searchable names for the Location
      */
     public Location(Point2D.Double position, int floorNumber, String[] nameList) {
-        this(position, floorNumber, nameList, new ArrayList<Edge>());
+        this(position, floorNumber, nameList, new ArrayList<>());
     }
 
     /**
@@ -67,14 +67,22 @@ public class Location {
      * Make the current Location adjacent to the passed location on the graph. This method will
      * build an edge between the two points.
      *
-     * @param nextLocation The Location the current Location will become adjecent to
+     * @param nextLocation The Location the current Location will become adjacent to
      * @param edgeAttributes The list of EdgeAttributes that will be applied to the new edge
      */
-    public void makeAdjacentTo(Location nextLocation, EdgeAttribute[] edgeAttributes) {
-        System.out.println("(Location.Java line 66) Location: " + nextLocation +
-                " would be added if this were" +
-                " implemented!");
-        //todo implement this!
+    public void makeAdjacentTo(Location nextLocation, List<EdgeAttribute> edgeAttributes) {
+        Edge connectionToNeighbor = getConnectingEdgeFromNeighbor(nextLocation);
+        if(connectionToNeighbor == null) {
+            //Build a new edge if there is no current connection
+            Edge e = new Edge(this, nextLocation, edgeAttributes);
+            edgeList.add(e);
+
+            //Make the connection two way
+            nextLocation.makeAdjacentTo(this, edgeAttributes);
+        } else {
+            //If there is an existing one way connection, take that edge and make it two way
+            edgeList.add(connectionToNeighbor);
+        }
     }
 
     /**
@@ -83,9 +91,46 @@ public class Location {
      * @param toRemove The edge that will be removed from the graph
      */
     public void removeEdge(Edge toRemove) {
-        System.out.println("(Location.Java line 76) Edge: " + toRemove +
-                " would be removed if this were implemented!");
-        //todo implement this!
+        edgeList.remove(toRemove);
+        if(neighborHasEdge(toRemove)) {
+            getOtherLoc(toRemove).removeEdge(toRemove);
+        }
+    }
+
+    /**
+     * Returns the node in the passed Location that is not the current object.
+     *
+     * @param e The other edge
+     * @return The node that is not the current node.
+     */
+    private Location getOtherLoc(Edge e) {
+        return (this != e.getNode1() ? e.getNode1() : e.getNode2());
+    }
+
+    /**
+     * Returns whether or not the neighbor contained in the passed Edge has the passed Edge stored.
+     *
+     * @param e The edge to search for
+     * @return whether or not the neighbor contained in the passed Edge has the passed Edge stored.
+     */
+    private boolean neighborHasEdge(Edge e) {
+        return getOtherLoc(e).getEdges().contains(e);
+    }
+
+    /**
+     * Returns the Edge contained by the passed Location that connects it to the current location.
+     * If it doesn't exist, return null
+     *
+     * @param otherLoc The Location to search for a connecting edge in
+     * @return The connecting edge or null
+     */
+    private Edge getConnectingEdgeFromNeighbor(Location otherLoc) {
+        for (Edge e: otherLoc.getEdges()) {
+            if (e.getNode1() == this || e.getNode2() == this) {
+                return e;
+            }
+        }
+        return null;
     }
 
     /**

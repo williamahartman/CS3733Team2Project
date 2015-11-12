@@ -72,7 +72,7 @@ public class Location {
      */
     public void makeAdjacentTo(Location nextLocation, List<EdgeAttribute> edgeAttributes) {
         Edge connectionToNeighbor = getConnectingEdgeFromNeighbor(nextLocation);
-        if(connectionToNeighbor == null) {
+        if (connectionToNeighbor == null) {
             //Build a new edge if there is no current connection
             Edge e = new Edge(this, nextLocation, edgeAttributes);
             edgeList.add(e);
@@ -92,7 +92,7 @@ public class Location {
      */
     public void removeEdge(Edge toRemove) {
         edgeList.remove(toRemove);
-        if(neighborHasEdge(toRemove)) {
+        if (neighborHasEdge(toRemove)) {
             getOtherLoc(toRemove).removeEdge(toRemove);
         }
     }

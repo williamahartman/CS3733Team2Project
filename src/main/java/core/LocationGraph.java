@@ -89,7 +89,8 @@ public class LocationGraph {
         the Map data structure.
          */
         for (Location currentAdjacentLocation: adjacentEdgesWithAttributes.keySet()) {
-            List<EdgeAttribute> attributes = adjacentEdgesWithAttributes.get(currentAdjacentLocation);
+            List<EdgeAttribute> attributes = adjacentEdgesWithAttributes
+                    .get(currentAdjacentLocation);
             newLocation.makeAdjacentTo(currentAdjacentLocation, attributes);
         }
 

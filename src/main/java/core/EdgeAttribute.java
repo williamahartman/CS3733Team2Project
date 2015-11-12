@@ -8,6 +8,6 @@ package core;
 public enum EdgeAttribute {
     INDOORS,
     OUTDOORS,
-    HANDICAP_ACCESSABLE,
+    HANDICAP_ACCESSIBLE,
     EDGE_REMOVED,
 }

@@ -54,12 +54,7 @@ public class LocationGraph {
      */
     public List<Location> searchLocationByName(String searchString) {
         ArrayList<Location> result = new ArrayList<>();
-
-        for (Location loc: locationList) {
-            if (loc.namesInclude(searchString)) {
-                result.add(loc);
-            }
-        }
+        locationList.stream().filter(loc -> loc.namesInclude(searchString)).forEach(result::add);
 
         return result;
     }

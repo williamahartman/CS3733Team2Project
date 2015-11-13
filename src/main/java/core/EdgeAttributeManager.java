@@ -11,13 +11,13 @@ import java.util.Map;
  * without traversing or rebuilding the graph.
  */
 public class EdgeAttributeManager {
-    private Map<EdgeAttribute, Float> attributeModifierValues;
+    private Map<EdgeAttribute, Double> attributeModifierValues;
 
     /**
      * Default constructor.
      */
     public EdgeAttributeManager() {
-        attributeModifierValues = new HashMap<EdgeAttribute, Float>();
+        attributeModifierValues = new HashMap<>();
     }
 
     /**
@@ -41,7 +41,7 @@ public class EdgeAttributeManager {
      * @param edgeAttribute The EdgeAttribute the value will be associated with
      * @param modifier The value for the modifier
      */
-    public void addModifierForAttribute(EdgeAttribute edgeAttribute, float modifier) {
+    public void addModifierForAttribute(EdgeAttribute edgeAttribute, double modifier) {
         attributeModifierValues.put(edgeAttribute, modifier);
     }
 }

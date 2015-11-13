@@ -66,6 +66,7 @@ public class LocationGraph {
      * @param searchAttribute The EdgeAttribute whose associated will have EDGE_REMOVED applied.
      */
     public void filterOutAttribute(final EdgeAttribute searchAttribute) {
+        //TODO Lets discuss how this should work
         List<Edge> edgeList = getAllEdges();
         edgeList.stream().filter(e -> e.hasAttribute(searchAttribute))
                          .forEach(e -> e.addAttribute(EdgeAttribute.EDGE_REMOVED));

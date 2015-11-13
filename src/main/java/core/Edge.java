@@ -1,5 +1,6 @@
 package core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,7 +22,7 @@ public class Edge {
     public Edge(Location node1, Location node2, List<EdgeAttribute> associatedAttributes) {
         this.node1 = node1;
         this.node2 = node2;
-        this.associatedAttributes = associatedAttributes;
+        this.associatedAttributes = new ArrayList<>(associatedAttributes);
     }
 
     /**

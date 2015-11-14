@@ -1,3 +1,4 @@
+import ui.LocationButton;
 import ui.MapView;
 
 import javax.swing.*;
@@ -10,26 +11,24 @@ import java.awt.event.MouseEvent;
  * launcher for our app probably.
  */
 public class AppLauncher{
-    /**
-     * This method just always returns the name of our team.
-     * We test this method with JUnit in src/test/java/TestPlaceholder.java
-     *
-     * @return The name of our amazing team!
-     */
-    public static String getTeamName() {
-        return "AZTEC WASH!";
-    }
-
     public static void main(String[] args) {
         //Make a frame
-        JFrame frame = new JFrame(getTeamName());
+        JFrame frame = new JFrame("AZTEC WASH!");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(800, 600));
+        frame.setMinimumSize(new Dimension(400, 300));
+        frame.setPreferredSize(new Dimension(800, 600));
 
         //Make the map
-        JPanel mapView = new MapView(TestGraphMaker.makeTestGraph(),
+        MapView mapView = new MapView(TestGraphMaker.makeTestGraph(),
                 "src/main/resources/campusmap.png");
 
+        //Make an example listener for each Location
+        for (LocationButton button: mapView.getLocationButtonList()) {
+            button.addActionListener(e -> System.out.println("Button clicked: " +
+                    ((LocationButton) e.getSource()).getAssociatedLocation()));
+        }
+
+        //Make the scroll pane, set up click and drag
         JScrollPane mapScrollPane = new JScrollPane(mapView);
         mapScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         mapScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -46,6 +45,7 @@ public class AppLauncher{
 
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
+                mapView.repaint();
             }
 
             @Override
@@ -63,8 +63,9 @@ public class AppLauncher{
         mapScrollPane.getViewport().addMouseListener(mouseAdapter);
         mapScrollPane.getViewport().addMouseMotionListener(mouseAdapter);
         mapScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
         frame.setLocationRelativeTo(null);
+
+        //Add the map scroll pane
         frame.setContentPane(mapScrollPane);
 
         frame.repaint();

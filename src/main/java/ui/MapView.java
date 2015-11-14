@@ -7,7 +7,6 @@ import core.LocationGraph;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -34,6 +33,8 @@ public class MapView extends JPanel{
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        setPreferredSize(getImageResolution());
     }
 
     /**
@@ -46,31 +47,57 @@ public class MapView extends JPanel{
     }
 
     /**
+     * Returns a Dimension that describes the resolution of the background image. Or 0 if the image
+     * failed to load
+     *
+     * @return The dimension of the image, or 0 if the image didn't load
+     */
+    public Dimension getImageResolution() {
+        Dimension result = new Dimension(0, 0);
+        if (mapBackground != null) {
+            result = new Dimension(mapBackground.getWidth(), mapBackground.getHeight());
+        }
+
+        return result;
+    }
+
+    /**
      * Draw the edges contained in this MapView, as well as the background.
      *
      * @param g The graphics object used to draw the edges and the background
      */
     @Override
     public void paint(Graphics g) {
-        //Draw background if loaded
-        if (mapBackground != null) {
-            g.drawImage(mapBackground, 0, 0, null);
+        if (!(g instanceof Graphics2D)) {
+            throw new RuntimeException("The supplied graphics object is not a Graphics2D!");
         }
 
+        Graphics2D g2d = (Graphics2D) g;
+
+        //Draw background if loaded
+        if (mapBackground != null) {
+            g2d.drawImage(mapBackground, 0, 0, null);
+        }
+
+        g2d.setStroke(new BasicStroke(4));
         for (Edge e: graphEdgeList) {
             if (e.hasAttribute(EdgeAttribute.EDGE_REMOVED)) {
-                g.setColor(Color.red);
+                g2d.setColor(Color.black);
             } else if (e.hasAttribute(EdgeAttribute.INDOORS)) {
-                g.setColor(Color.blue);
+                g2d.setColor(Color.blue);
             } else if (e.hasAttribute(EdgeAttribute.OUTDOORS)) {
-                g.setColor(Color.green);
+                g2d.setColor(Color.yellow);
             }  else {
-                g.setColor(Color.black);
+                g2d.setColor(Color.red);
             }
 
-            Point2D.Double loc1 = e.getNode1().getPosition();
-            Point2D.Double loc2 = e.getNode2().getPosition();
-            g.drawLine((int) loc1.x, (int) loc1.y, (int) loc2.x, (int) loc2.y);
+            Dimension imageRes = getImageResolution();
+            int x1 = (int) (e.getNode1().getPosition().x * imageRes.getWidth());
+            int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
+            int x2 = (int) (e.getNode2().getPosition().x * imageRes.getWidth());
+            int y2 = (int) (e.getNode2().getPosition().y * imageRes.getHeight());
+
+            g2d.drawLine(x1, y1, x2, y2);
         }
     }
 }

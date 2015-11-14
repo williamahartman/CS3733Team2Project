@@ -1,4 +1,7 @@
+import ui.MapView;
+
 import javax.swing.*;
+import java.awt.*;
 
 /**
  * This is a baby easy example of a swing app. This can turn into the real
@@ -19,19 +22,18 @@ public class AppLauncher{
         //Make a frame
         JFrame frame = new JFrame(getTeamName());
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        frame.setMinimumSize(new Dimension(800, 600));
 
-        //Make a panel for the frame, and give it a basic layout
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        //Make the map
+        JPanel mapView = new MapView(TestGraphMaker.makeTestGraph(),
+                "src/main/resources/campusmap.png");
 
-        //Add stuff to the panel
-        for (int i = 0; i < 10; i++) {
-            JLabel label = new JLabel(getTeamName());
-            mainPanel.add(label);
-        }
+        JScrollPane mapScrollPane = new JScrollPane(mapView);
+        mapScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        mapScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        frame.getContentPane().add(mapScrollPane);
 
-        //Add stuff to the frame
-        frame.getContentPane().add(mainPanel);
+        frame.repaint();
         frame.pack();
 
         //Show the frame

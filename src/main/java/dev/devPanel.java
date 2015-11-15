@@ -85,6 +85,16 @@ public class devPanel {
                             buttonFrame.add(panelLayout);
                             buttonFrame.setVisible(true);
                             panelLayout.repaint();
+
+                            okButton.addMouseListener(new MouseAdapter() {
+                                @Override
+                                public void mouseClicked(MouseEvent e) {
+                                    if(e.getButton() == 1){
+                                        //update values for Location object
+                                        buttonFrame.dispose();
+                                    }
+                                }
+                            });
                         }
                         else if(e.getButton() == 3){//Right mouse click
                             p.remove(b);

@@ -163,7 +163,7 @@ page at http://checkstyle.sourceforge.net/config.html -->
 
     <module name="LineLength">
       <!-- Checks if a line is too long. -->
-      <property name="max" value="100"/>
+      <property name="max" value="120"/>
       <property name="severity" value="warning"/>
 
       <!--
@@ -177,10 +177,10 @@ page at http://checkstyle.sourceforge.net/config.html -->
           default="^(package .*;\s*)|(import .*;\s*)|( *(\*|//).*https?://.*)$"/>
     </module>
 
-    <module name="LeftCurly">
-      <!-- Checks for placement of the left curly brace ('{'). -->
-      <property name="severity" value="warning"/>
-    </module>
+    <!--<module name="LeftCurly">-->
+      <!--&lt;!&ndash; Checks for placement of the left curly brace ('{'). &ndash;&gt;-->
+      <!--<property name="severity" value="warning"/>-->
+    <!--</module>-->
 
     <module name="RightCurly">
       <!-- Checks right curlies on CATCH, ELSE, and TRY blocks are on

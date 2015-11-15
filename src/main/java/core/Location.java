@@ -2,6 +2,7 @@ package core;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -15,7 +16,7 @@ public class Location {
     private Point2D.Double position;
     private int floorNumber;
     private String[] nameList;
-    private List<Edge> edgeList;
+    private LinkedList<Edge> edgeList;
 
     /**
      * Constructor. This is intended for loading a Location from a file.
@@ -27,7 +28,7 @@ public class Location {
      * @param edgeList The list of Edges that include the Location as one of their nodes.
      */
     public Location(Point2D.Double position, int floorNumber, String[] nameList,
-                    List<Edge> edgeList) {
+                    LinkedList<Edge> edgeList) {
         this.position = position;
         this.floorNumber = floorNumber;
         this.nameList = nameList;
@@ -43,7 +44,7 @@ public class Location {
      * @param nameList The list of searchable names for the Location
      */
     public Location(Point2D.Double position, int floorNumber, String[] nameList) {
-        this(position, floorNumber, nameList, new ArrayList<>());
+        this(position, floorNumber, nameList, new LinkedList<>());
     }
 
     /**
@@ -70,6 +71,7 @@ public class Location {
      * @param nextLocation The Location the current Location will become adjacent to
      * @param edgeAttributes The list of EdgeAttributes that will be applied to the new edge
      */
+
     public void makeAdjacentTo(Location nextLocation, List<EdgeAttribute> edgeAttributes) {
         Edge connectionToNeighbor = getConnectingEdgeFromNeighbor(nextLocation);
         if (connectionToNeighbor == null) {
@@ -84,7 +86,6 @@ public class Location {
             edgeList.add(connectionToNeighbor);
         }
     }
-
     /**
      * Removes the edge from the current Location and the other Location associated with that edge.
      *
@@ -143,7 +144,7 @@ public class Location {
         //todo implement this!
     }
 
-    public List<Edge> getEdges() {
+    public LinkedList<Edge> getEdges() {
         return edgeList;
     }
 

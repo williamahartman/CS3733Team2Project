@@ -41,104 +41,110 @@ public class LocationGraph {
      */
     public List<Location> makeAStarRoute(EdgeAttributeManager attributeManager, Location start, Location destination)
     {
-        ArrayList<Location> checkedLocations = new ArrayList<Location>(); //The List of already checked Locations
-        ArrayList<Location> uncheckedLocations = new ArrayList<Location>(); // The list of Locations yet to be checked
-        Map<Location,Location> path = new HashMap<Location, Location>(); // each Location refers to its previous Location
-        Map<Location,ArrayList<Double>> distanceValues = new HashMap<Location,ArrayList<Double>>(); //each Locations stored G,H,F values
-        List<Location> finalPath=new ArrayList<Location>(); //what will be returned
+        ArrayList<Location> checkedLocations = new ArrayList<>(); //The List of already checked Locations
+        ArrayList<Location> uncheckedLocations = new ArrayList<>(); // The list of Locations yet to be checked
+        Map<Location, Location> path = new HashMap<>(); // each Location refers to its previous Location
+        Map<Location, ArrayList<Double>> distanceValues = new HashMap<>(); //each Locations stored G,H,F values
+        List<Location> finalPath = new ArrayList<>(); //what will be returned
         /**
          * Initialise the path at start Location
          */
-        ArrayList<Double> initialValues= new ArrayList<Double>(); // The List of G,H,F for start
+        ArrayList<Double> initialValues = new ArrayList<Double>(); // The List of G,H,F for start
         uncheckedLocations.add(start); //initialising uncheckedLocations
         initialValues.add(0.0); //initial G Value
         initialValues.add(start.getPosition().distance(destination.getPosition())); //initial H Value
-        initialValues.add((initialValues.get(0)+initialValues.get(1))); //initial F Value
-        distanceValues.put(start,initialValues); //start and its corresponding G,H,F values
-
-        while(!uncheckedLocations.isEmpty())
+        initialValues.add((initialValues.get(0) + initialValues.get(1))); //initial F Value
+        distanceValues.put(start, initialValues); //start and its corresponding G,H,F values
+        while (!uncheckedLocations.isEmpty())
         {
             /**
              * Determining which location to check
              */
-            Location current=uncheckedLocations.get(0); // remember Location with smallest F
-            double smallestF=distanceValues.get(current).get(2); // remember smallest F Value
-            for (Location L:uncheckedLocations)
+            Location current = uncheckedLocations.get(0); // remember Location with smallest F
+            double smallestF = distanceValues.get(current).get(2); // remember smallest F Value
+            for (Location loc:uncheckedLocations)
             {
-                double checkF=distanceValues.get(L).get(2);
-                if(checkF<smallestF)
+                double checkF = distanceValues.get(loc).get(2);
+                if (checkF < smallestF)
                 {
-                    smallestF= checkF;
-                    current = L;
+                    smallestF = checkF;
+                    current = loc;
                 }
             }
             /**
              *Determining final path
              */
-            if(current.equals(destination)) // if you have reached your goal
+            if (current.equals(destination)) // if you have reached your goal
             {
-                Location recurse=current;
-                while(recurse!=null) //while path has a predecessor, keep recursively adding the previous locations
+                Location recurse = current;
+                while (recurse != null) //while path has a predecessor, keep recursively adding the previous locations
                 {
-                    finalPath.add(path.get(recurse));
-                    recurse =path.get(recurse);
+                    finalPath.add(recurse);
+                    recurse = path.get(recurse);
                 }
-                break;
+                return finalPath;
             }
             uncheckedLocations.remove(current); //this location will now be checked so remove it from uncheckedLocations
             checkedLocations.add(current); // this location will now be checked so add it to checkedLocations
             /**
              * Getting all Locations that are adjacent to current
              */
-            List<Edge> eList =current.getEdges(); //a list of all edges that current is a part of
-            ArrayList<Location> neighbors= new ArrayList<Location>();
-            for(Edge E:eList)
+
+            List<Edge> eList = current.getEdges(); //a list of all edges that current is a part of
+            ArrayList<Location> neighbors = new ArrayList<Location>();
+            for (Edge e:eList)
             {
-                Location L1 = E.getNode1(); //a possible location
-                Location L2 = E.getNode2();// a possible location
-                if(!L1.equals(current)) // if the location is not equal to current then add to neighbors
+                Location loc1 = e.getNode1(); //a possible location
+                Location loc2 = e.getNode2(); // a possible location
+                if (!loc1.equals(current)) // if the location is not equal to current then add to neighbors
                 {
-                    neighbors.add(L1);
+                    neighbors.add(loc1);
                 }
-                if(!L2.equals(current)) // if the location is not equal to current then add to neighbors
+                if (!loc2.equals(current)) // if the location is not equal to current then add to neighbors
                 {
-                    neighbors.add(L2);
+                    neighbors.add(loc2);
                 }
 
             }
+            //System.out.println(neighbors.get(0));
             /**
              * Determining which neighbors to add to uncheckedLocations
              */
-            for (Location L: neighbors )
+            for (Location loc: neighbors)
             {
-                if(checkedLocations.contains(L)) // this location has already been checked
+               // System.out.println(loc);
+
+                if (checkedLocations.contains(loc)) // this location has already been checked
                 {
                     //ignore this neighbor
                 }
                 else
                 {
-                    ArrayList<Double> LValues = new ArrayList<Double>(); // The List of G,H,F for L
-                    double gL = distanceValues.get(current).get(0)+ current.getPosition().distance(L.getPosition()); //initial G Value
-                    double hL = L.getPosition().distance(destination.getPosition()); // H Value of L
-                    double fL = LValues.get(0) + LValues.get(1); //F Value of L
-                    LValues.add(gL);LValues.add(hL);LValues.add(fL); // creating the list of values for L
+                    ArrayList<Double> locValues = new ArrayList<Double>(); // The List of G,H,F for L
+                    double gL = distanceValues.get(current).get(0) + current.getPosition().distance(loc.getPosition());
+                    // ^initial G Value
+                    double hL = loc.getPosition().distance(destination.getPosition()); // H Value of L
+                    locValues.add(gL); locValues.add(hL);  // creating the list of values for L
+                    double fL = locValues.get(0) + locValues.get(1); //F Value of L
+                    locValues.add(fL);
 
-                    if (uncheckedLocations.contains(L)) //if L is already in uncheckedLocations
+                    if (uncheckedLocations.contains(loc)) //if L is already in uncheckedLocations
                     {
-                        if (distanceValues.get(L).get(2) < fL) // if instance of L already has a lower F
+                        if (distanceValues.get(loc).get(2) < fL) // if instance of L already has a lower F
                         {
                             //ignore this neighbor
                         }
                         else
                         {
-                            distanceValues.put(L, LValues); //L and its corresponding G,H,F values
-                            path.put(L, current);
+                            distanceValues.put(loc, locValues); //L and its corresponding G,H,F values
+                            path.put(loc, current);
                         }
                     }
                     else
                     {
-                        uncheckedLocations.add(L);
-                        path.put(L, current);
+                        uncheckedLocations.add(loc);
+                        distanceValues.put(loc, locValues); //L and its corresponding G,H,F values
+                        path.put(loc, current);
                     }
                 }
             }
@@ -192,7 +198,9 @@ public class LocationGraph {
         for (Location currentAdjacentLocation: adjacentEdgesWithAttributes.keySet()) {
             List<EdgeAttribute> attributes = adjacentEdgesWithAttributes
                     .get(currentAdjacentLocation);
+            System.out.println("CURSE WILL");
             newLocation.makeAdjacentTo(currentAdjacentLocation, attributes);
+
         }
 
         //Add the new point (now with its associate edges) to the list of a points in the graph

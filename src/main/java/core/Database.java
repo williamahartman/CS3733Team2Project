@@ -28,4 +28,46 @@ public class Database {
         }
 
     }
+
+    /*
+     * @param locToAdd The location/node that needs to be added to the database
+     */
+    public void AddNode(Location locToAdd) {
+
+    }
+
+    /*
+     * @param locToRem The location/node that needs to be removed to the database
+     */
+    public void RemoveNode(Location locToRem) {
+
+    }
+
+    /*
+     * @param locToUpdate The location/node that needs to be updated in the database
+     */
+    public void UpdateNode(Location locToUpdate) {
+
+    }
+
+    /*
+     * @param edgeToAdd The edge that needs to be added to the database
+     */
+    public void AddEdge(Edge edgeToAdd) {
+
+    }
+
+    /*
+     * @param edgeToRem The edge that needs to be removed to the database
+     */
+    public void RemoveEdge(Edge edgeToRem) {
+
+    }
+
+    /*
+     * @param edgeToUpdate The edge that needs to be updated in the database
+     */
+    public void UpdateEdge(Edge edgeToUpdate) {
+
+    }
 }

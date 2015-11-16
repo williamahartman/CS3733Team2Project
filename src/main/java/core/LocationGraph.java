@@ -2,6 +2,7 @@ package core;
 
 import java.util.*;
 
+
 /**
  * A LocationGraph stores a graph of locations and edges. This will hold onto all the data used in
  * the mapping application.
@@ -115,8 +116,7 @@ public class LocationGraph {
                // System.out.println(loc);
 
                 if (checkedLocations.contains(loc)) // this location has already been checked
-                {
-                    //ignore this neighbor
+                {//ignore this neighbor
                 }
                 else
                 {
@@ -150,6 +150,25 @@ public class LocationGraph {
             }
         }
         return finalPath; //a list of locations from start - destination
+    }
+
+    /**
+     * Calculates the distance from the optimal route between two locations
+     * @param start The starting Location
+     * @param destination The destination Location
+     * @return The distance calculating from the optimal route between two locations
+     */
+    public double calculateDistance(Location start, Location destination){
+        double distance = 0.0;
+        List<Location> path = this.makeAStarRoute(new EdgeAttributeManager(), start, destination);
+        int listSize = path.size();
+        for (int i = 0; i < (listSize - 1); i++){
+            distance += path.get(i).getPosition().distance(path.get(i+1).getPosition());
+        }
+
+        String temp = String.format(("%.2f"), distance);
+        distance = Double.parseDouble(temp);
+        return distance;
     }
 
     /**
@@ -198,7 +217,6 @@ public class LocationGraph {
         for (Location currentAdjacentLocation: adjacentEdgesWithAttributes.keySet()) {
             List<EdgeAttribute> attributes = adjacentEdgesWithAttributes
                     .get(currentAdjacentLocation);
-            System.out.println("CURSE WILL");
             newLocation.makeAdjacentTo(currentAdjacentLocation, attributes);
 
         }

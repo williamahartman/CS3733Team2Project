@@ -1,5 +1,4 @@
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import core.*;
 import org.junit.Assert;
@@ -26,6 +25,7 @@ public class TestPlaceholder {
         assertEquals("AZTEC WASH!", teamName);
     }
 
+
     @Test
     public void testAstarInOneLine() {
         LocationGraph graph = new LocationGraph();
@@ -44,20 +44,26 @@ public class TestPlaceholder {
         loc1.makeAdjacentTo(loc2, new ArrayList<>());
         loc2.makeAdjacentTo(loc3, new ArrayList<>());
         loc3.makeAdjacentTo(loc4, new ArrayList<>());
-
+        //Test A* algorithm
         List<Location> test = new LinkedList<>();
         List<Location> path = graph.makeAStarRoute(new EdgeAttributeManager(), loc0, loc1);
         test.add(loc1);
         test.add(loc0);
         assertEquals(test, path);
-
+        //Test calculateDistance
+        double d1 = graph.calculateDistance(loc0, loc1);
+        assertEquals(0.1, d1, 0.0);
+        //Test A* algorithm
         List<Location> test2 = new LinkedList<>();
         List<Location> path2 = graph.makeAStarRoute(new EdgeAttributeManager(), loc0, loc2);
         test2.add(loc2);
         test2.add(loc1);
         test2.add(loc0);
         assertEquals(test2, path2);
-
+        //Test calculateDistance
+        double d2 = graph.calculateDistance(loc0, loc2);
+        assertEquals(0.2, d2, 0.0);
+        //Test A* algorithm
         List<Location> test3 = new LinkedList<>();
         List<Location> path3 = graph.makeAStarRoute(new EdgeAttributeManager(), loc0, loc3);
         test3.add(loc3);
@@ -65,7 +71,11 @@ public class TestPlaceholder {
         test3.add(loc1);
         test3.add(loc0);
         assertEquals(test3, path3);
+        //Test calculateDistance
+        double d3 = graph.calculateDistance(loc0, loc3);
+        assertEquals(0.3, d3, 0.0);
 
+        //Test A* algorithm
         List<Location> test4 = new LinkedList<>();
         List<Location> path4 = graph.makeAStarRoute(new EdgeAttributeManager(), loc0, loc4);
         test4.add(loc4);
@@ -74,10 +84,13 @@ public class TestPlaceholder {
         test4.add(loc1);
         test4.add(loc0);
         assertEquals(test4, path4);
+        //Test calculateDistance
+        double d4 = graph.calculateDistance(loc0, loc4);
+        assertEquals(0.4, d4, 0.0);
     }
 
     @Test
-    public void testAstarIn() {
+    public void testAstarInExampleGraph() {
         LocationGraph graph = new LocationGraph();
         Location loc1 = new Location(new Point2D.Double(1, 3), 0, new String[0]);
         Location loc2 = new Location(new Point2D.Double(2, 6), 0, new String[0]);
@@ -102,7 +115,7 @@ public class TestPlaceholder {
         loc4.makeAdjacentTo(loc6, new ArrayList<>());
         loc4.makeAdjacentTo(loc5, new ArrayList<>());
         loc6.makeAdjacentTo(loc7, new ArrayList<>());
-
+        //Test A* algorithm
         List<Location> test1 = new LinkedList<>();
         List<Location> path1 = graph.makeAStarRoute(new EdgeAttributeManager(), loc1, loc5);
         test1.add(loc5);
@@ -111,7 +124,57 @@ public class TestPlaceholder {
         test1.add(loc2);
         test1.add(loc1);
         assertEquals(test1, path1);
+        //Test calculateDistance
+        double d = graph.calculateDistance(loc1, loc5);
+        assertEquals(10.74, d, 0.0);
     }
+
+    @Test
+    public void testAstar1() {
+        LocationGraph graph = new LocationGraph();
+        Location loc1 = new Location(new Point2D.Double(1, 1), 0, new String[0]);
+        Location loc2 = new Location(new Point2D.Double(1, 5), 0, new String[0]);
+        Location loc3 = new Location(new Point2D.Double(2, 3), 0, new String[0]);
+        Location loc4 = new Location(new Point2D.Double(3, 2), 0, new String[0]);
+        Location loc5 = new Location(new Point2D.Double(4, 6), 0, new String[0]);
+
+        graph.addLocation(loc1, new HashMap<>());
+        graph.addLocation(loc2, new HashMap<>());
+        graph.addLocation(loc3, new HashMap<>());
+        graph.addLocation(loc4, new HashMap<>());
+        graph.addLocation(loc5, new HashMap<>());
+
+        loc1.makeAdjacentTo(loc2, new ArrayList<>());
+        loc1.makeAdjacentTo(loc3, new ArrayList<>());
+        loc1.makeAdjacentTo(loc4, new ArrayList<>());
+        loc2.makeAdjacentTo(loc3, new ArrayList<>());
+        loc2.makeAdjacentTo(loc5, new ArrayList<>());
+        loc3.makeAdjacentTo(loc4, new ArrayList<>());
+        loc3.makeAdjacentTo(loc5, new ArrayList<>());
+        loc4.makeAdjacentTo(loc5, new ArrayList<>());
+
+        //Test A* algorithm
+        List<Location> test1 = new LinkedList<>();
+        List<Location> path1 = graph.makeAStarRoute(new EdgeAttributeManager(), loc1, loc5);
+        test1.add(loc5);
+        test1.add(loc3);
+        test1.add(loc1);
+        assertEquals(test1, path1);
+        //Test calculateDistance
+        double d1 = graph.calculateDistance(loc1, loc5);
+        assertEquals(5.84, d1, 0.0);
+
+        //Test A* algorithm
+        List<Location> test2 = new LinkedList<>();
+        List<Location> path2 = graph.makeAStarRoute(new EdgeAttributeManager(), loc3, loc5);
+        test2.add(loc5);
+        test2.add(loc3);
+        assertEquals(test2, path2);
+        //Test calculateDistance
+        double d2 = graph.calculateDistance(loc3, loc5);
+        assertEquals(3.61, d2, 0.0);
+    }
+
 
 
     @Test

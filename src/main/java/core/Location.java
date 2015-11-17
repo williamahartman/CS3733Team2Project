@@ -16,7 +16,7 @@ public class Location {
     private Point2D.Double position;
     private int floorNumber;
     private String[] nameList;
-    private LinkedList<Edge> edgeList;
+    private List<Edge> edgeList;
 
     /**
      * Constructor. This is intended for loading a Location from a file.
@@ -28,7 +28,7 @@ public class Location {
      * @param edgeList The list of Edges that include the Location as one of their nodes.
      */
     public Location(Point2D.Double position, int floorNumber, String[] nameList,
-                    LinkedList<Edge> edgeList) {
+                    List<Edge> edgeList) {
         this.position = position;
         this.floorNumber = floorNumber;
         this.nameList = nameList;
@@ -127,7 +127,7 @@ public class Location {
      * @param otherLoc The Location to search for a connecting edge in
      * @return The connecting edge or null
      */
-    private Edge getConnectingEdgeFromNeighbor(Location otherLoc) {
+    public Edge getConnectingEdgeFromNeighbor(Location otherLoc) {
         for (Edge e: otherLoc.getEdges()) {
             if (e.getNode1() == this || e.getNode2() == this) {
                 return e;
@@ -146,7 +146,7 @@ public class Location {
         //todo implement this!
     }
 
-    public LinkedList<Edge> getEdges() {
+    public List<Edge> getEdges() {
         return edgeList;
     }
 
@@ -156,5 +156,14 @@ public class Location {
 
     public Point2D.Double getPosition() {
         return position;
+    }
+    public String[] getNameList(){
+        return nameList;
+    }
+    public void setFloorNumber(int number){
+        floorNumber = number;
+    }
+    public void setNameList(String[] s){
+        nameList = s;
     }
 }

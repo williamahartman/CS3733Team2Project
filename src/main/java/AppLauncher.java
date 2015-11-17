@@ -1,4 +1,4 @@
-import ui.MapView;
+import ui.MainAppUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,35 +8,18 @@ import java.awt.*;
  * launcher for our app probably.
  */
 public class AppLauncher{
-    /**
-     * This method just always returns the name of our team.
-     * We test this method with JUnit in src/test/java/TestPlaceholder.java
-     *
-     * @return The name of our amazing team!
-     */
-    public static String getTeamName() {
-        return "AZTEC WASH!";
-    }
-
     public static void main(String[] args) {
         //Make a frame
-        JFrame frame = new JFrame(getTeamName());
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(800, 600));
-
-        //Make the map
-        JPanel mapView = new MapView(TestGraphMaker.makeTestGraph(),
+        MainAppUI app = new MainAppUI(TestGraphMaker.makeTestGraph(),
                 "src/main/resources/campusmap.png");
+        app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        app.setMinimumSize(new Dimension(800, 600));
 
-        JScrollPane mapScrollPane = new JScrollPane(mapView);
-        mapScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        mapScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        frame.getContentPane().add(mapScrollPane);
+        app.setUpMainApp();
 
-        frame.repaint();
-        frame.pack();
+        app.repaint();
 
         //Show the frame
-        frame.setVisible(true);
+        app.setVisible(true);
     }
 }

@@ -237,6 +237,12 @@ public class LocationGraph {
          */
     }
 
+    /**
+     * Return the list of Locations in the LocationGraph. The order of the Locations in this
+     * list may change at anytime!
+     *
+     * @return The list of Locations in the LocationGraph
+     */
     public List<Location> getAllLocations() {
         return new ArrayList<>(locationList);
     }

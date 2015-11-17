@@ -2,6 +2,7 @@ package ui;
 
 import core.Edge;
 import core.EdgeAttribute;
+import core.Location;
 import core.LocationGraph;
 
 import javax.imageio.ImageIO;
@@ -10,13 +11,20 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.*;
+import java.util.List;
 
 /**
  * This is a panel that displays edges from a map. An image background is displayed bellow
  * these edges.
  */
 public class MapView extends JPanel{
+    private static final int NODE_BUTTON_SIZE = 20;
+
     private java.util.List<Edge> graphEdgeList;
+    private java.util.List<Location> locationList;
+    private java.util.List<LocationButton> locationButtonList;
+
     private BufferedImage mapBackground;
 
     /**
@@ -27,14 +35,17 @@ public class MapView extends JPanel{
      */
     public MapView(LocationGraph graph, String mapBackgroundImagePath) {
         super(true);
-        resetEdges(graph);
         try {
             mapBackground = ImageIO.read(new File(mapBackgroundImagePath));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        locationButtonList = new ArrayList<>();
+
         setPreferredSize(getImageResolution());
+        setLayout(null);
+        resetGraphData(graph);
     }
 
     /**
@@ -42,8 +53,29 @@ public class MapView extends JPanel{
      *
      * @param graph The graph whose edges will be displayed
      */
-    public final void resetEdges(LocationGraph graph) {
+    public final void resetGraphData(LocationGraph graph) {
         this.graphEdgeList = graph.getAllEdges();
+        this.locationList = graph.getAllLocations();
+
+        redrawButtons();
+    }
+
+    /**
+     * Remove and replace all buttons, setting them to thier original state
+     */
+    public void redrawButtons() {
+        locationButtonList.forEach(this::remove);
+        locationButtonList.clear();
+        drawButtons();
+    }
+
+    /**
+     * Returns the list of LocationButtons contained in the MapView.
+     *
+     * @return the list of LocationButtons contained in the MapView
+     */
+    public List<LocationButton> getLocationButtonList() {
+        return locationButtonList;
     }
 
     /**
@@ -62,17 +94,42 @@ public class MapView extends JPanel{
     }
 
     /**
+     * Adds one LocationButton to the panel for each Location in the backing Location graph.
+     */
+    private void drawButtons() {
+        for (Location loc: locationList) {
+            LocationButton currentButton = new LocationButton(loc);
+            currentButton.setBackground(Color.CYAN);
+            currentButton.setBorder(BorderFactory.createEmptyBorder());
+
+            int xPos = (int) (loc.getPosition().x * getImageResolution().width);
+            int yPos = (int) (loc.getPosition().y * getImageResolution().height);
+
+            currentButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos  - (NODE_BUTTON_SIZE / 2),
+                    NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
+            add(currentButton);
+            locationButtonList.add(currentButton);
+        }
+        repaint();
+    }
+
+    /**
      * Draw the edges contained in this MapView, as well as the background.
      *
      * @param g The graphics object used to draw the edges and the background
      */
     @Override
-    public void paint(Graphics g) {
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
         if (!(g instanceof Graphics2D)) {
             throw new RuntimeException("The supplied graphics object is not a Graphics2D!");
         }
 
         Graphics2D g2d = (Graphics2D) g;
+        RenderingHints rh = new RenderingHints(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHints(rh);
 
         //Draw background if loaded
         if (mapBackground != null) {
@@ -99,5 +156,6 @@ public class MapView extends JPanel{
 
             g2d.drawLine(x1, y1, x2, y2);
         }
+
     }
 }

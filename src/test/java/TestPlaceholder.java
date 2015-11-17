@@ -1,7 +1,6 @@
-import static org.junit.Assert.*;
-
-import core.*;
-import org.junit.Assert;
+import core.EdgeAttributeManager;
+import core.Location;
+import core.LocationGraph;
 import org.junit.Test;
 
 import java.awt.geom.Point2D;
@@ -10,21 +9,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * This is a little example of a test case. Real test cases should be less
  * stupid and more organized.
  */
 public class TestPlaceholder {
-
-    /**
-     * This is a test that will pass.
-     */
-    @Test
-    public void testCase1() {
-        String teamName = AppLauncher.getTeamName();
-        assertEquals("AZTEC WASH!", teamName);
-    }
-
 
     @Test
     public void testAstar1() {

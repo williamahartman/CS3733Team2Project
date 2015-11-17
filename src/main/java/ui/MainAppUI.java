@@ -15,6 +15,7 @@ import java.awt.event.MouseWheelEvent;
  * This runs the app.
  */
 public class MainAppUI extends JFrame{
+    private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
     private static final double DEFAULT_ZOOM = 0.2;
     private static final double MINIMUM_ZOOM = 0.1;
@@ -39,6 +40,7 @@ public class MainAppUI extends JFrame{
      * @param backgroundImagePath The path to the image that will be used as a background
      */
     public MainAppUI(LocationGraph graph, String backgroundImagePath) {
+        super(FRAME_TITLE);
         this.graph = graph;
         this.backgroundImagePath = backgroundImagePath;
         this.mapView = new MapView(graph, backgroundImagePath, DEFAULT_ZOOM);
@@ -53,14 +55,17 @@ public class MainAppUI extends JFrame{
     public void setUpMainApp() {
         //Initialize Panels and buttons
         JPanel sidePanel = new JPanel();
+        sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 
         startInfo = new JLabel();
         startInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         startInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+
         endPointInfo = new JLabel();
         endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+
 
         clearButton = new JButton("Clear Selections");
         clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -109,7 +114,7 @@ public class MainAppUI extends JFrame{
         //Set layout and add
         setLayout(new BorderLayout());
         add(mapScrollPane);
-        add(sidePanel, BorderLayout.EAST);
+        add(sidePanel, BorderLayout.WEST);
     }
 
     /**

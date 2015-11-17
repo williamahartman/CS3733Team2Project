@@ -22,7 +22,7 @@ public class MainAppUI extends JFrame{
     private JLabel endPointInfo;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param graph The graph that will be shown
      * @param backgroundImagePath The path to the image that will be used as a background
@@ -64,7 +64,7 @@ public class MainAppUI extends JFrame{
     }
 
     /**
-     * Populate the JFrame with panels used for the applcation
+     * Populate the JFrame with panels used for the applcation.
      */
     public void setUpMainApp() {
         //Initialize Panels and buttons

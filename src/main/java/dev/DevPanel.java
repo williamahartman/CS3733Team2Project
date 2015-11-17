@@ -46,13 +46,15 @@ public class DevPanel {
                         public void mouseClicked(MouseEvent e) {
                             if (e.getButton() == 1) {//Left mouse click
                                 if (edgeMode){//if in Edge Mode
-                                    Edge edge = originalButton.getAssociatedLocation().getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
+                                    Edge edge = originalButton.getAssociatedLocation()
+                                            .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
                                     if (edge != null){ //already has edge
                                         //remove edge
                                         originalButton.getAssociatedLocation().removeEdge(edge);
                                     } else { //does not have an edge
                                         //add an edge
-                                        originalButton.getAssociatedLocation().makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<EdgeAttribute>());
+                                        originalButton.getAssociatedLocation().makeAdjacentTo(b.getAssociatedLocation(),
+                                                new ArrayList<EdgeAttribute>());
                                     }
                                 } else {
                                     JFrame buttonFrame = new JFrame();
@@ -65,7 +67,8 @@ public class DevPanel {
                                     JButton nodeButton = new JButton("Edge Mode");
 
                                     //Fields with their initial entries
-                                    JFormattedTextField field1 = new JFormattedTextField(b.getAssociatedLocation().getFloorNumber());
+                                    JFormattedTextField field1 = new JFormattedTextField(b.getAssociatedLocation()
+                                            .getFloorNumber());
                                     JFormattedTextField field2 = new JFormattedTextField();
                                     if (b.getAssociatedLocation().getNameList().length == 0) {
                                         field2.setValue("Enter a String");

@@ -61,7 +61,7 @@ public class MapView extends JPanel{
     }
 
     /**
-     * Remove and replace all buttons, setting them to thier original state
+     * Remove and replace all buttons, setting them to thier original state.
      */
     public void redrawButtons() {
         locationButtonList.forEach(this::remove);

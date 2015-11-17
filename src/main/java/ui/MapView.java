@@ -33,17 +33,13 @@ public class MapView extends JPanel{
      * Constructor.
      *
      * @param graph The LocationGraph whose edges will be displayed
-     * @param mapBackgroundImagePath The path to the image that will be used as the background
+     * @param mapBackground The image that will be used as the background
      * @param defaultZoom The zoom level the map will be at when the app starts
      */
-    public MapView(LocationGraph graph, String mapBackgroundImagePath, double defaultZoom) {
+    public MapView(LocationGraph graph, BufferedImage mapBackground, double defaultZoom) {
         super(true);
-        try {
-            mapBackground = ImageIO.read(new File(mapBackgroundImagePath));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+        this.mapBackground = mapBackground;
         locationButtonList = new ArrayList<>();
         zoomFactor = defaultZoom;
 
@@ -89,13 +85,8 @@ public class MapView extends JPanel{
      * @return The dimension of the image, or 0 if the image didn't load
      */
     public Dimension getImagePixelSize() {
-        Dimension result = new Dimension(0, 0);
-        if (mapBackground != null) {
-            result = new Dimension((int) (mapBackground.getWidth() * zoomFactor),
-                    (int) (mapBackground.getHeight() * zoomFactor));
-        }
-
-        return result;
+        return new Dimension((int) (mapBackground.getWidth() * zoomFactor),
+                (int) (mapBackground.getHeight() * zoomFactor));
     }
 
     /**
@@ -157,9 +148,7 @@ public class MapView extends JPanel{
 
         //Draw background if loaded
         Dimension imageRes = getImagePixelSize();
-        if (mapBackground != null) {
-            g2d.drawImage(mapBackground, 0, 0, (int) imageRes.getWidth(), (int) imageRes.getHeight(), null);
-        }
+        g2d.drawImage(mapBackground, 0, 0, (int) imageRes.getWidth(), (int) imageRes.getHeight(), null);
 
         g2d.setStroke(new BasicStroke(4));
         for (Edge e: graphEdgeList) {

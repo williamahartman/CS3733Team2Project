@@ -4,6 +4,7 @@ import core.Location;
 import core.LocationGraph;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 /**
@@ -17,13 +18,13 @@ public class AStarRouteDisplay extends MapView {
      * Constructor.
      *
      * @param graph The LocationGraph whose edges will be displayed
-     * @param mapBackgroundImagePath The path to the image that will be used as the background
+     * @param mapBackground The image that will be used as the background
      * @param defaultZoom The default zoom amount
      * @param route The list the location in the order they should be visited
      */
-    public AStarRouteDisplay(LocationGraph graph, String mapBackgroundImagePath, double defaultZoom,
+    public AStarRouteDisplay(LocationGraph graph, BufferedImage mapBackground, double defaultZoom,
                              List<Location> route) {
-        super(graph, mapBackgroundImagePath, defaultZoom);
+        super(graph, mapBackground, defaultZoom);
         this.route = route;
     }
 

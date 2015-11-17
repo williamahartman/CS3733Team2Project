@@ -4,11 +4,15 @@ import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -21,9 +25,10 @@ public class MainAppUI extends JFrame{
     private static final double MINIMUM_ZOOM = 0.1;
     private static final double MAXIMUM_ZOOM = 2;
 
+    private BufferedImage mapBackground;
+
     private MapView mapView;
     private LocationGraph graph;
-    private String backgroundImagePath;
 
     private Location startPoint;
     private Location endPoint;
@@ -42,8 +47,18 @@ public class MainAppUI extends JFrame{
     public MainAppUI(LocationGraph graph, String backgroundImagePath) {
         super(FRAME_TITLE);
         this.graph = graph;
-        this.backgroundImagePath = backgroundImagePath;
-        this.mapView = new MapView(graph, backgroundImagePath, DEFAULT_ZOOM);
+
+        try {
+            mapBackground = ImageIO.read(new File(backgroundImagePath));
+        } catch (IOException e) {
+            System.err.println(e.toString());
+            JOptionPane.showMessageDialog(this,
+                    "The map image failed to load!",
+                    "Asset Load Failed!",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+
+        this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM);
 
         startPoint = null;
         endPoint = null;
@@ -83,7 +98,7 @@ public class MainAppUI extends JFrame{
                 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 frame.setMinimumSize(new Dimension(600, 400));
 
-                AStarRouteDisplay route = new AStarRouteDisplay(graph, backgroundImagePath, DEFAULT_ZOOM,
+                AStarRouteDisplay route = new AStarRouteDisplay(graph, mapBackground, DEFAULT_ZOOM,
                         graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint));
                 frame.add(addToScrollPane(route));
 

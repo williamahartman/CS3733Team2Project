@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -15,6 +16,9 @@ import java.awt.event.MouseEvent;
  */
 public class MainAppUI extends JFrame{
     private static final int SIDEPANEL_WIDTH = 250;
+    private static final double DEFAULT_ZOOM = 0.2;
+    private static final double MINIMUM_ZOOM = 0.1;
+    private static final double MAXIMUM_ZOOM = 2;
 
     private MapView mapView;
     private LocationGraph graph;
@@ -37,7 +41,7 @@ public class MainAppUI extends JFrame{
     public MainAppUI(LocationGraph graph, String backgroundImagePath) {
         this.graph = graph;
         this.backgroundImagePath = backgroundImagePath;
-        this.mapView = new MapView(graph, backgroundImagePath);
+        this.mapView = new MapView(graph, backgroundImagePath, DEFAULT_ZOOM);
 
         startPoint = null;
         endPoint = null;
@@ -62,7 +66,7 @@ public class MainAppUI extends JFrame{
         clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
         clearButton.setToolTipText("Remove the previously selected start and end points");
-        clearButton.addActionListener(e -> clearState());
+        clearButton.addActionListener(e -> clearState(mapView));
 
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -74,7 +78,7 @@ public class MainAppUI extends JFrame{
                 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 frame.setMinimumSize(new Dimension(600, 400));
 
-                AStarRouteDisplay route = new AStarRouteDisplay(graph, backgroundImagePath,
+                AStarRouteDisplay route = new AStarRouteDisplay(graph, backgroundImagePath, DEFAULT_ZOOM,
                         graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint));
                 frame.add(addToScrollPane(route));
 
@@ -82,7 +86,7 @@ public class MainAppUI extends JFrame{
                 frame.repaint();
                 frame.setVisible(true);
 
-                clearState();
+                clearState(mapView);
             } else {
                 JOptionPane.showMessageDialog(this,
                         "You must select two points in order to generate a path.",
@@ -99,7 +103,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(clearButton);
 
         //Build the map view scrollable stuff
-        clearState();
+        clearState(mapView);
         JScrollPane mapScrollPane = addToScrollPane(mapView);
 
         //Set layout and add
@@ -176,9 +180,27 @@ public class MainAppUI extends JFrame{
             public void mouseReleased(MouseEvent e) {
                 resultScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
+
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                //This is gross. Refactor it later!
+                if (panel instanceof MapView) {
+                    MapView mapViewPanel = (MapView) panel;
+
+                    if ((mapViewPanel.getZoomFactor() > MINIMUM_ZOOM || e.getWheelRotation() < 0) &&
+                            (mapViewPanel.getZoomFactor() < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
+                        mapViewPanel.zoomIncrementBy(e.getWheelRotation() * -0.01);
+                        clearState(mapViewPanel);
+
+                        repaint();
+                    }
+                }
+            }
+
         };
         resultScrollPane.getViewport().addMouseListener(mouseAdapter);
         resultScrollPane.getViewport().addMouseMotionListener(mouseAdapter);
+        resultScrollPane.getViewport().addMouseWheelListener(mouseAdapter);
         resultScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         return resultScrollPane;
@@ -187,11 +209,11 @@ public class MainAppUI extends JFrame{
     /**
      * Clear the state of the App, returning it to the default state.
      */
-    private void clearState() {
+    private void clearState(MapView toReset) {
         startPoint = null;
         endPoint = null;
 
-        mapView.redrawButtons();
+        toReset.resetGraphData(graph);
         addListenersToMapNodes();
 
         startInfo.setText("Start Point: Not selected");

@@ -21,6 +21,8 @@ import java.util.List;
 public class MapView extends JPanel{
     private static final int NODE_BUTTON_SIZE = 20;
 
+    private double zoomFactor;
+
     private java.util.List<Edge> graphEdgeList;
     private java.util.List<Location> locationList;
     private java.util.List<LocationButton> locationButtonList;
@@ -32,8 +34,9 @@ public class MapView extends JPanel{
      *
      * @param graph The LocationGraph whose edges will be displayed
      * @param mapBackgroundImagePath The path to the image that will be used as the background
+     * @param defaultZoom The zoom level the map will be at when the app starts
      */
-    public MapView(LocationGraph graph, String mapBackgroundImagePath) {
+    public MapView(LocationGraph graph, String mapBackgroundImagePath, double defaultZoom) {
         super(true);
         try {
             mapBackground = ImageIO.read(new File(mapBackgroundImagePath));
@@ -42,8 +45,9 @@ public class MapView extends JPanel{
         }
 
         locationButtonList = new ArrayList<>();
+        zoomFactor = defaultZoom;
 
-        setPreferredSize(getImageResolution());
+        setPreferredSize(getImagePixelSize());
         setLayout(null);
         resetGraphData(graph);
     }
@@ -84,13 +88,33 @@ public class MapView extends JPanel{
      *
      * @return The dimension of the image, or 0 if the image didn't load
      */
-    public Dimension getImageResolution() {
+    public Dimension getImagePixelSize() {
         Dimension result = new Dimension(0, 0);
         if (mapBackground != null) {
-            result = new Dimension(mapBackground.getWidth(), mapBackground.getHeight());
+            result = new Dimension((int) (mapBackground.getWidth() * zoomFactor),
+                    (int) (mapBackground.getHeight() * zoomFactor));
         }
 
         return result;
+    }
+
+    /**
+     * Adjust the zoom value by adding the passed value.
+     *
+     * @param toAdd the value to add
+     */
+    public void zoomIncrementBy(double toAdd) {
+        zoomFactor += toAdd;
+        setPreferredSize(getImagePixelSize());
+    }
+
+    /**
+     * Returns the current zoom factor.
+     *
+     * @return the current zoom factor
+     */
+    public double getZoomFactor() {
+        return zoomFactor;
     }
 
     /**
@@ -102,8 +126,8 @@ public class MapView extends JPanel{
             currentButton.setBackground(Color.CYAN);
             currentButton.setBorder(BorderFactory.createEmptyBorder());
 
-            int xPos = (int) (loc.getPosition().x * getImageResolution().width);
-            int yPos = (int) (loc.getPosition().y * getImageResolution().height);
+            int xPos = (int) (loc.getPosition().x * getImagePixelSize().width);
+            int yPos = (int) (loc.getPosition().y * getImagePixelSize().height);
 
             currentButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos  - (NODE_BUTTON_SIZE / 2),
                     NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
@@ -132,12 +156,12 @@ public class MapView extends JPanel{
         g2d.setRenderingHints(rh);
 
         //Draw background if loaded
+        Dimension imageRes = getImagePixelSize();
         if (mapBackground != null) {
-            g2d.drawImage(mapBackground, 0, 0, null);
+            g2d.drawImage(mapBackground, 0, 0, (int) imageRes.getWidth(), (int) imageRes.getHeight(), null);
         }
 
         g2d.setStroke(new BasicStroke(4));
-        Dimension imageRes = getImageResolution();
         for (Edge e: graphEdgeList) {
             if (e.hasAttribute(EdgeAttribute.EDGE_REMOVED)) {
                 g2d.setColor(Color.black);

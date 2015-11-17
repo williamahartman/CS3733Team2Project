@@ -18,9 +18,12 @@ public class AStarRouteDisplay extends MapView {
      *
      * @param graph The LocationGraph whose edges will be displayed
      * @param mapBackgroundImagePath The path to the image that will be used as the background
+     * @param defaultZoom The default zoom amount
+     * @param route The list the location in the order they should be visited
      */
-    public AStarRouteDisplay(LocationGraph graph, String mapBackgroundImagePath, List<Location> route) {
-        super(graph, mapBackgroundImagePath);
+    public AStarRouteDisplay(LocationGraph graph, String mapBackgroundImagePath, double defaultZoom,
+                             List<Location> route) {
+        super(graph, mapBackgroundImagePath, defaultZoom);
         this.route = route;
     }
 
@@ -44,7 +47,7 @@ public class AStarRouteDisplay extends MapView {
         g2d.setColor(Color.BLUE);
 
 
-        Dimension imageRes = getImageResolution();
+        Dimension imageRes = getImagePixelSize();
 
         int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
         int previousY = (int) (route.get(0).getPosition().y * imageRes.getHeight());

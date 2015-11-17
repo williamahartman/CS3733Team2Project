@@ -12,8 +12,9 @@ public class AppLauncher{
         //Make a frame
         MainAppUI app = new MainAppUI(TestGraphMaker.makeTestGraph(),
                 "src/main/resources/campusmap.png");
+
         app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        app.setMinimumSize(new Dimension(800, 600));
+        app.setMinimumSize(new Dimension(1024, 768));
 
         app.setUpMainApp();
 

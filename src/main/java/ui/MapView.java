@@ -137,6 +137,7 @@ public class MapView extends JPanel{
         }
 
         g2d.setStroke(new BasicStroke(4));
+        Dimension imageRes = getImageResolution();
         for (Edge e: graphEdgeList) {
             if (e.hasAttribute(EdgeAttribute.EDGE_REMOVED)) {
                 g2d.setColor(Color.black);
@@ -148,7 +149,6 @@ public class MapView extends JPanel{
                 g2d.setColor(Color.red);
             }
 
-            Dimension imageRes = getImageResolution();
             int x1 = (int) (e.getNode1().getPosition().x * imageRes.getWidth());
             int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
             int x2 = (int) (e.getNode2().getPosition().x * imageRes.getWidth());

@@ -124,7 +124,7 @@ public class Location {
      * @param otherLoc The Location to search for a connecting edge in
      * @return The connecting edge or null
      */
-    private Edge getConnectingEdgeFromNeighbor(Location otherLoc) {
+    public Edge getConnectingEdgeFromNeighbor(Location otherLoc) {
         for (Edge e: otherLoc.getEdges()) {
             if (e.getNode1() == this || e.getNode2() == this) {
                 return e;
@@ -154,16 +154,13 @@ public class Location {
     public Point2D.Double getPosition() {
         return position;
     }
-
+    public String[] getNameList(){
+        return nameList;
+    }
     public void setFloorNumber(int number){
         floorNumber = number;
     }
-
-    public void setNameList(String[] list){
-        nameList = list;
-    }
-
-    public String[] getNameList(){
-        return nameList;
+    public void setNameList(String[] s){
+        nameList = s;
     }
 }

@@ -27,7 +27,7 @@ public class TestPlaceholder {
 
 
     @Test
-    public void testAstarInOneLine() {
+    public void testAstar1() {
         LocationGraph graph = new LocationGraph();
         Location loc0 = new Location(new Point2D.Double(0.0, 0.0), 0, new String[0]);
         Location loc1 = new Location(new Point2D.Double(0.1, 0.0), 0, new String[0]);
@@ -51,7 +51,7 @@ public class TestPlaceholder {
         test.add(loc0);
         assertEquals(test, path);
         //Test calculateDistance
-        double d1 = graph.calculateDistance(loc0, loc1);
+        double d1 = graph.calculateDistance(path);
         assertEquals(0.1, d1, 0.0);
         //Test A* algorithm
         List<Location> test2 = new LinkedList<>();
@@ -61,7 +61,7 @@ public class TestPlaceholder {
         test2.add(loc0);
         assertEquals(test2, path2);
         //Test calculateDistance
-        double d2 = graph.calculateDistance(loc0, loc2);
+        double d2 = graph.calculateDistance(path2);
         assertEquals(0.2, d2, 0.0);
         //Test A* algorithm
         List<Location> test3 = new LinkedList<>();
@@ -72,7 +72,7 @@ public class TestPlaceholder {
         test3.add(loc0);
         assertEquals(test3, path3);
         //Test calculateDistance
-        double d3 = graph.calculateDistance(loc0, loc3);
+        double d3 = graph.calculateDistance(path3);
         assertEquals(0.3, d3, 0.0);
 
         //Test A* algorithm
@@ -85,12 +85,12 @@ public class TestPlaceholder {
         test4.add(loc0);
         assertEquals(test4, path4);
         //Test calculateDistance
-        double d4 = graph.calculateDistance(loc0, loc4);
+        double d4 = graph.calculateDistance(path4);
         assertEquals(0.4, d4, 0.0);
     }
 
     @Test
-    public void testAstarInExampleGraph() {
+    public void testAstar2() {
         LocationGraph graph = new LocationGraph();
         Location loc1 = new Location(new Point2D.Double(1, 3), 0, new String[0]);
         Location loc2 = new Location(new Point2D.Double(2, 6), 0, new String[0]);
@@ -125,12 +125,12 @@ public class TestPlaceholder {
         test1.add(loc1);
         assertEquals(test1, path1);
         //Test calculateDistance
-        double d = graph.calculateDistance(loc1, loc5);
+        double d = graph.calculateDistance(path1);
         assertEquals(10.74, d, 0.0);
     }
 
     @Test
-    public void testAstar1() {
+    public void testAstar3() {
         LocationGraph graph = new LocationGraph();
         Location loc1 = new Location(new Point2D.Double(1, 1), 0, new String[0]);
         Location loc2 = new Location(new Point2D.Double(1, 5), 0, new String[0]);
@@ -161,7 +161,7 @@ public class TestPlaceholder {
         test1.add(loc1);
         assertEquals(test1, path1);
         //Test calculateDistance
-        double d1 = graph.calculateDistance(loc1, loc5);
+        double d1 = graph.calculateDistance(path1);
         assertEquals(5.84, d1, 0.0);
 
         //Test A* algorithm
@@ -171,11 +171,11 @@ public class TestPlaceholder {
         test2.add(loc3);
         assertEquals(test2, path2);
         //Test calculateDistance
-        double d2 = graph.calculateDistance(loc3, loc5);
+        double d2 = graph.calculateDistance(path2);
         assertEquals(3.61, d2, 0.0);
     }
     @Test
-    public void testAstar2()
+    public void testAstar4()
     {
         LocationGraph graph = new LocationGraph();
         Location loc0 = new Location(new Point2D.Double(0, 0), 0, new String[0]);
@@ -272,8 +272,8 @@ public class TestPlaceholder {
         test1.add(loc0);
         assertEquals(test1, path1);
         //Test calculateDistance
-        double d1 = graph.calculateDistance(loc0, loc18);
-        assertEquals(22.84, d1, 0.0);
+        double d1 = graph.calculateDistance(path1);
+        assertEquals(22.85, d1, 0.0);
     }
 
     @Test

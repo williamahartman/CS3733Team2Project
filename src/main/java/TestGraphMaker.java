@@ -31,15 +31,13 @@ public class TestGraphMaker {
         graph.addLocation(loc1, new HashMap<>());
         graph.addLocation(loc2, new HashMap<>());
         graph.addLocation(loc3, new HashMap<>());
-//        graph.addLocation(loc4, new HashMap<>());
-//        graph.addLocation(loc5, new HashMap<>());
-//        graph.addLocation(loc6, new HashMap<>());
-//        graph.addLocation(loc7, new HashMap<>());
+        graph.addLocation(loc4, new HashMap<>());
+        graph.addLocation(loc5, new HashMap<>());
+        graph.addLocation(loc6, new HashMap<>());
+        graph.addLocation(loc7, new HashMap<>());
 
           loc0.makeAdjacentTo(loc1, new ArrayList<>());
           loc1.makeAdjacentTo(loc2, new ArrayList<>());
-//        System.out.println(loc2.getEdges().get(0).getNode1());
-//        System.out.println(loc2.getEdges().get(0).getNode2());
 
           loc2.makeAdjacentTo(loc3, new ArrayList<>());
 

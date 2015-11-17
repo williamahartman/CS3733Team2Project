@@ -21,7 +21,7 @@ public class TestGraphMaker {
         Location loc0 = new Location(new Point2D.Double(0.0, 0.0), 0, new String[0]);
         Location loc1 = new Location(new Point2D.Double(0.1, 0.0), 0, new String[0]);
         Location loc2 = new Location(new Point2D.Double(0.2, 0.0), 0, new String[0]);
-        Location loc3 = new Location(new Point2D.Double(0.3  , 0.0), 0, new String[0]);
+        Location loc3 = new Location(new Point2D.Double(0.3, 0.0), 0, new String[0]);
         Location loc4 = new Location(new Point2D.Double(0.6, 0.6), 0, new String[0]);
         Location loc5 = new Location(new Point2D.Double(0.9, 0.6), 0, new String[0]);
         Location loc6 = new Location(new Point2D.Double(0.5, 0.5), 0, new String[0]);
@@ -30,15 +30,18 @@ public class TestGraphMaker {
         graph.addLocation(loc0, new HashMap<>());
         graph.addLocation(loc1, new HashMap<>());
         graph.addLocation(loc2, new HashMap<>());
-       // graph.addLocation(loc3, new HashMap<>());
+        graph.addLocation(loc3, new HashMap<>());
 //        graph.addLocation(loc4, new HashMap<>());
 //        graph.addLocation(loc5, new HashMap<>());
 //        graph.addLocation(loc6, new HashMap<>());
 //        graph.addLocation(loc7, new HashMap<>());
 
           loc0.makeAdjacentTo(loc1, new ArrayList<>());
-          loc2.makeAdjacentTo(loc1, new ArrayList<>());
-          //loc2.makeAdjacentTo(loc3, new ArrayList<>());
+          loc1.makeAdjacentTo(loc2, new ArrayList<>());
+//        System.out.println(loc2.getEdges().get(0).getNode1());
+//        System.out.println(loc2.getEdges().get(0).getNode2());
+
+          loc2.makeAdjacentTo(loc3, new ArrayList<>());
 
 
 

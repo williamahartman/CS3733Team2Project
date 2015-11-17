@@ -57,6 +57,14 @@ public class MapView extends JPanel{
         this.graphEdgeList = graph.getAllEdges();
         this.locationList = graph.getAllLocations();
 
+        redrawButtons();
+    }
+
+    /**
+     * Remove and replace all buttons, setting them to thier original state
+     */
+    public void redrawButtons() {
+        locationButtonList.forEach(this::remove);
         locationButtonList.clear();
         drawButtons();
     }

@@ -14,6 +14,8 @@ import java.awt.event.MouseEvent;
  * This runs the app.
  */
 public class MainAppUI extends JFrame{
+    private static final int SIDEPANEL_WIDTH = 250;
+
     private MapView mapView;
     private LocationGraph graph;
     private String backgroundImagePath;
@@ -23,6 +25,8 @@ public class MainAppUI extends JFrame{
 
     private JLabel startInfo;
     private JLabel endPointInfo;
+    private JButton clearButton;
+    private JButton makeAStarRoute;
 
     /**
      * Constructor.
@@ -48,17 +52,27 @@ public class MainAppUI extends JFrame{
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 
         startInfo = new JLabel();
+        startInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        startInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo = new JLabel();
+        endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
-        JButton clearButton = new JButton("Clear start point and destination");
+        clearButton = new JButton("Clear Selections");
+        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        clearButton.setToolTipText("Remove the previously selected start and end points");
         clearButton.addActionListener(e -> clearState());
 
-        JButton makeAStarRoute = new JButton("Find the shortest route");
+        makeAStarRoute = new JButton("Find Shortest Route");
+        makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        makeAStarRoute.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 JFrame frame = new JFrame("Route");
                 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                frame.setMinimumSize(new Dimension(800, 600));
+                frame.setMinimumSize(new Dimension(600, 400));
 
                 AStarRouteDisplay route = new AStarRouteDisplay(graph, backgroundImagePath,
                         graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint));
@@ -80,9 +94,9 @@ public class MainAppUI extends JFrame{
         //Add elements to the side panel
         sidePanel.add(startInfo);
         sidePanel.add(endPointInfo);
+        sidePanel.add(makeAStarRoute);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
-        sidePanel.add(makeAStarRoute);
 
         //Build the map view scrollable stuff
         clearState();
@@ -105,11 +119,20 @@ public class MainAppUI extends JFrame{
                 if (startPoint == null) {
                     startPoint = clickedLocation;
                     ((JButton) e.getSource()).setBackground(Color.GREEN);
-                    startInfo.setText("Starting from: " + clickedLocation.getPosition());
+                    startInfo.setText("Start Point: ("
+                            + clickedLocation.getPosition().x + ", "
+                            + clickedLocation.getPosition().y + ")");
+
+                    clearButton.setEnabled(true);
                 } else if (endPoint == null) {
                     endPoint = clickedLocation;
                     ((JButton) e.getSource()).setBackground(Color.RED);
-                    endPointInfo.setText("Going to: " + clickedLocation.getPosition());
+                    endPointInfo.setText("Destination Point: ("
+                            + clickedLocation.getPosition().x + ", "
+                            + clickedLocation.getPosition().y + ")");
+
+                    clearButton.setEnabled(true);
+                    makeAStarRoute.setEnabled(true);
                 }
             });
         }
@@ -124,8 +147,8 @@ public class MainAppUI extends JFrame{
     private JScrollPane addToScrollPane(JPanel panel) {
         //Make the scroll pane, set up click and drag
         JScrollPane resultScrollPane = new JScrollPane(panel);
-        resultScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        resultScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        resultScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        resultScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         MouseAdapter mouseAdapter = new MouseAdapter() {
             int mouseStartX = 0;
             int mouseStartY = 0;
@@ -171,8 +194,11 @@ public class MainAppUI extends JFrame{
         mapView.redrawButtons();
         addListenersToMapNodes();
 
-        startInfo.setText("Click a Node");
-        endPointInfo.setText("Click a Node");
+        startInfo.setText("Start Point: Not selected");
+        endPointInfo.setText("Destination Point: Not selected");
+
+        makeAStarRoute.setEnabled(false);
+        clearButton.setEnabled(false);
     }
 
 }

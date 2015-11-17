@@ -133,7 +133,7 @@ public class MainAppUI extends JFrame{
                             + clickedLocation.getPosition().y + ")");
 
                     clearButton.setEnabled(true);
-                } else if (endPoint == null) {
+                } else if (endPoint == null && clickedLocation != startPoint) {
                     endPoint = clickedLocation;
                     ((JButton) e.getSource()).setBackground(Color.RED);
                     endPointInfo.setText("Destination Point: ("

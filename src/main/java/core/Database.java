@@ -240,7 +240,7 @@ public class Database {
      *
      *
      */
-    public LocationGraph CreateGraph() {
+    public LocationGraph createGraph() {
         // Location graph for this map
         LocationGraph graph = new LocationGraph();
 

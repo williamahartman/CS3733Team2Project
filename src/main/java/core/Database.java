@@ -4,6 +4,7 @@ package core;
 import java.sql.*;
 import java.util.*;
 import java.io.*;
+import java.awt.geom.Point2D;
 
 /**
  * Created by Scott on 11/14/2015.
@@ -233,5 +234,54 @@ public class Database {
     public void UpdateEdge(Edge edgeToUpdate) {
         //// TODO: 11/15/2015 Add in update funcitonality 
 
+    }
+    /*
+ * Create a location graph based on node and edge information in the database
+     *
+     *
+     */
+    public LocationGraph CreateGraph() {
+        // Location graph for this map
+        LocationGraph graph = new LocationGraph();
+
+        try {
+            // Hash map to store location and its corresponding database node id
+            Statement sta = con.createStatement();
+            int locCount = 0;
+            String query = "SELECT COUNT(NODE_ID) AS NUM FROM NODES";
+            ResultSet rs = sta.executeQuery(query);
+            locCount = rs.getInt("NUM");
+            HashMap<Integer, Location> hm = new HashMap<Integer, Location>(locCount);
+
+
+            // Create locations
+            // Get all nodes stored in the database
+            ResultSet res = sta.executeQuery(
+                    "SELECT * FROM NODES");
+            while (res.next()) {
+                Location loc = new Location (
+                        new Point2D.Double(res.getDouble("POS_X"),
+                                res.getDouble("POS_Y")),
+                        res.getInt("FLOOR_NUM"), new String[0]);
+
+                // Add locations and node id to a hash map
+                hm.put(res.getInt("NODE_ID"), loc);
+                graph.addLocation(loc, new HashMap<>());
+            }
+
+            // Create edges
+            query = "SELECT * FROM EDGES";
+            res = sta.executeQuery(query);
+            while (res.next()) {
+                Location loc1 = hm.get(res.getInt("NODE1_ID"));
+                Location loc2 = hm.get(res.getInt("NODE2_ID"));
+                loc1.makeAdjacentTo(loc2, new ArrayList<>());
+            }
+        } catch (SQLException e) {
+            System.out.print(e);
+        }
+
+        // Return location graph
+        return graph;
     }
 }

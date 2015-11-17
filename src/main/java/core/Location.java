@@ -154,4 +154,13 @@ public class Location {
     public Point2D.Double getPosition() {
         return position;
     }
+    public String[] getNameList(){
+        return nameList;
+    }
+    public void setFloorNumber(int number){
+        floorNumber = number;
+    }
+    public void setNameList(String[] s){
+        nameList = s;
+    }
 }

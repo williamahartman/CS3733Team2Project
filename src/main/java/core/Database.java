@@ -36,7 +36,7 @@ public class Database {
             System.out.println(
                     "  " + res.getInt("NODE_ID")
                             + ", " + res.getDouble("POS_X")
-                            + ", " + res.getDouble("POS_Y") );
+                            + ", " + res.getDouble("POS_Y"));
         }
 
     }
@@ -46,7 +46,7 @@ public class Database {
      *
      * @param locToAdd The location/node that needs to be added to the database
      */
-    public void AddNode(Location locToAdd) {
+    public void addNode(Location locToAdd) {
         //// TODO: 11/15/2015 Add in names functionality
         //get the x and y of the node to add
         double x = locToAdd.getPosition().getX();
@@ -75,7 +75,7 @@ public class Database {
      *
      * @param locToRem The location/node that needs to be removed to the database
      */
-    public void RemoveNode(Location locToRem) {
+    public void removeNode(Location locToRem) {
         //get the x and y of the location
         double x = locToRem.getPosition().getX();
         double y = locToRem.getPosition().getY();
@@ -114,7 +114,7 @@ public class Database {
      *
      * @param locToUpdate The location/node that needs to be updated in the database
      */
-    public void UpdateNode(Location locToUpdate) {
+    public void updateNode(Location locToUpdate) {
         //// TODO: 11/15/2015 will add when adding names
         /*
         double x = locToUpdate.getPosition().getX();
@@ -145,7 +145,7 @@ public class Database {
      *
      * @param edgeToAdd The edge that needs to be added to the database
      */
-    public void AddEdge(Edge edgeToAdd) {
+    public void addEdge(Edge edgeToAdd) {
         //// TODO: 11/15/2015 add in attributes functionality
         //NOTE: can add edge with node ids 5,6 and another with 6,5
         //gets the x and y of both nodes in the edge
@@ -187,7 +187,7 @@ public class Database {
      *
      * @param edgeToRem The edge that needs to be removed to the database
      */
-    public void RemoveEdge(Edge edgeToRem) {
+    public void removeEdge(Edge edgeToRem) {
         //gets the x and y of both nodes in the edge
         double x1 = edgeToRem.getNode1().getPosition().getX();
         double y1 = edgeToRem.getNode1().getPosition().getY();
@@ -231,7 +231,7 @@ public class Database {
      *
      * @param edgeToUpdate The edge that needs to be updated in the database
      */
-    public void UpdateEdge(Edge edgeToUpdate) {
+    public void updateEdge(Edge edgeToUpdate) {
         //// TODO: 11/15/2015 Add in update funcitonality 
 
     }

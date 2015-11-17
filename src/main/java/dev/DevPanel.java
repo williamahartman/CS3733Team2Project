@@ -21,7 +21,7 @@ import java.util.List;
  * To activate developer mode, flip the static bool
  *
  */
-public class devPanel {
+public class DevPanel {
 
     // booleans to toggle developer features
     public static boolean inDevMode = false;
@@ -160,7 +160,7 @@ public class devPanel {
 //        frame.setLayout(null);
 //        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 //        frame.add(p);
-//        devPanel.addDevFunction(p);
+//        DevPanel.addDevFunction(p);
 //        inDevMode = true;
 //        frame.setVisible(true);
 //        frame.repaint();

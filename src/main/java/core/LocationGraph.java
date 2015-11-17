@@ -153,24 +153,20 @@ public class LocationGraph {
     }
 
     /**
-     * Calculates the distance from the optimal route between two locations
-     * @param start The starting Location
-     * @param destination The destination Location
-     * @return The distance calculating from the optimal route between two locations
+     * Calculates the length of the route
+     * @param path a list of locations on the route
+     * @return The length of the route
      */
-    public double calculateDistance(Location start, Location destination){
+    public double calculateDistance(List<Location> path){
         double distance = 0.0;
-        List<Location> path = this.makeAStarRoute(new EdgeAttributeManager(), start, destination);
         int listSize = path.size();
         for (int i = 0; i < (listSize - 1); i++){
             distance += path.get(i).getPosition().distance(path.get(i+1).getPosition());
         }
-
         String temp = String.format(("%.2f"), distance);
         distance = Double.parseDouble(temp);
         return distance;
     }
-
     /**
      * Return a list of locations whose names contain or are equal to the passed String.
      *

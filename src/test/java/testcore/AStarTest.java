@@ -1,3 +1,5 @@
+package testcore;
+
 import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
@@ -12,10 +14,9 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * This is a little example of a test case. Real test cases should be less
- * stupid and more organized.
+ * This class tests the makeAStarRoute() and calculateDistance() in LocationGraph.java.
  */
-public class TestPlaceholder {
+public class AStarTest {
 
     @Test
     public void testAstar1() {

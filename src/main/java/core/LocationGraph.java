@@ -116,7 +116,8 @@ public class LocationGraph {
                // System.out.println(loc);
 
                 if (checkedLocations.contains(loc)) // this location has already been checked
-                {//ignore this neighbor
+                {
+                    //ignore this neighbor
                 }
                 else
                 {
@@ -153,7 +154,7 @@ public class LocationGraph {
     }
 
     /**
-     * Calculates the length of the route
+     * Calculates the length of the route.
      * @param path a list of locations on the route
      * @return The length of the route
      */
@@ -161,7 +162,7 @@ public class LocationGraph {
         double distance = 0.0;
         int listSize = path.size();
         for (int i = 0; i < (listSize - 1); i++){
-            distance += path.get(i).getPosition().distance(path.get(i+1).getPosition());
+            distance += path.get(i).getPosition().distance(path.get(i + 1).getPosition());
         }
         String temp = String.format(("%.2f"), distance);
         distance = Double.parseDouble(temp);

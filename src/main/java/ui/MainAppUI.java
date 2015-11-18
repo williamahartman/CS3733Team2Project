@@ -242,8 +242,7 @@ public class MainAppUI extends JFrame{
                             (mapViewPanel.getZoomFactor() < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
                         mapViewPanel.zoomIncrementBy(e.getWheelRotation() * -0.01);
                         resetMap(mapViewPanel);
-
-                        repaint();
+                        mapViewPanel.getParent().validate();
                     }
                 }
             }

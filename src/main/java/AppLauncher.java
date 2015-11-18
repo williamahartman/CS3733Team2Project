@@ -1,6 +1,10 @@
 import core.Database;
-
-import javax.swing.*;
+import core.Location;
+import core.Edge;
+import core.LocationGraph;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This is a baby easy example of a swing app. This can turn into the real
@@ -43,9 +47,27 @@ public class AppLauncher{
         frame.setVisible(true);
         */
         try {
+            LocationGraph graph = new LocationGraph();
             Database test = new Database();
+            Database test1 = new Database();
+            test1.closeConnection();
+
+            Location loc1 = new Location(new Point2D.Double(0.1, 0.3), 0, new String[0]);
+            Location loc2 = new Location(new Point2D.Double(0.2, 0.3), 0, new String[0]);
+            Location loc3 = new Location(new Point2D.Double(0.3, 0.3), 0, new String[0]);
+            graph.addLocation(loc1, new HashMap<>());
+            graph.addLocation(loc2, new HashMap<>());
+            graph.addLocation(loc3, new HashMap<>());
+            test.addNode(loc1);
+            test.addNode(loc2);
+            Edge edge1 = new Edge(loc1, loc2, new ArrayList<>());
+            test.addEdge(edge1);
+
+            test.removeEdge(edge1);
+            test.removeNode(loc1);
+            test.removeNode(loc2);
         } catch (Exception e) {
-            System.out.print(e);
+            System.out.print("\n Exception::\n" + e);
         }
     }
 

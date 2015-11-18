@@ -11,9 +11,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
-import dev.DevPanel;
 
 /**
  * This is a panel that displays edges from a map. An image background is displayed bellow
@@ -62,7 +61,7 @@ public class MapView extends JPanel{
     }
 
     /**
-     * Remove and replace all buttons, setting them to thier original state
+     * Remove and replace all buttons, setting them to thier original state.
      */
     public void redrawButtons() {
         locationButtonList.forEach(this::remove);
@@ -99,7 +98,6 @@ public class MapView extends JPanel{
      */
     private void drawButtons() {
         for (Location loc: locationList) {
-            System.out.println(loc);
             LocationButton currentButton = new LocationButton(loc);
             currentButton.setBackground(Color.CYAN);
             currentButton.setBorder(BorderFactory.createEmptyBorder());

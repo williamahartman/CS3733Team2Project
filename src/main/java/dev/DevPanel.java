@@ -1,16 +1,20 @@
 package dev;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.Point2D;
-import javax.swing.*;
-import core.*;
-
+import core.Edge;
+import core.Location;
+import core.LocationGraph;
 import ui.LocationButton;
-import ui.MainAppUI;
 import ui.MapView;
-import java.util.*;
-import java.util.List;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Alora on 11/14/2015.
@@ -39,12 +43,10 @@ public class DevPanel {
             //Creates a new button object where the panel is clicked
             double x = (double) (e.getX() + vpp.x) / (double) p.getWidth();
             double y = (double) (e.getY() + vpp.y) / (double) p.getHeight();
-            System.out.println(x + "," + y);
             LocationButton b = new LocationButton(new Location(new Point2D.Double(x, y),
-                    0, new String[0], new ArrayList<Edge>()));
+                    0, new String[0], new ArrayList<>()));
             b.setBounds(e.getX() + vpp.x, e.getY() + vpp.y, 10, 10);
             lg.addLocation(b.getAssociatedLocation(), new HashMap<>());
-            System.out.println(b.getAssociatedLocation());
             addEditListener(b, lg);
             // move this to locationbutton later
 
@@ -129,13 +131,15 @@ public class DevPanel {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == 1) {//Left mouse click
                     if (edgeMode){//if in Edge Mode
-                        Edge edge = originalButton.getAssociatedLocation().getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
+                        Edge edge = originalButton.getAssociatedLocation()
+                                .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
                         if (edge != null){ //already has edge
                             //remove edge
                             originalButton.getAssociatedLocation().removeEdge(edge);
                         } else { //does not have an edge
                             //add an edge
-                            originalButton.getAssociatedLocation().makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<EdgeAttribute>());
+                            originalButton.getAssociatedLocation()
+                                    .makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<>());
                         }
                     } else {
                         JFrame buttonFrame = new JFrame();
@@ -151,12 +155,13 @@ public class DevPanel {
 
 
                         //Fields with their initial entries
-                        JFormattedTextField field1 = new JFormattedTextField(b.getAssociatedLocation().getFloorNumber());
+                        JFormattedTextField field1 = new JFormattedTextField(b.getAssociatedLocation()
+                                .getFloorNumber());
                         JFormattedTextField field2 = new JFormattedTextField();
                         if (b.getAssociatedLocation().getNameList().length == 0) {
                             field2.setValue("Enter a String");
                         } else {
-                            String tempString = new String();
+                            String tempString = "";
                             for (int i = 0; i < b.getAssociatedLocation().getNameList().length; i++) {
                                 tempString = tempString.concat(b.getAssociatedLocation().getNameList()[i]);
                                 tempString = tempString.concat(",");
@@ -202,7 +207,7 @@ public class DevPanel {
                                     b.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                                     String tempString = (String) field2.getValue();
                                     String[] nameList = tempString.split(",");
-                                    if (!((String) field2.getValue()).equals("Enter a String")) {
+                                    if (!field2.getValue().equals("Enter a String")) {
                                         for (int i = 0; i < nameList.length; i++) {
                                             nameList[i] = nameList[i].trim().toLowerCase();
                                         }

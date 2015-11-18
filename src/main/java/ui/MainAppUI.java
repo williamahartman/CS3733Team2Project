@@ -24,7 +24,7 @@ public class MainAppUI extends JFrame{
     private LocationGraph lg;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param graph The graph that will be shown
      * @param backgroundImagePath The path to the image that will be used as a background
@@ -66,7 +66,7 @@ public class MainAppUI extends JFrame{
     }
 
     /**
-     * Populate the JFrame with panels used for the applcation
+     * Populate the JFrame with panels used for the applcation.
      */
     public void setUpMainApp() {
         //Initialize Panels and buttons
@@ -81,7 +81,7 @@ public class MainAppUI extends JFrame{
 
         JButton devModeButton = new JButton("Open Map Tool");
         devModeButton.addActionListener(e -> {
-            if(DevPanel.inDevMode == false) {
+            if (DevPanel.inDevMode == false) {
                 DevPanel.createDevWindow(lg);
                 clearState();
             }

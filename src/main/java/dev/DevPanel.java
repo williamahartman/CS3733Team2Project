@@ -13,6 +13,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -56,9 +57,8 @@ public class DevPanel {
         }//end of dev mode check
     }
 
-    public static void createDevWindow(LocationGraph lg){
-        MapView mapView = new MapView(lg,
-                "src/main/resources/campusmap.png");
+    public static void createDevWindow(BufferedImage backgroundImage, double defaultZoom, LocationGraph lg){
+        MapView mapView = new MapView(lg, backgroundImage, defaultZoom);
 
         JFrame frame = new JFrame();
         //Make the scroll pane, set up click and drag

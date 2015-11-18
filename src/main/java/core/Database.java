@@ -22,7 +22,7 @@ public class Database {
 
         Class.forName("com.mysql.jdbc.Driver");
         con = DriverManager.getConnection("jdbc:mysql://" +
-                        "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
+                "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
                 "aztecwash", "aztecwash");
 
         /*
@@ -105,14 +105,6 @@ public class Database {
                 throw new SQLException("No locations with those coordinates");
             }
             double nodeId = rs.getDouble("NODE_ID");
-
-            try {
-                String remNodeEdge = "DELETE FROM NODE_EDGES WHERE NODE_ID ="
-                        + nodeId;
-                stmt.execute(remNodeEdge);
-            } catch (SQLException e) {
-                //node had no entry in node edges
-            }
 
             try {
                 // Remove the edges that include this node
@@ -273,7 +265,7 @@ public class Database {
      * @param edgeToUpdate The edge that needs to be updated in the database
      */
     public void updateEdge(Edge edgeToUpdate) {
-        //// TODO: 11/15/2015 Add in update funcitonality 
+        //// TODO: 11/15/2015 Add in update functionality
 
     }
     /*
@@ -288,7 +280,7 @@ public class Database {
         try {
             // Hash map to store location and its corresponding database node id
             Statement sta = con.createStatement();
-            int locCount = 0;
+            int locCount;
             String query = "SELECT COUNT(NODE_ID) AS NUM FROM mydb.NODES";
             ResultSet res = sta.executeQuery(query);
             if (!res.next()){

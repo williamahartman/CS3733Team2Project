@@ -68,6 +68,26 @@ public class MainAppUI extends JFrame{
      * Populate the JFrame with panels used for the applcation.
      */
     public void setUpMainApp() {
+        //Set up menubar
+        JMenuBar menuBar = new JMenuBar();
+        JMenu editMenu = new JMenu("Edit");
+
+        JMenuItem refreshMap = new JMenuItem("Refresh Map");
+        refreshMap.addActionListener(e -> resetMap(mapView));
+        JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers only!)");
+        enterDevloperMode.addActionListener(e -> {
+            if (!DevPanel.inDevMode) {
+                DevPanel.createDevWindow(mapBackground, DEFAULT_ZOOM, graph);
+                clearState(mapView);
+            }
+        });
+
+        editMenu.add(refreshMap);
+        editMenu.add(enterDevloperMode);
+        menuBar.add(editMenu);
+
+        setJMenuBar(menuBar);
+
         //Initialize Panels and buttons
         JPanel sidePanel = new JPanel();
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -91,19 +111,6 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
-
-        JButton devModeButton = new JButton("Open Map Tool");
-        devModeButton.addActionListener(e -> {
-            if (!DevPanel.inDevMode) {
-                DevPanel.createDevWindow(mapBackground, DEFAULT_ZOOM, graph);
-                clearState(mapView);
-            }
-        });
-
-        JButton refreshModeButton = new JButton("Refresh Map");
-        refreshModeButton.addActionListener(e -> clearState(mapView));
-
-        JButton makeAStarRoute = new JButton("Find the shortest route");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 JFrame frame = new JFrame("Route");
@@ -142,8 +149,6 @@ public class MainAppUI extends JFrame{
         sidePanel.add(makeAStarRoute);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
-        sidePanel.add(devModeButton);
-        sidePanel.add(refreshModeButton);
 
         //Build the map view scrollable stuff
         JScrollPane mapScrollPane = addToScrollPane(mapView);
@@ -247,8 +252,7 @@ public class MainAppUI extends JFrame{
                             (mapViewPanel.getZoomFactor() < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
                         mapViewPanel.zoomIncrementBy(e.getWheelRotation() * -0.01);
                         resetMap(mapViewPanel);
-
-                        repaint();
+                        mapViewPanel.getParent().validate();
                     }
                 }
             }

@@ -62,8 +62,8 @@ public class DevPanel {
 
         //Make the scroll pane, set up click and drag
         JScrollPane mapScrollPane = new JScrollPane(mapView);
-        mapScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        mapScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        mapScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+        mapScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         MouseAdapter mouseAdapter = new MouseAdapter() {
             int mouseStartX = 0;
             int mouseStartY = 0;
@@ -103,6 +103,8 @@ public class DevPanel {
                         (mapView.getZoomFactor() < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
                     mapView.zoomIncrementBy(e.getWheelRotation() * -0.01);
                     updateGraph(lg, mapView);
+
+                    mapScrollPane.validate();
                 }
             }
         };

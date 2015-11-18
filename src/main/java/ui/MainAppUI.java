@@ -8,9 +8,7 @@ import dev.DevPanel;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -155,6 +153,18 @@ public class MainAppUI extends JFrame{
         add(mapScrollPane);
         add(sidePanel, BorderLayout.WEST);
 
+        addWindowFocusListener(new WindowFocusListener() {
+            @Override
+            public void windowGainedFocus(WindowEvent e) {
+                resetMap(mapView);
+            }
+
+            @Override
+            public void windowLostFocus(WindowEvent e) {
+                resetMap(mapView);
+            }
+        });
+
         clearState(mapView);
     }
 
@@ -268,6 +278,11 @@ public class MainAppUI extends JFrame{
         resetMap(toReset);
     }
 
+    /**
+     * Reset the state of just the map. (none of the class data)
+     *
+     * @param toReset
+     */
     private void resetMap(MapView toReset) {
         toReset.resetGraphData(graph);
         addListenersToMapNodes();

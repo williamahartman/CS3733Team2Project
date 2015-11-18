@@ -62,7 +62,6 @@ public class AppLauncher{
             test.addNode(loc2);
             Edge edge1 = new Edge(loc1, loc2, new ArrayList<>());
             test.addEdge(edge1);
-
             test.removeEdge(edge1);
             test.removeNode(loc1);
             test.removeNode(loc2);

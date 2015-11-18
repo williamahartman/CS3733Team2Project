@@ -222,6 +222,12 @@ public class LocationGraph {
         locationList.add(newLocation);
     }
 
+    public void removeLocation(Location loc){
+        locationList.remove(loc);
+        for (Edge e:loc.getEdges()) {
+            loc.removeEdge(e);
+        }
+    }
     /**
      * Magically save everything somehow.
      */

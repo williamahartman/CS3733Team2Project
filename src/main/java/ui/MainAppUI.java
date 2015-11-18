@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import dev.DevPanel;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -20,6 +21,7 @@ public class MainAppUI extends JFrame{
 
     private JLabel startInfo;
     private JLabel endPointInfo;
+    private LocationGraph lg;
 
     /**
      * Constructor
@@ -29,7 +31,7 @@ public class MainAppUI extends JFrame{
      */
     public MainAppUI(LocationGraph graph, String backgroundImagePath) {
         this.mapView = new MapView(graph, backgroundImagePath);
-
+        lg = graph;
         startPoint = null;
         endPoint = null;
     }
@@ -55,7 +57,7 @@ public class MainAppUI extends JFrame{
     private void clearState() {
         startPoint = null;
         endPoint = null;
-
+        mapView.resetGraphData(lg);
         mapView.redrawButtons();
         addListenersToMapNodes();
 
@@ -77,6 +79,19 @@ public class MainAppUI extends JFrame{
         JButton clearButton = new JButton("Clear start point and destination");
         clearButton.addActionListener(e -> clearState());
 
+        JButton devModeButton = new JButton("Open Map Tool");
+        devModeButton.addActionListener(e -> {
+            if(DevPanel.inDevMode == false) {
+                DevPanel.createDevWindow(lg);
+                clearState();
+            }
+        });
+
+        JButton refreshModeButton = new JButton("Refresh Map");
+        refreshModeButton.addActionListener(e -> {
+            clearState();
+        });
+
         JButton makeAStarRoute = new JButton("Find the shortest route");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
@@ -90,6 +105,8 @@ public class MainAppUI extends JFrame{
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
         sidePanel.add(makeAStarRoute);
+        sidePanel.add(devModeButton);
+        sidePanel.add(refreshModeButton);
 
         /*
         Setup for the mapView
@@ -135,5 +152,6 @@ public class MainAppUI extends JFrame{
         setLayout(new BorderLayout());
         add(mapScrollPane);
         add(sidePanel, BorderLayout.EAST);
+
     }
 }

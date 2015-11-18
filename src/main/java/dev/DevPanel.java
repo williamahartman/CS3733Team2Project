@@ -9,10 +9,7 @@ import ui.MapView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -29,6 +26,8 @@ import java.util.HashMap;
  *
  */
 public class DevPanel {
+    private static final double MINIMUM_ZOOM = 0.1;
+    private static final double MAXIMUM_ZOOM = 2;
 
     // booleans to toggle developer features
     public static boolean inDevMode = false;
@@ -36,25 +35,23 @@ public class DevPanel {
     // temporary storage for the button being edited;
     private static LocationButton originalButton;
 
-    public DevPanel(){
+    private static void updateGraph(LocationGraph lg, MapView mapView) {
+        mapView.resetGraphData(lg);
+
+        for (LocationButton lb: mapView.getLocationButtonList()) {
+            addEditListener(lb, lg, mapView);
+        }
     }
 
-    public static void devModeCheck(MouseEvent e, JPanel p, JViewport vp, LocationGraph lg){
+    public static void devModeCheck(MouseEvent e, JPanel p, JViewport vp, LocationGraph lg, MapView mapView){
         if (inDevMode) {
             Point vpp = vp.getViewPosition();
             //Creates a new button object where the panel is clicked
             double x = (double) (e.getX() + vpp.x) / (double) p.getWidth();
             double y = (double) (e.getY() + vpp.y) / (double) p.getHeight();
-            LocationButton b = new LocationButton(new Location(new Point2D.Double(x, y),
-                    0, new String[0], new ArrayList<>()));
-            b.setBounds(e.getX() + vpp.x, e.getY() + vpp.y, 10, 10);
-            lg.addLocation(b.getAssociatedLocation(), new HashMap<>());
-            addEditListener(b, lg);
-            // move this to locationbutton later
+            lg.addLocation(new Location(new Point2D.Double(x, y), 0, new String[0]), new HashMap<>());
 
-            p.add(b);
-            b.setVisible(true);
-            p.repaint();
+            updateGraph(lg, mapView);
         }//end of dev mode check
     }
 
@@ -84,7 +81,8 @@ public class DevPanel {
             }
             @Override
             public void mouseClicked(MouseEvent e){
-                DevPanel.devModeCheck(e, mapView, mapScrollPane.getViewport(), lg);
+                DevPanel.devModeCheck(e, mapView, mapScrollPane.getViewport(), lg, mapView);
+                updateGraph(lg, mapView);
             }
 
             @Override
@@ -98,14 +96,20 @@ public class DevPanel {
             public void mouseReleased(MouseEvent e) {
                 mapScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
             }
-        };
 
-        for (LocationButton lb: mapView.getLocationButtonList()) {
-            addEditListener(lb, lg);
-        }
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                if ((mapView.getZoomFactor() > MINIMUM_ZOOM || e.getWheelRotation() < 0) &&
+                        (mapView.getZoomFactor() < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
+                    mapView.zoomIncrementBy(e.getWheelRotation() * -0.01);
+                    updateGraph(lg, mapView);
+                }
+            }
+        };
 
         mapScrollPane.getViewport().addMouseListener(mouseAdapter);
         mapScrollPane.getViewport().addMouseMotionListener(mouseAdapter);
+        mapScrollPane.getViewport().addMouseWheelListener(mouseAdapter);
         mapScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         frame.addWindowListener(new WindowAdapter() {
@@ -113,9 +117,6 @@ public class DevPanel {
             @Override
             public void windowClosing(WindowEvent e) {
                 DevPanel.inDevMode = false;
-                mapView.resetGraphData(lg);
-                mapView.redrawButtons();
-                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             }
         });
 
@@ -143,7 +144,7 @@ public class DevPanel {
         DevPanel.inDevMode = true;
     }
 
-    public static void addEditListener(LocationButton b, LocationGraph lg){
+    public static void addEditListener(LocationButton b, LocationGraph lg, MapView mapView){
         b.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -252,6 +253,7 @@ public class DevPanel {
                     temp.remove(b);
                     temp.repaint();
                 }
+                updateGraph(lg, mapView);
             }
         });
     }

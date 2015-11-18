@@ -1,3 +1,4 @@
+import core.Database;
 import ui.MainAppUI;
 
 import javax.swing.*;
@@ -11,18 +12,32 @@ import java.awt.*;
 public class AppLauncher{
 
     public static void main(String[] args) {
-        //Make a frame
-        MainAppUI app = new MainAppUI(TestGraphMaker.makeTestGraph(),
-                "src/main/resources/campusmap.png");
-        app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        app.setMinimumSize(new Dimension(1024, 768));
+        try {
+            Database graphData = new Database();
 
-        app.setUpMainApp();
+            //Make a frame
+            MainAppUI app = new MainAppUI(graphData.createGraph(),
+                    "src/main/resources/campusmap.png");
+            graphData.closeConnection();
 
-        app.repaint();
+            app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            app.setMinimumSize(new Dimension(1024, 768));
 
-        //Show the frame
-        app.setVisible(true);
+            app.setUpMainApp();
+
+            app.repaint();
+
+            //Show the frame
+            app.setVisible(true);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,
+                    "Failed to connect to the online database (be on the internet!)",
+                    "Database error!",
+                    JOptionPane.ERROR_MESSAGE);
+
+            System.err.println(e.toString());
+            System.exit(-1);
+        }
     }
 
 }

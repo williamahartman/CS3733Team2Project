@@ -22,7 +22,7 @@ public class Database {
 
         Class.forName("com.mysql.jdbc.Driver");
         con = DriverManager.getConnection("jdbc:mysql://" +
-                "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
+                        "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
                 "aztecwash", "aztecwash");
 
         /*
@@ -346,32 +346,12 @@ public class Database {
             // Get all edges and store in database
             List<Edge> allEdges = locGraph.getAllEdges();
             for (int i = 0; i < allEdges.size(); i++) {
-                double x1 = allEdges.get(i).getNode1().getPosition().getX();
-                double y1 = allEdges.get(i).getNode1().getPosition().getY();
-                double x2 = allEdges.get(i).getNode2().getPosition().getX();
-                double y2 = allEdges.get(i).getNode2().getPosition().getY();
-                //query to get the first nodeID
-                String getID1 = "SELECT NODE_ID FROM mydb.NODES WHERE POS_X = "  +
-                        x1 + " and POS_Y =" + y1;
-                //execute the query to get the first nodeID
-                ResultSet rs = sta.executeQuery(getID1);
-                if (!rs.next()){
-                    addEdge(allEdges.get(i));
-                } else {
-                    //query to get the second nodeID
-                    String getID2 = "SELECT NODE_ID FROM mydb.NODES WHERE POS_X = "  +
-                            x2 + " and POS_Y =" + y2;
-                    //execute the query to get the second nodeID
-                    rs = sta.executeQuery(getID2);
-                    if (!rs.next()) {
-                        addEdge(allEdges.get(i));
-                    }
-                }
-
+                //todo: make this not throw all kinds of exceptions.
+                addEdge(allEdges.get(i));
             }
 
         } catch (SQLException e) {
-            e.getStackTrace();
+            e.printStackTrace();
         }
     }
     public void closeConnection() {

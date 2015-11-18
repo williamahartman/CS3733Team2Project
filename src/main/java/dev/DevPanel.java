@@ -1,5 +1,6 @@
 package dev;
 
+import core.Database;
 import core.Edge;
 import core.Location;
 import core.LocationGraph;
@@ -61,6 +62,7 @@ public class DevPanel {
         MapView mapView = new MapView(lg, backgroundImage, defaultZoom);
 
         JFrame frame = new JFrame();
+
         //Make the scroll pane, set up click and drag
         JScrollPane mapScrollPane = new JScrollPane(mapView);
         mapScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -117,8 +119,24 @@ public class DevPanel {
             }
         });
 
+        JButton saveToDatabase = new JButton("Save to database");
+        saveToDatabase.addActionListener(listener -> {
+            try {
+                Database graphData = new Database();
+                graphData.updateDB(lg);
+                graphData.closeConnection();
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(frame,
+                        "Failed to connect to the online database (be on the internet!)",
+                        "Database error!",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+
         frame.setLayout(new BorderLayout());
         frame.add(mapScrollPane);
+        frame.add(saveToDatabase, BorderLayout.SOUTH);
         frame.setMinimumSize(new Dimension(800, 600));
         frame.setVisible(true);
 

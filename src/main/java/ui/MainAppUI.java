@@ -83,7 +83,6 @@ public class MainAppUI extends JFrame{
         endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
-
         clearButton = new JButton("Clear Selections");
         clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));

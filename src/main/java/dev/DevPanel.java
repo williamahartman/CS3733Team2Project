@@ -49,7 +49,7 @@ public class DevPanel {
                     0, new String[0], new ArrayList<>()));
             b.setBounds(e.getX() + vpp.x, e.getY() + vpp.y, 10, 10);
             lg.addLocation(b.getAssociatedLocation(), new HashMap<>());
-            addEditListener(b, lg);
+            addEditListener(b, lg, p);
             // move this to locationbutton later
 
             p.add(b);
@@ -101,7 +101,7 @@ public class DevPanel {
         };
 
         for (LocationButton lb: mapView.getLocationButtonList()) {
-            addEditListener(lb, lg);
+            addEditListener(lb, lg, mapView);
         }
 
         mapScrollPane.getViewport().addMouseListener(mouseAdapter);
@@ -143,7 +143,7 @@ public class DevPanel {
         DevPanel.inDevMode = true;
     }
 
-    public static void addEditListener(LocationButton b, LocationGraph lg){
+    public static void addEditListener(LocationButton b, LocationGraph lg, JPanel containingPanel){
         b.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -161,7 +161,7 @@ public class DevPanel {
                         }
                     } else {
                         JFrame buttonFrame = new JFrame();
-                        buttonFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                        buttonFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                         buttonFrame.setSize(new Dimension(300, 100));
 
                         //Labels that appear on the left side and describe the open fields
@@ -214,6 +214,7 @@ public class DevPanel {
                         panelLayout.add(textPanel, BorderLayout.LINE_END);
 
                         buttonFrame.add(panelLayout);
+                        buttonFrame.setLocation(800, 0);
                         buttonFrame.setVisible(true);
                         panelLayout.repaint();
 

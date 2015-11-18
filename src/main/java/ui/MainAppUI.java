@@ -10,8 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -49,10 +47,10 @@ public class MainAppUI extends JFrame{
         this.graph = graph;
 
         try {
-            mapBackground = ImageIO.read(new File(backgroundImagePath));
-        } catch (IOException e) {
+            mapBackground = ImageIO.read(ClassLoader.getSystemResourceAsStream(backgroundImagePath));
+        } catch (Exception e) {
             //Close the program with an error message if we can't load stuff.
-            System.err.println(e.toString());
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this,
                     "The map image failed to load!",
                     "Asset Load Failed!",
@@ -285,7 +283,7 @@ public class MainAppUI extends JFrame{
     /**
      * Reset the state of just the map. (none of the class data)
      *
-     * @param toReset
+     * @param toReset the mapView to reset
      */
     private void resetMap(MapView toReset) {
         toReset.resetGraphData(graph);

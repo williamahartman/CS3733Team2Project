@@ -24,7 +24,7 @@ public class MapView extends JPanel{
     private java.util.List<Location> locationList;
     private java.util.List<LocationButton> locationButtonList;
 
-    private BufferedImage mapBackground;
+    private Image mapBackground;
 
     /**
      * Constructor.
@@ -82,8 +82,8 @@ public class MapView extends JPanel{
      * @return The dimension of the image, or 0 if the image didn't load
      */
     public Dimension getImagePixelSize() {
-        return new Dimension((int) (mapBackground.getWidth() * zoomFactor),
-                (int) (mapBackground.getHeight() * zoomFactor));
+        return new Dimension((int) (mapBackground.getWidth(null) * zoomFactor),
+                (int) (mapBackground.getHeight(null) * zoomFactor));
     }
 
     /**

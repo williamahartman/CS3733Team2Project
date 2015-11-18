@@ -17,7 +17,7 @@ public class AppLauncher{
 
             //Make a frame
             MainAppUI app = new MainAppUI(graphData.createGraph(),
-                    "src/main/resources/campusmap.png");
+                    "campusmap.png");
             graphData.closeConnection();
 
             app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -35,7 +35,7 @@ public class AppLauncher{
                     "Database error!",
                     JOptionPane.ERROR_MESSAGE);
 
-            System.err.println(e.toString());
+            e.printStackTrace();
             System.exit(-1);
         }
     }

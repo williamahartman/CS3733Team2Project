@@ -142,6 +142,7 @@ public class DevPanel {
         frame.setVisible(true);
 
         DevPanel.inDevMode = true;
+        updateGraph(lg, mapView);
     }
 
     public static void addEditListener(LocationButton b, LocationGraph lg, MapView mapView){

@@ -40,9 +40,7 @@ public class TestGraphMaker {
         loc3.makeAdjacentTo(loc4, new ArrayList<>());
         loc4.makeAdjacentTo(loc6, new ArrayList<>());
         loc4.makeAdjacentTo(loc5, new ArrayList<>());
-        loc5.makeAdjacentTo(loc4, new ArrayList<>());
         loc6.makeAdjacentTo(loc7, new ArrayList<>());
-        loc7.makeAdjacentTo(loc1, new ArrayList<>());
 
         return graph;
     }

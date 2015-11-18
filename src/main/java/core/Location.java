@@ -73,7 +73,13 @@ public class Location {
      */
 
     public void makeAdjacentTo(Location nextLocation, List<EdgeAttribute> edgeAttributes) {
+        //Don't add an edge if the current Location is passed.
+        if (nextLocation == this) {
+            return;
+        }
+
         Edge connectionToNeighbor = getConnectingEdgeFromNeighbor(nextLocation);
+
         if (connectionToNeighbor == null) {
             Edge e = new Edge(this, nextLocation, edgeAttributes);
             edgeList.add(e);
@@ -82,9 +88,6 @@ public class Location {
             nextLocation.makeAdjacentTo(this, edgeAttributes);
         } else {
             //If there is an existing one way connection, take that edge and make it two way
-            //System.out.println("Make two way");
-           // System.out.println(connectionToNeighbor.getNode1());
-            //System.out.println(connectionToNeighbor.getNode2());
             edgeList.add(connectionToNeighbor);
         }
     }

@@ -108,10 +108,10 @@ public class MapView extends JPanel{
     /**
      * Adds one LocationButton to the panel for each Location in the backing Location graph.
      */
-    private void drawButtons() {
+    protected void drawButtons() {
         for (Location loc: locationList) {
             LocationButton currentButton = new LocationButton(loc);
-            currentButton.setBackground(Color.CYAN);
+            currentButton.setBackground(Color.YELLOW);
             currentButton.setBorder(BorderFactory.createEmptyBorder());
 
             int xPos = (int) (loc.getPosition().x * getImagePixelSize().width);
@@ -152,11 +152,11 @@ public class MapView extends JPanel{
             if (e.hasAttribute(EdgeAttribute.EDGE_REMOVED)) {
                 g2d.setColor(Color.black);
             } else if (e.hasAttribute(EdgeAttribute.INDOORS)) {
-                g2d.setColor(Color.blue);
+                g2d.setColor(Color.red);
             } else if (e.hasAttribute(EdgeAttribute.OUTDOORS)) {
                 g2d.setColor(Color.yellow);
             }  else {
-                g2d.setColor(Color.red);
+                g2d.setColor(Color.ORANGE);
             }
 
             int x1 = (int) (e.getNode1().getPosition().x * imageRes.getWidth());

@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage;
 public class MainAppUI extends JFrame{
     private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
-    private static final double DEFAULT_ZOOM = 0.2;
+    private static final double DEFAULT_ZOOM = 0.4;
     private static final double MINIMUM_ZOOM = 0.1;
     private static final double MAXIMUM_ZOOM = 2;
 
@@ -113,7 +113,7 @@ public class MainAppUI extends JFrame{
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 JFrame frame = new JFrame("Route");
                 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                frame.setMinimumSize(new Dimension(600, 400));
+                frame.setMinimumSize(new Dimension(1024, 768));
 
                 java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
                 if (route.size() > 0) {

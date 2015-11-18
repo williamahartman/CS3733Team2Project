@@ -28,7 +28,6 @@ public class AStarRouteDisplay extends MapView {
         this.route = route;
     }
 
-
     /**
      * Draw the edges contained in this AStarRoute.
      *

@@ -223,6 +223,19 @@ public class LocationGraph {
     }
 
     /**
+     * Removes the passed Location for the LocationGraph, removing all associated Edges as well.
+     *
+     * @param loc The Location to remove.
+     */
+    public void removeLocation(Location loc){
+        locationList.remove(loc);
+
+        for (int i = 0; i < loc.getEdges().size(); i++) {
+            loc.removeEdge(loc.getEdges().get(i));
+            i--;
+        }
+    }
+    /**
      * Magically save everything somehow.
      */
     public void saveToDisk() {

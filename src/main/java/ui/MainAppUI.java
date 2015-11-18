@@ -13,6 +13,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import dev.DevPanel;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -35,6 +36,7 @@ public class MainAppUI extends JFrame{
 
     private JLabel startInfo;
     private JLabel endPointInfo;
+
     private JButton clearButton;
     private JButton makeAStarRoute;
 
@@ -51,15 +53,15 @@ public class MainAppUI extends JFrame{
         try {
             mapBackground = ImageIO.read(new File(backgroundImagePath));
         } catch (IOException e) {
+            //Close the program with an error message if we can't load stuff.
             System.err.println(e.toString());
             JOptionPane.showMessageDialog(this,
                     "The map image failed to load!",
                     "Asset Load Failed!",
                     JOptionPane.ERROR_MESSAGE);
+            System.exit(-1);
         }
-
         this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM);
-
         startPoint = null;
         endPoint = null;
     }
@@ -92,6 +94,19 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
+
+        JButton devModeButton = new JButton("Open Map Tool");
+        devModeButton.addActionListener(e -> {
+            if (!DevPanel.inDevMode) {
+                DevPanel.createDevWindow(mapBackground, DEFAULT_ZOOM, graph);
+                clearState(mapView);
+            }
+        });
+
+        JButton refreshModeButton = new JButton("Refresh Map");
+        refreshModeButton.addActionListener(e -> clearState(mapView));
+
+        JButton makeAStarRoute = new JButton("Find the shortest route");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 JFrame frame = new JFrame("Route");
@@ -121,15 +136,18 @@ public class MainAppUI extends JFrame{
         sidePanel.add(makeAStarRoute);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
+        sidePanel.add(devModeButton);
+        sidePanel.add(refreshModeButton);
 
         //Build the map view scrollable stuff
-        clearState(mapView);
         JScrollPane mapScrollPane = addToScrollPane(mapView);
 
         //Set layout and add
         setLayout(new BorderLayout());
         add(mapScrollPane);
         add(sidePanel, BorderLayout.WEST);
+
+        clearState(mapView);
     }
 
     /**

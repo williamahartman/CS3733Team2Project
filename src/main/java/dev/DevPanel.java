@@ -162,7 +162,8 @@ public class DevPanel {
                         }
                     } else {
                         JFrame buttonFrame = new JFrame();
-                        buttonFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                        buttonFrame.setLocation(800, 0);
+                        buttonFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
                         buttonFrame.setSize(new Dimension(300, 100));
 
                         //Labels that appear on the left side and describe the open fields

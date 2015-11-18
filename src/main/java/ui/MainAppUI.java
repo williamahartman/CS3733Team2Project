@@ -3,6 +3,7 @@ package ui;
 import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
+import dev.DevPanel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -13,7 +14,6 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import dev.DevPanel;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -112,20 +112,29 @@ public class MainAppUI extends JFrame{
                 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 frame.setMinimumSize(new Dimension(600, 400));
 
-                AStarRouteDisplay route = new AStarRouteDisplay(graph, mapBackground, DEFAULT_ZOOM,
-                        graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint));
-                frame.add(addToScrollPane(route));
+                java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
+                if (route.size() > 0) {
+                    AStarRouteDisplay routeDisplay = new AStarRouteDisplay(graph, mapBackground, DEFAULT_ZOOM, route);
+                    frame.add(addToScrollPane(routeDisplay));
 
-                frame.setLocationRelativeTo(null);
-                frame.repaint();
-                frame.setVisible(true);
+                    frame.setLocationRelativeTo(null);
+                    frame.repaint();
+                    frame.setVisible(true);
 
-                clearState(mapView);
+                    clearState(mapView);
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "There is no path between the selected points!",
+                            "Routing Error!",
+                            JOptionPane.ERROR_MESSAGE);
+                    clearState(mapView);
+                }
             } else {
                 JOptionPane.showMessageDialog(this,
                         "You must select two points in order to generate a path.",
                         "Routing Error!",
                         JOptionPane.ERROR_MESSAGE);
+                clearState(mapView);
             }
         });
 
@@ -227,7 +236,7 @@ public class MainAppUI extends JFrame{
                     if ((mapViewPanel.getZoomFactor() > MINIMUM_ZOOM || e.getWheelRotation() < 0) &&
                             (mapViewPanel.getZoomFactor() < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
                         mapViewPanel.zoomIncrementBy(e.getWheelRotation() * -0.01);
-                        clearState(mapViewPanel);
+                        resetMap(mapViewPanel);
 
                         repaint();
                     }
@@ -250,14 +259,28 @@ public class MainAppUI extends JFrame{
         startPoint = null;
         endPoint = null;
 
-        toReset.resetGraphData(graph);
-        addListenersToMapNodes();
-
         startInfo.setText("Start Point: Not selected");
         endPointInfo.setText("Destination Point: Not selected");
 
         makeAStarRoute.setEnabled(false);
         clearButton.setEnabled(false);
+
+        resetMap(toReset);
+    }
+
+    private void resetMap(MapView toReset) {
+        toReset.resetGraphData(graph);
+        addListenersToMapNodes();
+
+        //Make sure selected stuff is still respected
+        for (LocationButton locButton: mapView.getLocationButtonList()) {
+            if (locButton.getAssociatedLocation() == startPoint) {
+                locButton.setBackground(Color.GREEN);
+            }
+            if (locButton.getAssociatedLocation() == endPoint) {
+                locButton.setBackground(Color.RED);
+            }
+        }
     }
 
 }

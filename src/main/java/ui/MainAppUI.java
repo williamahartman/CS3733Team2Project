@@ -113,8 +113,6 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
-
-        JButton makeAStarRoute = new JButton("Find the shortest route");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 JFrame frame = new JFrame("Route");

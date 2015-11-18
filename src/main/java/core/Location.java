@@ -2,6 +2,7 @@ package core;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -43,7 +44,7 @@ public class Location {
      * @param nameList The list of searchable names for the Location
      */
     public Location(Point2D.Double position, int floorNumber, String[] nameList) {
-        this(position, floorNumber, nameList, new ArrayList<>());
+        this(position, floorNumber, nameList, new LinkedList<>());
     }
 
     /**
@@ -70,10 +71,10 @@ public class Location {
      * @param nextLocation The Location the current Location will become adjacent to
      * @param edgeAttributes The list of EdgeAttributes that will be applied to the new edge
      */
+
     public void makeAdjacentTo(Location nextLocation, List<EdgeAttribute> edgeAttributes) {
         Edge connectionToNeighbor = getConnectingEdgeFromNeighbor(nextLocation);
         if (connectionToNeighbor == null) {
-            //Build a new edge if there is no current connection
             Edge e = new Edge(this, nextLocation, edgeAttributes);
             edgeList.add(e);
 
@@ -81,10 +82,12 @@ public class Location {
             nextLocation.makeAdjacentTo(this, edgeAttributes);
         } else {
             //If there is an existing one way connection, take that edge and make it two way
+            //System.out.println("Make two way");
+           // System.out.println(connectionToNeighbor.getNode1());
+            //System.out.println(connectionToNeighbor.getNode2());
             edgeList.add(connectionToNeighbor);
         }
     }
-
     /**
      * Removes the edge from the current Location and the other Location associated with that edge.
      *
@@ -124,7 +127,7 @@ public class Location {
      * @param otherLoc The Location to search for a connecting edge in
      * @return The connecting edge or null
      */
-    private Edge getConnectingEdgeFromNeighbor(Location otherLoc) {
+    public Edge getConnectingEdgeFromNeighbor(Location otherLoc) {
         for (Edge e: otherLoc.getEdges()) {
             if (e.getNode1() == this || e.getNode2() == this) {
                 return e;
@@ -153,5 +156,14 @@ public class Location {
 
     public Point2D.Double getPosition() {
         return position;
+    }
+    public String[] getNameList(){
+        return nameList;
+    }
+    public void setFloorNumber(int number){
+        floorNumber = number;
+    }
+    public void setNameList(String[] s){
+        nameList = s;
     }
 }

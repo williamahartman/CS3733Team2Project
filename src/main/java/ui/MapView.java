@@ -5,12 +5,9 @@ import core.EdgeAttribute;
 import core.Location;
 import core.LocationGraph;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +16,7 @@ import java.util.List;
  * these edges.
  */
 public class MapView extends JPanel{
-    private static final int NODE_BUTTON_SIZE = 20;
+    private static final int NODE_BUTTON_SIZE = 10;
 
     private double zoomFactor;
 

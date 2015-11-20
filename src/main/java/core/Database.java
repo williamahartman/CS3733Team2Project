@@ -72,14 +72,24 @@ public class Database {
         //query for inserting the node into the database
         String query = "INSERT INTO mydb.NODES (POS_X, POS_Y, FLOOR_NUM) VALUES " +
                 "(" + x + "," + y + "," + floorNum + ")";
+        String getID = "SELECT NODE_ID FROM mydb.NODES WHERE" +
+                "POS_X = " + x + " AND POS_Y = " + y;
         try {
             Statement stmt = con.createStatement();
             //execute the query to add the node
             stmt.execute(query);
-            /* Add location NAMES
-            for (int i = 0; i < locToAdd.) {
 
-            */
+            //get the node id
+            ResultSet rs = stmt.executeQuery(getID);
+            if (!rs.next()){
+                throw new SQLException("No locations with those coordinates");
+            }
+            int nodeId = rs.getInt("NODE_ID");
+
+            //Add location NAMES
+            addNames(locToAdd, nodeId);
+
+
         } catch (SQLException e) {
             System.out.print("Couldn't add location\n");
             e.getStackTrace();
@@ -104,7 +114,7 @@ public class Database {
             if (!rs.next()){
                 throw new SQLException("No locations with those coordinates");
             }
-            double nodeId = rs.getDouble("NODE_ID");
+            int nodeId = rs.getInt("NODE_ID");
 
             try {
                 // Remove the edges that include this node
@@ -112,13 +122,21 @@ public class Database {
                         + nodeId + " or NODE2_ID = " + nodeId;
                 //execute query to remove edges
                 stmt.execute(remEdge);
+
+                String remNames = "DELETE FROM mydb.EDGE_ATTRIBUTES" +
+                        "WHERE EDGE_ID = (SELECT EDGE_ID FROM EDGES WHERE NODE1_ID = " + nodeId +
+                        "AND NODE2_ID = " + nodeId + ")";
+                stmt.execute(remNames);
             } catch (SQLException e){
                 //location not apart of any nodes
             }
 
+            String removeNames = "DELETE FROM mydb.NAMES WHERE NODE_ID = "
+                    + nodeId;
+            stmt.execute(removeNames);
             //remove the node
-            String remNode = "DELETE FROM mydb.NODES WHERE POS_X = " +
-                    x + " and POS_Y =" + y;
+            String remNode = "DELETE FROM mydb.NODES WHERE NODE_ID = "
+                    + nodeId;
             //execute the query to remove nodes
             stmt.execute(remNode);
 
@@ -136,7 +154,7 @@ public class Database {
      */
     public void updateNode(Location locToUpdate) {
         //// TODO: 11/15/2015 add name functionality
-        /*
+
         double x = locToUpdate.getPosition().getX();
         double y = locToUpdate.getPosition().getY();
         try {
@@ -145,22 +163,22 @@ public class Database {
                     x + "and POS_Y =" + y;
             ResultSet rs = stmt.executeQuery(getID);
             if (!rs.next()){
-                throw new SQLException("No entry with Node2's location");
+                throw new SQLException("No entry with Node's location");
             }
             int nodeId = rs.getInt("NODE_ID");
-            String remNodeEdge = "DELETE FROM NODE_EDGES WHERE NODE_ID ="
-                    + nodeId;
-            String remEdge = "DELETE FROM EDGES WHERE NODE1_ID = "
-                    + nodeId + "or NODE2_ID = " + nodeId;
-            String remNode = "DELETE FROM NODES WHERE POS_X = " +
-                    x + "and POS_Y =" + y;
-            stmt.execute(remNodeEdge);
-            stmt.execute(remEdge);
-            stmt.execute(remNode);
+            String update = "UPDATE mydb.NODES SET"
+                    + "FLOOR_NUM = " + locToUpdate.getFloorNumber()
+                    + "WHERE NODE_ID =" + nodeId;
+            stmt.execute(update);
+            String delete = "DELETE FROM mydb.NAMES WHERE" +
+                    "NODE_ID =" + nodeId;
+            update = "INSERT INTO mydb.NAMES ()"
+                    + "FLOOR_NUM = " + locToUpdate.getFloorNumber()
+                    + "WHERE NODE_ID =" + nodeId;
         } catch (SQLException e) {
             System.out.print("Couldn't add location\n" + e);
         }
-        */
+
 
     }
 
@@ -219,38 +237,44 @@ public class Database {
      *
      * @param edgeToRem The edge that needs to be removed to the database
      */
-    public void removeEdge(Edge edgeToRem) {
+    public void removeEdge(Location loc1, Location loc2) {
         //gets the x and y of both nodes in the edge
-        double x1 = edgeToRem.getNode1().getPosition().getX();
-        double y1 = edgeToRem.getNode1().getPosition().getY();
-        double x2 = edgeToRem.getNode2().getPosition().getX();
-        double y2 = edgeToRem.getNode2().getPosition().getY();
+        double x1 = loc1.getPosition().getX();
+        double y1 = loc1.getPosition().getY();
+        double x2 = loc2.getPosition().getX();
+        double y2 = loc2.getPosition().getY();
         try {
             Statement stmt = con.createStatement();
             //query to get the first nodeID
-            String getID1 = "SELECT NODE_ID FROM mydb.NODES WHERE POS_X = "  +
-                    x1 + " and POS_Y =" + y1;
-            //query to get the second nodeID
-            String getID2 = "SELECT NODE_ID FROM mydb.NODES WHERE POS_X = "  +
-                    x2 + " and POS_Y =" + y2;
+            String query = "SELECT NODE_ID FROM mydb.NODES WHERE " +
+                    "(POS_X = " + x1 + " AND POS_Y =" + y1 + ") OR " +
+                    "(POS_X = " + x2 + " and POS_Y =" + y2 + ")";
             //execute the query to get the first nodeID
-            ResultSet rs = stmt.executeQuery(getID1);
+            ResultSet rs = stmt.executeQuery(query);
             if (!rs.next()){
                 throw new SQLException("No locations with those coordinates(Node1)");
             }
             //store the first nodeID
             int nodeId1 = rs.getInt("NODE_ID");
-            //execute the query to get the second nodeID
-            rs = stmt.executeQuery(getID2);
             if (!rs.next()){
                 throw new SQLException("No locations with those coordinates(Node2)");
             }
             //store the second nodeID
             int nodeId2 = rs.getInt("NODE_ID");
-            //query to delete the edge from the database
-            String remEdge = "DELETE FROM mydb.EDGES WHERE (NODE1_ID = "
-                    + nodeId1 + " AND NODE2_ID = " + nodeId2 +
-                    ") OR ( NODE1_ID = " + nodeId2 + " AND NODE2_ID = " + nodeId1 + ")";
+
+            query = "SELECT EDGE_ID FROM mydb.EDGES WHERE " +
+                    "NODE1_ID = " + nodeId1 + " AND NODE2_ID = " + nodeId2 + ") OR" +
+                    " (NODE1_ID = " + nodeId2 + " AND NODE2_ID = " + nodeId1 + ")";
+            //query to get the Edge id
+            rs = stmt.executeQuery(query);
+            if (!rs.next()){
+                throw new SQLException("No locations with those coordinates(Node2)");
+            }
+            //store the second nodeID
+            int edgeId = rs.getInt("EDGE_ID");
+            String remAttr = "DELETE FROM mydb.EDGE_ATTRIBUTES WHERE EDGE_ID = " + edgeId;
+            stmt.execute(remAttr);
+            String remEdge = "DELETE FROM mydb.EDGES WHERE EDGE_ID = " + edgeId;
             //remove the edge from the database
             stmt.execute(remEdge);
         } catch (SQLException e) {
@@ -360,6 +384,21 @@ public class Database {
         } catch (SQLException e) {
             System.out.print("Error Closing Connection: \n");
             e.getStackTrace();
+        }
+    }
+    private void addNames(Location loc, int nodeId){
+        try {
+            Statement stmt = con.createStatement();
+            String[] nameList = loc.getNameList();
+            for (int i = 0; i < nameList.length; i++) {
+                String query = "INSERT INTO mydb.NAMES (NODE_ID, NAME) VALUES " +
+                        "(" + nodeId + "," + nameList[i] + ")";
+                stmt.execute(query);
+            }
+
+
+        } catch (SQLException e){
+            e.printStackTrace();
         }
     }
 }

@@ -151,8 +151,6 @@ public class MapView extends JPanel{
         for (Edge e: graphEdgeList) {
             if (e.hasAttribute(EdgeAttribute.EDGE_REMOVED)) {
                 g2d.setColor(Color.black);
-            } else if (e.hasAttribute(EdgeAttribute.INDOORS)) {
-                g2d.setColor(Color.red);
             } else if (e.hasAttribute(EdgeAttribute.OUTDOORS)) {
                 g2d.setColor(Color.yellow);
             }  else {

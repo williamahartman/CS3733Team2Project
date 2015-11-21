@@ -4,6 +4,7 @@ import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
 import dev.DevPanel;
+import dev.DevTools;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -155,6 +156,7 @@ public class MainAppUI extends JFrame{
         setLayout(new BorderLayout());
         add(mapScrollPane);
         add(sidePanel, BorderLayout.WEST);
+        add(new DevTools(graph, mapView), BorderLayout.EAST);
 
         addWindowFocusListener(new WindowFocusListener() {
             @Override

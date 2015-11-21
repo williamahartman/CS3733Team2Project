@@ -18,7 +18,7 @@ public class Instruction {
      * @return The list of step by step instructions
      */
 
-    public String stepByStepInstruction(List<Location> locList) {
+    public List<String> stepByStepInstruction(List<Location> locList) {
         int i = 0;
         int flag = 0;
         int flag2 = 0;
@@ -26,9 +26,11 @@ public class Instruction {
         double distance2 = 0;
         int listSize = locList.size();
         if (listSize == 0) {
-            return "Can't find route between these two locations.";
+            instruction.add("Can't find route between these two locations.");
+            return instruction;
         } else if (listSize == 1 || (locList.get(listSize - 1) == locList.get(0))) {
-            return "You arrive at your destination.";
+            instruction.add("You arrive at your destination.");
+            return instruction;
         } else {
             while (i < (listSize - 1)) {
                 Location locPrev = locList.get(i);
@@ -52,21 +54,21 @@ public class Instruction {
 
                 if (i == 0){
                     if (deg < 20 || deg > 340){
-                        instruction.add("Head East.");
+                        instruction.add("\nHead East.");
                     } else if (deg >= 20 && deg <= 70){
-                        instruction.add("Head North East.");
+                        instruction.add("\nHead North East.");
                     } else if (deg > 70 && deg < 110){
-                        instruction.add("Head North.");
+                        instruction.add("\nHead North.");
                     } else if (deg >= 110 && deg <= 160) {
-                        instruction.add("Head North West.");
+                        instruction.add("\nHead North West.");
                     } else if (deg > 160 && deg < 200){
-                        instruction.add("Head West.");
+                        instruction.add("\nHead West.");
                     } else if (deg >= 200 && deg <= 250){
-                        instruction.add("Head South West.");
+                        instruction.add("\nHead South West.");
                     } else if (deg > 250 && deg < 290){
-                        instruction.add("Head South.");
+                        instruction.add("\nHead South.");
                     } else if (deg >= 290 && deg <= 340){
-                        instruction.add("Head South Ease.");
+                        instruction.add("\nHead South Ease.");
                     }
                 }
                 //determines if the vector2 rotates counterclockwise or clockwise
@@ -97,19 +99,19 @@ public class Instruction {
                 }
                 if (flag == 1){
                     distance = leftRightDirection(i, flag2, distance, distance2);
-                    instruction.add("Turn" + str + "left ");
+                    instruction.add("\nTurn" + str + "left.");
                     if (i == listSize - 2){
-                        instruction.add("Go " + l2 + " feet.");
+                        instruction.add("\nGo " + l2 + " feet.");
                     }
                     distance2 = l2;
                     flag2 = 2;
                 } else if (flag == 2){
                     distance = leftRightDirection(i, flag2, distance, distance2);
-                    instruction.add("Turn" + str + "right. ");
+                    instruction.add("\nTurn" + str + "right.");
                     distance2 = l2;
                     flag2 = 2;
                     if (i == listSize - 2){
-                        instruction.add("Go " + l2 + " feet.");
+                        instruction.add("\nGo " + l2 + " feet.");
                     }
                 } else {
                     if (flag == 3){
@@ -120,22 +122,14 @@ public class Instruction {
                         flag2 = 1;
                     }
                     if (i == listSize - 2){
-                        instruction.add("Go straight and go " + distance + " feet.");
+                        instruction.add("\nGo straight and go " + distance + " feet.");
                     }
                 }
                 i++;
             }
         }
-        instruction.add("You arrive at your destination.");
-
-        String ins = "";
-        int instructionSize = instruction.size();
-        for (int j = 0; j < instructionSize; j++){
-            String temp = instruction.get(j);
-            ins = ins + temp;
-            ins = ins + "\n";
-        }
-        return ins;
+        instruction.add("\nYou arrive at your destination.");
+        return instruction;
     }
 
 
@@ -151,12 +145,16 @@ public class Instruction {
 
     private double leftRightDirection(int i, int flag2, double distance, double distance2){
         if (i != 0 && i != 1) {
-            instruction.add("Go " + distance2 + " feet.");
+            instruction.add("\nGo " + distance2 + " feet.");
         }
         if (flag2 == 1){
-            instruction.add("Go straight and go " + distance + " feet.");
+            instruction.add("\nGo straight and go " + distance + " feet.");
             distance = 0;
         }
         return distance;
+    }
+
+    public List<String> getInstruction(){
+        return instruction;
     }
 }

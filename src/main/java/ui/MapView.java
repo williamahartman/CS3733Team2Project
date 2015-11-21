@@ -101,11 +101,10 @@ public class MapView extends JScrollPane{
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                JViewport viewPort = getViewport();
-                Point vpp = viewPort.getViewPosition();
+                Point vpp = getViewport().getViewPosition();
 
                 vpp.translate(mouseStartX - e.getXOnScreen(), mouseStartY - e.getYOnScreen());
-                mapPanel.scrollRectToVisible(new Rectangle(vpp, viewPort.getSize()));
+                mapPanel.scrollRectToVisible(new Rectangle(vpp, getViewport().getSize()));
 
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
@@ -129,12 +128,29 @@ public class MapView extends JScrollPane{
             public void mouseWheelMoved(MouseWheelEvent e) {
                 if ((zoomFactor > MINIMUM_ZOOM || e.getWheelRotation() < 0) &&
                         (zoomFactor < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
-                    zoomIncrementBy(e.getWheelRotation() * -0.01);
 
+                    Point viewPortPos = getViewport().getViewPosition();
+
+                    double viewportWidth = getViewport().getWidth();
+                    double viewportHeight = getViewport().getHeight();
+
+                    double imageWidth = getImagePixelSize().getWidth();
+                    double imageHeight = getImagePixelSize().getHeight();
+
+                    double xPosFrac = (viewPortPos.getX() + (viewportWidth / 2.0)) / imageWidth;
+                    double yPosFrac = (viewPortPos.getY() + (viewportHeight / 2.0)) / imageHeight;
+
+                    zoomIncrementBy(e.getWheelRotation() * -0.04);
                     positionButtons();
+                    validate();
+
+                    Point newViewportPos = new Point();
+                    newViewportPos.x = (int) ((xPosFrac * getImagePixelSize().getWidth()) - (viewportWidth / 2.0));
+                    newViewportPos.y = (int) ((yPosFrac * getImagePixelSize().getHeight()) - (viewportHeight / 2.0));
+
+                    mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, getViewport().getSize()));
 
                     repaint();
-                    validate();
                 }
             }
         };
@@ -198,7 +214,7 @@ public class MapView extends JScrollPane{
      */
     public void zoomIncrementBy(double toAdd) {
         zoomFactor += toAdd;
-        setPreferredSize(getImagePixelSize());
+        mapPanel.setPreferredSize(getImagePixelSize());
     }
 
     /**

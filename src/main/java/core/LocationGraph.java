@@ -83,7 +83,8 @@ public class LocationGraph {
                     finalPath.add(recurse);
                     recurse = path.get(recurse);
                 }
-                return finalPath;
+                Collections.reverse(finalPath);
+                return finalPath; //returns final path from start to destination
             }
             uncheckedLocations.remove(current); //this location will now be checked so remove it from uncheckedLocations
             checkedLocations.add(current); // this location will now be checked so add it to checkedLocations

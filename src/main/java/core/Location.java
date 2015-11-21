@@ -59,7 +59,6 @@ public class Location {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -147,8 +146,9 @@ public class Location {
                 " implemented!");
         //todo implement this!
     }
+
     /**
-     * Calculates distance between two locations and keeps two decimal
+     * Calculates distance between two locations and keeps two decimal.
      * @param loc the location used to calculate the distance
      * @return The two decimal number representing the distance
      */

@@ -275,8 +275,8 @@ public class AStarTest {
         double d1 = graph.calculateDistance(path1);
         assertEquals(22.85, d1, 0.0);
         Instruction i = new Instruction();
-        i.stepByStepInstruction(path1);
-        System.out.println(i.getInstruction());
+        String str = i.stepByStepInstruction(path1);
+        System.out.println(str);
     }
 
     @Test

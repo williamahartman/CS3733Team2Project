@@ -55,7 +55,18 @@ public class MainAppUI extends JFrame{
                     JOptionPane.ERROR_MESSAGE);
             System.exit(-1);
         }
-        this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM);
+
+        MapViewSyle style = new MapViewSyle(
+                true,
+                true,
+                true,
+                true,
+                new Color(250, 120, 0),
+                new Color(15, 78, 152),
+                new Color(255, 240, 0),
+                new Color(79, 189, 255));
+
+        this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM, style);
         startPoint = null;
         endPoint = null;
     }
@@ -108,35 +119,29 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
         makeAStarRoute.addActionListener(e -> {
-//            if (startPoint != null && endPoint != null && startPoint != endPoint) {
-//                JFrame frame = new JFrame("Route");
-//                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-//                frame.setMinimumSize(new Dimension(1024, 768));
-//
-//                java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
-//                if (route.size() > 0) {
-//                    AStarRouteDisplay routeDisplay = new AStarRouteDisplay(graph, mapBackground, DEFAULT_ZOOM, route);
-//                    frame.add(addToScrollPane(routeDisplay));
-//
-//                    frame.setLocationRelativeTo(null);
-//                    frame.repaint();
-//                    frame.setVisible(true);
-//
-//                    clearState(mapView);
-//                } else {
-//                    JOptionPane.showMessageDialog(this,
-//                            "There is no path between the selected points!",
-//                            "Routing Error!",
-//                            JOptionPane.ERROR_MESSAGE);
-//                    clearState(mapView);
-//                }
-//            } else {
-//                JOptionPane.showMessageDialog(this,
-//                        "You must select two points in order to generate a path.",
-//                        "Routing Error!",
-//                        JOptionPane.ERROR_MESSAGE);
-//                clearState(mapView);
-//            }
+            if (startPoint != null && endPoint != null && startPoint != endPoint) {
+                JFrame frame = new JFrame("Route");
+                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                frame.setMinimumSize(new Dimension(1024, 768));
+
+                java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
+                if (route.size() > 0) {
+                    mapView.addRoute(route);
+                    repaint();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "There is no path between the selected points!",
+                            "Routing Error!",
+                            JOptionPane.ERROR_MESSAGE);
+                    clearState(mapView);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "You must select two points in order to generate a path.",
+                        "Routing Error!",
+                        JOptionPane.ERROR_MESSAGE);
+                clearState(mapView);
+            }
         });
 
         //Add elements to the side panel

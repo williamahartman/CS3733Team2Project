@@ -1,7 +1,6 @@
 package ui;
 
 import core.Edge;
-import core.EdgeAttribute;
 import core.Location;
 import core.LocationGraph;
 
@@ -19,6 +18,8 @@ import java.util.List;
  * these edges.
  */
 public class MapView extends JScrollPane{
+    private static final double START_XFRAC = 0.38;
+    private static final double START_YFRAC = 0.3;
     private static final int NODE_BUTTON_SIZE = 10;
     private static final double MINIMUM_ZOOM = 0.1;
     private static final double MAXIMUM_ZOOM = 2;
@@ -26,11 +27,14 @@ public class MapView extends JScrollPane{
     private JPanel mapPanel;
     private double zoomFactor;
 
-    private java.util.List<Edge> graphEdgeList;
-    private java.util.List<Location> locationList;
-    private java.util.List<LocationButton> locationButtonList;
+    private List<Edge> graphEdgeList;
+    private List<Location> locationList;
+    private List<LocationButton> locationButtonList;
+    private List<List<Location>> routeLists;
 
-    private Image mapBackground;
+    private MapViewSyle style;
+
+    private Image backgroundImage;
 
     /**
      * Constructor.
@@ -38,8 +42,9 @@ public class MapView extends JScrollPane{
      * @param graph The LocationGraph whose edges will be displayed
      * @param mapBackground The image that will be used as the background
      * @param defaultZoom The zoom level the map will be at when the app starts
+     * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, BufferedImage mapBackground, double defaultZoom) {
+    public MapView(LocationGraph graph, BufferedImage mapBackground, double defaultZoom, MapViewSyle viewStyle) {
         mapPanel = new JPanel(true) {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -55,31 +60,46 @@ public class MapView extends JScrollPane{
 
                 //Draw background if loaded
                 Dimension imageRes = getImagePixelSize();
-                g2d.drawImage(mapBackground, 0, 0, (int) imageRes.getWidth(), (int) imageRes.getHeight(), null);
+                g2d.drawImage(backgroundImage, 0, 0, (int) imageRes.getWidth(), (int) imageRes.getHeight(), null);
 
                 g2d.setStroke(new BasicStroke(4));
-                for (Edge e: graphEdgeList) {
-                    if (e.hasAttribute(EdgeAttribute.EDGE_REMOVED)) {
-                        g2d.setColor(Color.black);
-                    } else if (e.hasAttribute(EdgeAttribute.INDOORS)) {
-                        g2d.setColor(Color.red);
-                    } else if (e.hasAttribute(EdgeAttribute.OUTDOORS)) {
-                        g2d.setColor(Color.yellow);
-                    }  else {
-                        g2d.setColor(Color.ORANGE);
+                if (style.isDrawAllEdges()) {
+                    for (Edge e : graphEdgeList) {
+                        g2d.setColor(style.getEdgeColor());
+
+                        int x1 = (int) (e.getNode1().getPosition().x * imageRes.getWidth());
+                        int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
+                        int x2 = (int) (e.getNode2().getPosition().x * imageRes.getWidth());
+                        int y2 = (int) (e.getNode2().getPosition().y * imageRes.getHeight());
+
+                        g2d.drawLine(x1, y1, x2, y2);
                     }
+                }
 
-                    int x1 = (int) (e.getNode1().getPosition().x * imageRes.getWidth());
-                    int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
-                    int x2 = (int) (e.getNode2().getPosition().x * imageRes.getWidth());
-                    int y2 = (int) (e.getNode2().getPosition().y * imageRes.getHeight());
+                if (style.isDrawRoutes()) {
+                    for (List<Location> route: routeLists) {
+                        g2d.setColor(style.getRouteColor());
 
-                    g2d.drawLine(x1, y1, x2, y2);
+                        int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
+                        int previousY = (int) (route.get(0).getPosition().y * imageRes.getHeight());
+                        for (int i = 1; i < route.size(); i++) {
+                            int currentX = (int) (route.get(i).getPosition().x * imageRes.getWidth());
+                            int currentY = (int) (route.get(i).getPosition().y * imageRes.getHeight());
+
+                            g2d.drawLine(previousX, previousY, currentX, currentY);
+
+                            previousX = currentX;
+                            previousY = currentY;
+                        }
+                    }
                 }
             }
         };
 
-        this.mapBackground = mapBackground;
+        this.style = viewStyle;
+
+        this.routeLists = new ArrayList<>();
+        this.backgroundImage = mapBackground;
         locationButtonList = new ArrayList<>();
         zoomFactor = defaultZoom;
 
@@ -88,8 +108,23 @@ public class MapView extends JScrollPane{
 
         setViewportView(mapPanel);
 
+        Point newViewportPos = new Point();
+        newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
+        newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
+        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, getViewport().getSize()));
+
         updateGraph(graph);
         addDefaultListeners();
+    }
+
+    /**
+     * Add a route that will be displayed.
+     *
+     * @param routeToAdd the route that will be added
+     */
+    public void addRoute(List<Location> routeToAdd) {
+        routeLists.add(routeToAdd);
+        positionButtons();
     }
 
     private void addDefaultListeners() {
@@ -170,6 +205,7 @@ public class MapView extends JScrollPane{
     public final void updateGraph(LocationGraph graph) {
         this.graphEdgeList = graph.getAllEdges();
         this.locationList = graph.getAllLocations();
+        this.routeLists = new ArrayList<>();
 
         for (LocationButton locButton: locationButtonList) {
             mapPanel.remove(locButton);
@@ -203,8 +239,8 @@ public class MapView extends JScrollPane{
      * @return The dimension of the image, or 0 if the image didn't load
      */
     public Dimension getImagePixelSize() {
-        return new Dimension((int) (mapBackground.getWidth(null) * zoomFactor),
-                (int) (mapBackground.getHeight(null) * zoomFactor));
+        return new Dimension((int) (backgroundImage.getWidth(null) * zoomFactor),
+                (int) (backgroundImage.getHeight(null) * zoomFactor));
     }
 
     /**
@@ -232,7 +268,7 @@ public class MapView extends JScrollPane{
     private void addButtons() {
         for (Location loc: locationList) {
             LocationButton currentButton = new LocationButton(loc);
-            currentButton.setBackground(Color.YELLOW);
+            currentButton.setBackground(style.getLocationColor());
             currentButton.setBorder(BorderFactory.createEmptyBorder());
 
             mapPanel.add(currentButton);
@@ -253,6 +289,12 @@ public class MapView extends JScrollPane{
 
             locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos  - (NODE_BUTTON_SIZE / 2),
                     NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
+
+            for (List<Location> route: routeLists) {
+                if (route.contains(locButton.getAssociatedLocation())) {
+                    locButton.setBackground(style.getRouteLocationColor());
+                }
+            }
         }
     }
 }

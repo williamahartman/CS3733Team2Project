@@ -6,6 +6,7 @@ import core.Location;
 import core.LocationGraph;
 import ui.LocationButton;
 import ui.MapView;
+import ui.MapViewSyle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -51,7 +52,16 @@ public class DevPanel {
     }
 
     public static void createDevWindow(BufferedImage backgroundImage, double defaultZoom, LocationGraph lg){
-        MapView mapView = new MapView(lg, backgroundImage, defaultZoom);
+        MapViewSyle style = new MapViewSyle(
+                true,
+                true,
+                true,
+                true,
+                new Color(250, 120, 0),
+                new Color(15, 78, 152),
+                new Color(232, 189, 19),
+                new Color(49, 113, 152));
+        MapView mapView = new MapView(lg, backgroundImage, defaultZoom, style);
 
         JFrame frame = new JFrame();
 

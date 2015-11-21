@@ -14,7 +14,7 @@ public class Database {
 
     /**
      * Constructor.
-     * Connects to the database
+     * Connects to the database as a read-only user
      *
      */
     public Database() throws Exception {
@@ -24,6 +24,8 @@ public class Database {
         con = DriverManager.getConnection("jdbc:mysql://" +
                         "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
                 "aztecwash", "aztecwash");
+
+        //ACTUAL READ ONLY USER IS USERNAME: user PASSWORD: guest
 
         /*
         TABLES IN THE DATABASE:
@@ -54,6 +56,24 @@ public class Database {
                 EDGE_ID int not null,
                 ATTRIBUTE varchar(30) not null)
         */
+    }
+
+
+    /*
+      * Attepmts to connect to the database with the given username and password
+      *
+      * @param username username of the database user
+      *
+      * @param password password for the user
+      *
+     */
+    public Database(String username, String password) throws Exception {
+        //create a file to find the absolute path of the project
+
+        Class.forName("com.mysql.jdbc.Driver");
+        con = DriverManager.getConnection("jdbc:mysql://" +
+                        "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
+                username, password);
     }
 
     /*

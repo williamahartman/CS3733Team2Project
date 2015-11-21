@@ -37,6 +37,8 @@ public class MainAppUI extends JFrame{
     private JButton clearButton;
     private JButton makeAStarRoute;
 
+    private DevTools dt;
+
     /**
      * Constructor.
      *
@@ -156,7 +158,8 @@ public class MainAppUI extends JFrame{
         setLayout(new BorderLayout());
         add(mapScrollPane);
         add(sidePanel, BorderLayout.WEST);
-        add(new DevTools(graph, mapView), BorderLayout.EAST);
+        dt = new DevTools(graph, mapView);
+        add(dt, BorderLayout.EAST);
 
         addWindowFocusListener(new WindowFocusListener() {
             @Override
@@ -228,6 +231,11 @@ public class MainAppUI extends JFrame{
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
                 panel.repaint();
+            }
+
+            @Override
+            public  void mouseClicked(MouseEvent e){
+                dt.devModeCheck(e, resultScrollPane);
             }
 
             @Override

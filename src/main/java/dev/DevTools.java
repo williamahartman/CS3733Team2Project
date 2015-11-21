@@ -19,11 +19,14 @@ public class DevTools extends JPanel {
 
     private LocationGraph lg;
     private MapView mv;
-    private boolean inDevMode = false;
+    private boolean inDevMode = true;
     private LocationButton b;
     private Edge currentEdge;
+    private boolean deleteEdge;
+    private boolean edgeMode;
+    private LocationButton originalButton;
 
-    public DevTools(LocationGraph newGraph, MapView newView){
+    public DevTools(LocationGraph newGraph, MapView newView) {
         lg = newGraph;
         mv = newView;
         b = mv.getLocationButtonList().get(0);
@@ -32,14 +35,14 @@ public class DevTools extends JPanel {
         this.add(createEditor());
     }
 
-    private void updateGraph(){
+    private void updateGraph() {
         mv.resetGraphData(lg);
-        for (LocationButton lb: mv.getLocationButtonList()) {
-            //addEditListener(lb, lg, mv);
+        for (LocationButton lb : mv.getLocationButtonList()) {
+            addEditListener(lb, lg, mv);
         }
     }
 
-    public void devModeCheck(MouseEvent e, JScrollPane mvs){
+    public void devModeCheck(MouseEvent e, JScrollPane mvs) {
         if (inDevMode) {
             Point vpp = mvs.getViewport().getViewPosition();
             //Creates a new button object where the panel is clicked
@@ -50,7 +53,7 @@ public class DevTools extends JPanel {
         }//end of dev mode check
     }
 
-    private JButton createSaveButton(){
+    private JButton createSaveButton() {
         JButton saveToDatabase = new JButton("Save to database");
         saveToDatabase.addActionListener(listener -> {
             try {
@@ -67,13 +70,19 @@ public class DevTools extends JPanel {
         return saveToDatabase;
     }
 
-    private JPanel createEditor(){
+    public void updateLastButtonClicked(LocationButton nb){
+        b = nb;
+    }
+
+    private JPanel createEditor() {
         //Labels that appear on the left side and describe the open fields
         JLabel buttonLabel1 = new JLabel("Floor Number: ");
         JLabel buttonLabel2 = new JLabel("Name List:");
-        JCheckBox nodeButton = new JCheckBox("Edge Mode");
+        JCheckBox edgeToggle = new JCheckBox("Edge Mode");
+        JCheckBox edgeDelete = new JCheckBox("Delete Edges");
 
-        nodeButton.setSelected(false);
+        edgeToggle.setSelected(false);
+        edgeDelete.setSelected(false);
 
         //Fields with their initial entries
         JFormattedTextField field1 = new JFormattedTextField(b.getAssociatedLocation()
@@ -122,13 +131,38 @@ public class DevTools extends JPanel {
         JPanel labelPanel = new JPanel(new GridLayout(0, 1));
         labelPanel.add(buttonLabel1);
         labelPanel.add(buttonLabel2);
-        labelPanel.add(nodeButton);
+        labelPanel.add(edgeToggle);
+        labelPanel.add(edgeDelete);
 
         JComboBox attributeList = new JComboBox(EdgeAttribute.values());
         attributeList.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 currentEdge.addAttribute(EdgeAttribute.values()[attributeList.getSelectedIndex()]);
+            }
+        });
+
+        edgeToggle.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == 1) {
+                    originalButton = b;
+                    edgeMode = edgeToggle.isSelected();
+                    edgeDelete.setVisible(edgeMode);
+                    if(!edgeMode){
+                        deleteEdge = false;
+                        edgeDelete.setSelected(false);
+                    }
+                }
+            }
+        });
+
+        edgeDelete.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getButton() == 1){
+                    deleteEdge = edgeDelete.isSelected();
+                }
             }
         });
 
@@ -139,13 +173,50 @@ public class DevTools extends JPanel {
         textPanel.add(okButton);
         textPanel.add(attributeList);
 
-
         //Panel created to display both the label panel and the field panel
         JPanel panelLayout = new JPanel(new BorderLayout());
         panelLayout.add(labelPanel, BorderLayout.WEST);
         panelLayout.add(textPanel, BorderLayout.LINE_END);
 
-        return  panelLayout;
+        return panelLayout;
     }
 
+    public void addEditListener(LocationButton b, LocationGraph lg, MapView mapView) {
+
+        b.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                System.out.println("EdgeMode" + edgeMode);
+                System.out.println("DeleteMode" + deleteEdge);
+                updateLastButtonClicked(b);
+                if (e.getButton() == 1) {//Left mouse click
+                    if (edgeMode) {//if in Edge Mode
+                        Edge edge = originalButton.getAssociatedLocation()
+                                .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
+                        if (deleteEdge) {
+                            //remove edge
+                            if (edge != null) {
+                                originalButton.getAssociatedLocation().removeEdge(edge);
+                                updateGraph();
+                            }
+                        } else if (edge != null) { //already has edge
+                            //change edge attributes
+                        } else { //does not have an edge
+                            //add an edge
+                            originalButton.getAssociatedLocation()
+                                    .makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<>());
+                        }
+                    }
+                } else if (e.getButton() == 3) {//Right mouse click
+                    lg.removeLocation(b.getAssociatedLocation());
+                    mv.remove(b);
+                    originalButton = mv.getLocationButtonList().get(0);
+                    mv.repaint();
+                }
+                updateGraph();
+            }
+        });
+
+    }
 }

@@ -32,6 +32,7 @@ public class DevPanel {
     // booleans to toggle developer features
     public static boolean inDevMode = false;
     private static boolean edgeMode = false;
+    private static boolean deleteEdge = false;
     // temporary storage for the button being edited;
     private static LocationButton originalButton;
 
@@ -151,13 +152,20 @@ public class DevPanel {
         b.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+
                 if (e.getButton() == 1) {//Left mouse click
                     if (edgeMode){//if in Edge Mode
                         Edge edge = originalButton.getAssociatedLocation()
                                 .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
-                        if (edge != null){ //already has edge
+                        if(deleteEdge){
                             //remove edge
-                            originalButton.getAssociatedLocation().removeEdge(edge);
+                            if(edge != null) {
+                                System.out.println(originalButton.getAssociatedLocation());
+                                System.out.println(originalButton.getAssociatedLocation().getEdges());
+                                originalButton.getAssociatedLocation().removeEdge(edge);
+                            }
+                        } else if(edge != null){ //already has edge
+                            //change edge attributes
                         } else { //does not have an edge
                             //add an edge
                             originalButton.getAssociatedLocation()
@@ -261,19 +269,4 @@ public class DevPanel {
             }
         });
     }
-
-//    public static void main(String[] args){
-//        //Sets up the framework for the GUI
-//        JPanel p = new JPanel(null);
-//        JFrame frame = new JFrame();
-//        p.setSize(new Dimension(1000, 500));
-//        frame.setSize(new Dimension(1000, 500));
-//        frame.setLayout(null);
-//        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        frame.add(p);
-//        DevPanel.addDevFunction(p);
-//        inDevMode = true;
-//        frame.setVisible(true);
-//        frame.repaint();
-//    }
 }

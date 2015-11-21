@@ -3,6 +3,7 @@ package core;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * This class represents a Location for a LocationGraph. These are the nodes in the graph
@@ -15,7 +16,7 @@ public class Location {
     private Point2D.Double position;
     private int floorNumber;
     private String[] nameList;
-    private List<Edge> edgeList;
+    private TreeSet<Edge> edgeList;
 
     /**
      * Constructor. This is intended for loading a Location from a file.
@@ -27,7 +28,7 @@ public class Location {
      * @param edgeList The list of Edges that include the Location as one of their nodes.
      */
     public Location(Point2D.Double position, int floorNumber, String[] nameList,
-                    List<Edge> edgeList) {
+                    TreeSet<Edge> edgeList) {
         this.position = position;
         this.floorNumber = floorNumber;
         this.nameList = nameList;
@@ -43,7 +44,7 @@ public class Location {
      * @param nameList The list of searchable names for the Location
      */
     public Location(Point2D.Double position, int floorNumber, String[] nameList) {
-        this(position, floorNumber, nameList, new LinkedList<>());
+        this(position, floorNumber, nameList, new TreeSet<>());
     }
 
     /**
@@ -148,7 +149,7 @@ public class Location {
         //todo implement this!
     }
 
-    public List<Edge> getEdges() {
+    public TreeSet<Edge> getEdges() {
         return edgeList;
     }
 

@@ -4,6 +4,7 @@ import core.Edge;
 import core.EdgeAttribute;
 import core.Location;
 import core.LocationGraph;
+import dev.DevTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -121,6 +122,10 @@ public class MapView extends JPanel{
                     NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
             add(currentButton);
             locationButtonList.add(currentButton);
+            currentButton.setVisible(true);
+            if ((!MainAppUI.allNodesShown) && (currentButton.getAssociatedLocation().getNameList()[0].equals(""))){
+                currentButton.setVisible(false);
+            }
         }
         repaint();
     }
@@ -162,7 +167,9 @@ public class MapView extends JPanel{
             int x2 = (int) (e.getNode2().getPosition().x * imageRes.getWidth());
             int y2 = (int) (e.getNode2().getPosition().y * imageRes.getHeight());
 
-            g2d.drawLine(x1, y1, x2, y2);
+            if(MainAppUI.edgesShown) {
+                g2d.drawLine(x1, y1, x2, y2);
+            }
         }
 
     }

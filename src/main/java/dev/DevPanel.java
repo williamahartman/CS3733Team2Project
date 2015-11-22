@@ -157,14 +157,14 @@ public class DevPanel {
                     if (edgeMode){//if in Edge Mode
                         Edge edge = originalButton.getAssociatedLocation()
                                 .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
-                        if(deleteEdge){
+                        if (deleteEdge){
                             //remove edge
-                            if(edge != null) {
+                            if (edge != null) {
                                 System.out.println(originalButton.getAssociatedLocation());
                                 System.out.println(originalButton.getAssociatedLocation().getEdges());
                                 originalButton.getAssociatedLocation().removeEdge(edge);
                             }
-                        } else if(edge != null){ //already has edge
+                        } else if (edge != null){ //already has edge
                             //change edge attributes
                         } else { //does not have an edge
                             //add an edge

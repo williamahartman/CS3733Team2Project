@@ -19,7 +19,7 @@ public class DevTools extends JPanel {
 
     private LocationGraph lg;
     private MapView mv;
-    private boolean inDevMode = true;
+    private static boolean inDevMode = false;
     private LocationButton b;
     private Edge currentEdge;
     private boolean deleteEdge;
@@ -149,7 +149,7 @@ public class DevTools extends JPanel {
                     originalButton = b;
                     edgeMode = edgeToggle.isSelected();
                     edgeDelete.setVisible(edgeMode);
-                    if(!edgeMode){
+                    if (!edgeMode){
                         deleteEdge = false;
                         edgeDelete.setSelected(false);
                     }
@@ -160,7 +160,7 @@ public class DevTools extends JPanel {
         edgeDelete.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(e.getButton() == 1){
+                if (e.getButton() == 1){
                     deleteEdge = edgeDelete.isSelected();
                 }
             }
@@ -187,9 +187,9 @@ public class DevTools extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println("EdgeMode" + edgeMode);
-                System.out.println("DeleteMode" + deleteEdge);
                 updateLastButtonClicked(b);
+                b.setBackground(Color.CYAN);
+                b.repaint();
                 if (e.getButton() == 1) {//Left mouse click
                     if (edgeMode) {//if in Edge Mode
                         Edge edge = originalButton.getAssociatedLocation()
@@ -218,5 +218,11 @@ public class DevTools extends JPanel {
             }
         });
 
+    }
+    public static boolean getDevMode(){
+        return inDevMode;
+    }
+    public static void setDevMode(boolean devMode){
+        inDevMode = devMode;
     }
 }

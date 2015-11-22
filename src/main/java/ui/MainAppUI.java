@@ -39,6 +39,9 @@ public class MainAppUI extends JFrame{
 
     private DevTools dt;
 
+    public static boolean edgesShown = false;
+    public static boolean allNodesShown = true;
+
     /**
      * Constructor.
      *
@@ -75,17 +78,40 @@ public class MainAppUI extends JFrame{
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
         refreshMap.addActionListener(e -> resetMap(mapView));
-        JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers only!)");
+        JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers Only!)");
         enterDevloperMode.addActionListener(e -> {
-            if (!DevPanel.inDevMode) {
-                DevPanel.createDevWindow(mapBackground, DEFAULT_ZOOM, graph);
+            if (!DevTools.getDevMode()) {
+                DevTools.setDevMode(true);
+                enterDevloperMode.setText("Exit Developer Mode");
+                clearState(mapView);
+            }
+            else {
+                DevTools.setDevMode(false);
+                enterDevloperMode.setText("Edit Map (Developers Only!)");
                 clearState(mapView);
             }
         });
 
+        JMenu view = new JMenu("View");
+        JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
+        JMenuItem showNodes = new JMenuItem("Show All Locations");
+        toggleEdges.addActionListener(e -> {
+            edgesShown = !edgesShown;
+        });
+        showNodes.addActionListener(e -> {
+            if (allNodesShown){
+                showNodes.setText("Show Only Named Locations");
+            } else {
+                showNodes.setText("Show All Locations");
+            }
+            allNodesShown = !allNodesShown;
+        });
+        view.add(toggleEdges);
+        view.add(showNodes);
         editMenu.add(refreshMap);
         editMenu.add(enterDevloperMode);
         menuBar.add(editMenu);
+        menuBar.add(view);
 
         setJMenuBar(menuBar);
 

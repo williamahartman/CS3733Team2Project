@@ -126,7 +126,7 @@ public class DevPanel {
         saveToDatabase.addActionListener(listener -> {
             try {
                 Database graphData = new Database();
-                graphData.updateDB(lg);
+                //graphData.updateDB(lg);
                 graphData.closeConnection();
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(frame,

@@ -8,20 +8,15 @@ import java.awt.geom.Point2D;
  * Created by hollyn on 11/21/15.
  */
 public class DatabaseList {
-    List<Location> addLocList;
-    List<Location> removeLocList;
-    List<Location> updateLocList;
-    List<Edge> addEdgeList;
-    List<Edge> removeEdgeList;
-    List<Edge> updateEdgeList;
+    List<Location> addLocList = new ArrayList<Location>();
+    List<Location> removeLocList = new ArrayList<Location>();
+    List<Location> updateLocList = new ArrayList<Location>();
+    List<Edge> addEdgeList = new ArrayList<Edge>();
+    List<Edge> removeEdgeList = new ArrayList<Edge>();
+    List<Edge> updateEdgeList = new ArrayList<Edge>();
 
-    public void DatabaseList() {
-        this.addLocList = new ArrayList<>();
-        this.removeLocList = new ArrayList<>();
-        this.updateLocList = new ArrayList<>();
-        this.addEdgeList = new ArrayList<>();
-        this.removeEdgeList = new ArrayList<>();
-        this.updateEdgeList = new ArrayList<>();
+    public DatabaseList() {
+
     }
 
     public void addedLocation(Location locAdd) {

@@ -38,7 +38,7 @@ public class Database {
             PRIMARY KEY (NODE_ID))
 
         ALTER TABLE mydb.NODES
-                ADD CONSTRAINT uniquePosition UNIQUE (POS_X, POS_Y)
+                ADD CONSTRAINT uniquePosition UNIQUE (POS_X, POS_Y, FLOOR_NUM)
 
         CREATE TABLE mydb.EDGES(
                 EDGE_ID int not null AUTO_INCREMENT,
@@ -90,7 +90,7 @@ public class Database {
         String query = "INSERT INTO mydb.NODES (POS_X, POS_Y, FLOOR_NUM) VALUES " +
                 "(" + x + "," + y + "," + floorNum + ")";
         String getID = "SELECT NODE_ID FROM mydb.NODES WHERE" +
-                "POS_X = " + x + " AND POS_Y = " + y;
+                "(POS_X = " + x + ") AND (POS_Y = " + y + ")";
         try {
             Statement stmt = con.createStatement();
             //execute the query to add the node
@@ -107,8 +107,7 @@ public class Database {
             addNames(locToAdd, nodeId);
 
         } catch (SQLException e) {
-            System.out.print("Couldn't add location\n");
-            e.getStackTrace();
+            System.out.print("Couldn't add Node\n" + e + "\n");
         }
     }
 
@@ -198,7 +197,7 @@ public class Database {
             addNames(locToUpdate, nodeId);
 
         } catch (SQLException e) {
-            System.out.print("Couldn't add location\n" + e);
+            System.out.print("Couldn't Update location\n" + e);
         }
     }
 
@@ -251,7 +250,7 @@ public class Database {
 
             //query for getting edgeId from database
             String getEdgeId = "SELECT EDGE_ID FROM mydb.EDGES WHERE " +
-                    "NODE1_ID = " + nodeId1 + "AND NODE2_ID = " + nodeId2 + ")";
+                    "NODE1_ID = " + nodeId1 + " AND NODE2_ID = " + nodeId2;
             //get the result set of the query for the edgeId
             ResultSet rsE = stmt.executeQuery(getEdgeId);
             if (!rsE.next()){ //if rsE is empty
@@ -268,7 +267,7 @@ public class Database {
             }
 
         } catch (SQLException e) {
-            System.out.print("Couldn't add location\n" + e);
+            System.out.print("Couldn't add Edge\n" + e + "\n");
         }
 
 
@@ -434,34 +433,38 @@ public class Database {
             Statement sta = con.createStatement();
             int locCount;
             String query = "SELECT COUNT(NODE_ID) AS NUM FROM mydb.NODES";
-            ResultSet res = sta.executeQuery(query);
-            if (!res.next()){
+            ResultSet rset = sta.executeQuery(query);
+            if (!rset.next()){
                 throw new SQLException("No Nodes in table \n");
             }
-            locCount = res.getInt("NUM");
+            locCount = rset.getInt("NUM");
             HashMap<Integer, Location> hm = new HashMap<Integer, Location>(locCount);
 
             // Create locations
             // Get all nodes stored in the database
-            res = sta.executeQuery(
+            ResultSet res = sta.executeQuery(
                     "SELECT * FROM mydb.NODES");
             while (res.next()) {
                 int nodeId = res.getInt("NODE_ID");
+                Point2D.Double coords = new Point2D.Double(res.getDouble("POS_X"),
+                        res.getDouble("POS_Y"));
+                int floor = res.getInt("FLOOR_NUM");
 
                 String[] names = new String[20];
                 int numNames = 0;
-                String getNames = "SELECT NAME FROM mydb.NAMES WHERE NODE_ID = " + nodeId + ")";
-                ResultSet rsName = sta.executeQuery(getNames);
-                while(rsName.next() && numNames < 20) {
+                String getNames = "SELECT NAME FROM mydb.NAMES WHERE NODE_ID = " + nodeId;
+                Statement stmt = con.createStatement();
+                ResultSet rsName = stmt.executeQuery(getNames);
+                while (rsName.next() && numNames < 20) {
                     String nameToAdd = rsName.getString("NAME");
                     names[numNames] = nameToAdd;
                     numNames++;
                 }
+                //rsName.close();
 
                 Location loc = new Location (
-                        new Point2D.Double(res.getDouble("POS_X"),
-                                res.getDouble("POS_Y")),
-                        res.getInt("FLOOR_NUM"), names);
+                        coords,
+                        floor, new String[0]);
 
                 // Add locations and node id to a hash map
                 hm.put(nodeId, loc);
@@ -469,19 +472,21 @@ public class Database {
             }
 
             query = "SELECT * FROM mydb.EDGES";
-            res = sta.executeQuery(query);
-            while (res.next()) {
-                int node1 = res.getInt("NODE1_ID");
-                int node2 = res.getInt("NODE2_ID");
-                int edgeId = res.getInt("EDGE_ID");
+            //Statement st = con.createStatement();
+            ResultSet rs = sta.executeQuery(query);
+            while (rs.next()) {
+                int node1 = rs.getInt("NODE1_ID");
+                int node2 = rs.getInt("NODE2_ID");
+                int edgeId = rs.getInt("EDGE_ID");
 
                 // get all attributes in result set based on edge id
                 String getAttr = "SELECT ATTRIBUTE FROM mydb.EDGE_ATTRIBUTES WHERE EDGE_ID = " +
-                        edgeId + ")";
+                        edgeId;
+
                 ResultSet rsAttr = sta.executeQuery(getAttr);
                 ArrayList<EdgeAttribute> attrList = new ArrayList<EdgeAttribute>();
 
-                while(rsAttr.next()) {
+                while (rsAttr.next()) {
                     String attr = rsAttr.getString("ATTRIBUTE");
                     EdgeAttribute attrToAdd = EdgeAttribute.valueOf(attr);
                     attrList.add(attrToAdd);
@@ -493,7 +498,7 @@ public class Database {
             }
 
         } catch (SQLException e) {
-            e.getStackTrace();
+            e.printStackTrace();
         }
 
         // Return location graph
@@ -524,7 +529,7 @@ public class Database {
             }
 
             // Add all nodes from add list
-            for (int j= 0; j < addLocList.size(); j++) {
+            for (int j = 0; j < addLocList.size(); j++) {
                 addNode(addLocList.get(j));
             }
 
@@ -574,7 +579,7 @@ public class Database {
 
             // Add all nodes from add list
             // Call addNode(Location loc)
-            for (int n= 0; n < addEdgeList.size(); n++) {
+            for (int n = 0; n < addEdgeList.size(); n++) {
                 addEdge(addEdgeList.get(n));
             }
 
@@ -631,7 +636,7 @@ public class Database {
             String[] nameList = loc.getNameList();
             for (int i = 0; i < nameList.length; i++) {
                 String query = "INSERT INTO mydb.NAMES (NODE_ID, NAME) VALUES " +
-                        "(" + nodeId + "," + nameList[i] + ")";
+                        "( " + nodeId + " , " + '"' + nameList[i] + '"' + " )";
                 stmt.execute(query);
             }
         } catch (SQLException e){

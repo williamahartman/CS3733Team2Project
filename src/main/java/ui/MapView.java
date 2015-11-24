@@ -97,7 +97,8 @@ public class MapView extends JScrollPane{
                 }
             }
         };
-
+        //this.dt = new DevTools(graph, this);
+        //todo added because we never interact with dev tools?????
         this.style = viewStyle;
 
         this.routeLists = new ArrayList<>();
@@ -154,6 +155,13 @@ public class MapView extends JScrollPane{
                 mouseStartY = e.getYOnScreen();
                 setCursor(new Cursor(Cursor.MOVE_CURSOR));
             }
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                //dt.devModeCheck(e, mapPanel);
+                //todo in order for dev tools to register a click of the mouse
+            }
+
 
             @Override
             public void mouseReleased(MouseEvent e) {

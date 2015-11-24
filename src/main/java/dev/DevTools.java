@@ -77,7 +77,7 @@ public class DevTools extends JPanel {
         edgeToggle.setSelected(false);
 
         //Fields with their initial entries
-        JFormattedTextField field1 = new JFormattedTextField(b.getAssociatedLocation()
+        JFormattedTextField field1 = new JFormattedTextField(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
         JFormattedTextField field2 = new JFormattedTextField();
 
@@ -130,7 +130,7 @@ public class DevTools extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == 1) {
-                    originalButton = b;
+                    originalButton = lastButtonClicked;
                     edgeMode = edgeToggle.isSelected();
                     if (!edgeMode){
                         deleteEdge = false;
@@ -154,7 +154,7 @@ public class DevTools extends JPanel {
         return panelLayout;
     }
 
-    public ChangeListener buildEditListener(LocationGraph lg, MapView mapView) {
+    public void buildEditListener(LocationGraph lg, MapView mapView) {
 
         lastButtonClicked.addMouseListener(new MouseAdapter() {
 
@@ -165,43 +165,42 @@ public class DevTools extends JPanel {
                 if (e.getButton() == 1) {//Left mouse click
                     if (edgeMode) {//if in Edge Mode
                         Edge edge = originalButton.getAssociatedLocation()
-                                .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
+                                .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (deleteEdge) {
                             //remove edge
                             if (edge != null) {
                                 originalButton.getAssociatedLocation().removeEdge(edge);
-                                updateGraph();
-                                b.setBackground(Color.CYAN);
+                                mapView.updateGraph(graph, MainAppUI.floorNumber);
+                                lastButtonClicked.setBackground(Color.CYAN);
                             }
                         } else if (edge != null) { //already has edge
                             //TODO change edge attributes
                         } else { //does not have an edge
                             //add an edge
                             originalButton.getAssociatedLocation()
-                                    .makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<>());
+                                    .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), new ArrayList<>());
                         }
                     }
                 } else if (e.getButton() == 3) {//Right mouse click
                     if (!edgeMode) {
-                        lg.removeLocation(b.getAssociatedLocation());
-                        DevTools.this.mapView.remove(b);
+                        lg.removeLocation(lastButtonClicked.getAssociatedLocation());
+                        DevTools.this.mapView.remove(lastButtonClicked);
                         originalButton = DevTools.this.mapView.getLocationButtonList().get(0);
                         DevTools.this.mapView.repaint();
                     } else {
                         Edge edge = originalButton.getAssociatedLocation()
-                                .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
+                                .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (edge != null) {
                             originalButton.getAssociatedLocation().removeEdge(edge);
-                            updateGraph();
+                            mapView.updateGraph(graph, MainAppUI.floorNumber);
                         }
                     }
                 }
-                updateGraph();
-                b.setBackground(Color.CYAN);
-                b.repaint();
+                mapView.updateGraph(graph, MainAppUI.floorNumber);
+                lastButtonClicked.setBackground(Color.CYAN);
+                lastButtonClicked.repaint();
             }
         });
-
     }
     public boolean getDevMode(){
         return inDevMode;

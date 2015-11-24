@@ -1,6 +1,7 @@
 package ui;
 
 import core.EdgeAttributeManager;
+import core.Instruction;
 import core.Location;
 import core.LocationGraph;
 import dev.DevTools;
@@ -193,6 +194,10 @@ public class MainAppUI extends JFrame{
         clearButton.setToolTipText("Remove the previously selected start and end points");
         clearButton.addActionListener(e -> clearState(mapView));
 
+        JTextArea gPS = new JTextArea();
+        gPS.setVisible(true);
+
+
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -206,6 +211,13 @@ public class MainAppUI extends JFrame{
                 java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
                 if (route.size() > 0) {
                     mapView.addRoute(route);
+                    gPS.setText("");
+                    Instruction instruct = new Instruction();
+                    for (String str:instruct.stepByStepInstruction(route, 1))
+                    {
+                    gPS.append(str);
+                    }
+
                     repaint();
                 } else {
                     JOptionPane.showMessageDialog(this,
@@ -224,10 +236,12 @@ public class MainAppUI extends JFrame{
         });
 
         //Add elements to the side panel
+        JScrollPane text = new JScrollPane(gPS);
         sidePanel.add(startInfo);
         sidePanel.add(endPointInfo);
         sidePanel.add(makeAStarRoute);
         sidePanel.add(floorNum);
+        sidePanel.add(text, BorderLayout.CENTER);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
 
@@ -257,7 +271,8 @@ public class MainAppUI extends JFrame{
      * Add the listeners to all the nodes in the map.
      */
     private void addListenersToMapNodes(ChangeListener listener) {
-        for (LocationButton button: mapView.getLocationButtonList()) {
+        for (LocationButton button: mapView.getLocationButtonList())
+        {
             button.addChangeListener(listener);
         }
     }

@@ -288,13 +288,13 @@ public class MapView extends JScrollPane{
         for (LocationButton button: locationButtonList) {
             Location loc = button.getAssociatedLocation();
 
-            if(style.isDrawAllPoints()) {
+            if (style.isDrawAllPoints()) {
                 button.setVisible(false);
             } else {
                 button.setVisible(true);
             }
 
-            if(style.isDrawNamedPoints() && loc.getNameList().length > 0) {
+            if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
                 button.setVisible(true);
                 button.setToolTipText(loc.getNameList()[0]);
             }

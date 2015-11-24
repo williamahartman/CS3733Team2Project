@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * This class represents a Location for a LocationGraph. These are the nodes in the graph
@@ -44,7 +45,7 @@ public class Location {
      * @param nameList The list of searchable names for the Location
      */
     public Location(Point2D.Double position, int floorNumber, String[] nameList) {
-        this(position, floorNumber, nameList, new LinkedList<>());
+        this(position, floorNumber, nameList, new ArrayList<>());
     }
 
     /**

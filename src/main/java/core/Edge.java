@@ -79,4 +79,7 @@ public class Edge {
     public Location getNode2() {
         return node2;
     }
+
+    public List<EdgeAttribute> getAttributes() { return associatedAttributes; }
+
 }

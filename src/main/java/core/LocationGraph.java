@@ -92,7 +92,7 @@ public class LocationGraph {
              * Getting all Locations that are adjacent to current
              */
 
-            List<Edge> eList = current.getEdges(); //a list of all edges that current is a part of
+            List<Edge> eList = new ArrayList<>(current.getEdges()); //a list of all edges that current is a part of
             ArrayList<Location> neighbors = new ArrayList<Location>();
             for (Edge e:eList)
             {
@@ -266,10 +266,10 @@ public class LocationGraph {
      */
     public void removeLocation(Location loc){
         locationList.remove(loc);
+        Iterator<Edge> iter = loc.getEdges().iterator();
+        while (iter.hasNext()) {
+            loc.removeEdge(iter.next());
 
-        for (int i = 0; i < loc.getEdges().size(); i++) {
-            loc.removeEdge(loc.getEdges().get(i));
-            i--;
         }
     }
     /**

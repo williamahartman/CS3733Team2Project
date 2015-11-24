@@ -215,9 +215,11 @@ public class MainAppUI extends JFrame{
                     mapView.addRoute(route);
                     gPS.setText("");
                     Instruction instruct = new Instruction();
+                    int count =0;
                     for (String str:instruct.stepByStepInstruction(route, 1))
                     {
-                    gPS.append(str);
+                        count++;
+                        gPS.append(count + ") " + str);
                     }
 
                     repaint();

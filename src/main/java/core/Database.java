@@ -1,6 +1,8 @@
 package core;
 
 
+import org.w3c.dom.Attr;
+
 import java.sql.*;
 import java.util.*;
 import java.awt.geom.Point2D;
@@ -262,7 +264,7 @@ public class Database {
             List<EdgeAttribute> attributes = edgeToAdd.getAttributes();
             for (int i = 0; i < attributes.size(); i++) {
                 String insertAttr = "INSERT INTO mydb.EDGE_ATTRIBUTES VALUES" +
-                        "(" + edgeId + "," + attributes.get(i) + ")";
+                        "(" + edgeId + "," + '"' + attributes.get(i) + '"' + ")";
                 stmt.execute(insertAttr);
             }
 
@@ -285,6 +287,7 @@ public class Database {
         double x2 = loc2.getPosition().getX();
         double y2 = loc2.getPosition().getY();
         try {
+            System.out.print("\nCALLED REMOVE EDGE\n");
             Statement stmt = con.createStatement();
             //query to get the first nodeID
             String query = "SELECT NODE_ID FROM mydb.NODES WHERE " +
@@ -309,26 +312,32 @@ public class Database {
             //query to get the Edge id
             rs = stmt.executeQuery(query);
             if (!rs.next()){
-                throw new SQLException("No locations with those coordinates(Node2)");
+                throw new SQLException("No edges with those two locations");
             }
             //store first edgeId found
             int edgeId1 = rs.getInt("EDGE_ID");
             if (!rs.next()){
-                throw new SQLException("No locations with those coordinates(Node2)");
+                //throw new SQLException("No locations with those coordinates(Node2)");
+                String remAttr = "DELETE FROM mydb.EDGE_ATTRIBUTES WHERE (EDGE_ID = " + edgeId1 + ")";
+                stmt.execute(remAttr); //remove the attributes from the database
+
+                String remEdge = "DELETE FROM mydb.EDGES WHERE (EDGE_ID = " + edgeId1 + ")";
+                stmt.execute(remEdge); //remove the edge from the database
+            } else {
+                //store second edgeId found
+                int edgeId2 = rs.getInt("EDGE_ID");
+
+                String remAttr = "DELETE FROM mydb.EDGE_ATTRIBUTES WHERE (EDGE_ID = " + edgeId1
+                        + "OR (EDGE_ID = " + edgeId2 + ")";
+                stmt.execute(remAttr); //remove the attributes from the database
+
+                String remEdge = "DELETE FROM mydb.EDGES WHERE (EDGE_ID = " + edgeId1
+                        + "OR (EDGE_ID = " + edgeId2 + ")";
+                stmt.execute(remEdge); //remove the edge from the database
             }
-            //store second edgeId found
-            int edgeId2 = rs.getInt("EDGE_ID");
-
-            String remAttr = "DELETE FROM mydb.EDGE_ATTRIBUTES WHERE (EDGE_ID = " + edgeId1
-                    + "OR (EDGE_ID = " + edgeId2 + ")";
-            stmt.execute(remAttr); //remove the attributes from the database
-
-            String remEdge = "DELETE FROM mydb.EDGES WHERE (EDGE_ID = " + edgeId1
-                    + "OR (EDGE_ID = " + edgeId2 + ")";
-            stmt.execute(remEdge); //remove the edge from the database
 
         } catch (SQLException e) {
-            e.getStackTrace();
+            e.printStackTrace();
         }
 
     }
@@ -439,6 +448,34 @@ public class Database {
             }
             locCount = rset.getInt("NUM");
             HashMap<Integer, Location> hm = new HashMap<Integer, Location>(locCount);
+            //create a hashmap with enough entries for 3 names for each node
+            HashMap<Integer, String[]> nameHm = new HashMap<Integer, String[]>(locCount);
+
+            String[] names = new String[30];
+            int numNames = 0;
+            int id = -1;
+            int prevID = -1;
+            String nameToAdd;
+            String getNames = "SELECT * FROM mydb.NAMES ORDER BY NODE_ID ASC";
+            Statement stmt = con.createStatement();
+            ResultSet rsName = stmt.executeQuery(getNames);
+            while (rsName.next()) {
+                id = rsName.getInt("NODE_ID");
+                nameToAdd = rsName.getString("NAME");
+                if (id == prevID || prevID == -1) {
+                    names[numNames] = nameToAdd;
+                    numNames++;
+                } else {
+                    nameHm.put(prevID, names);
+                    numNames = 0;
+                    names = new String[30];
+                    names[numNames] = nameToAdd;
+
+                }
+                prevID = id;
+            }
+            nameHm.put(id, names);
+
 
             // Create locations
             // Get all nodes stored in the database
@@ -450,27 +487,42 @@ public class Database {
                         res.getDouble("POS_Y"));
                 int floor = res.getInt("FLOOR_NUM");
 
-                String[] names = new String[20];
-                int numNames = 0;
-                String getNames = "SELECT NAME FROM mydb.NAMES WHERE NODE_ID = " + nodeId;
-                Statement stmt = con.createStatement();
-                ResultSet rsName = stmt.executeQuery(getNames);
-                while (rsName.next() && numNames < 20) {
-                    String nameToAdd = rsName.getString("NAME");
-                    names[numNames] = nameToAdd;
-                    numNames++;
-                }
+
                 //rsName.close();
 
                 Location loc = new Location (
                         coords,
-                        floor, new String[0]);
+                        floor, nameHm.get(nodeId));
 
                 // Add locations and node id to a hash map
                 hm.put(nodeId, loc);
                 graph.addLocation(loc, new HashMap<>());
             }
 
+            //create a hashmap with enough entries for 3 names for each node
+            HashMap<Integer, List<EdgeAttribute>> attrHm = new HashMap<Integer, List<EdgeAttribute>>(locCount);
+
+            List<EdgeAttribute> attrList = new ArrayList<EdgeAttribute>();
+            int numAttr = 0;
+            id = -1;
+            prevID = -1;
+            String attrToAdd;
+            String getAttr = "SELECT * FROM mydb.EDGE_ATTRIBUTES ORDER BY EDGE_ID ASC";
+            rsName = stmt.executeQuery(getAttr);
+            while (rsName.next()) {
+                id = rsName.getInt("EDGE_ID");
+                attrToAdd = rsName.getString("ATTRIBUTE");
+                if (id == prevID || prevID == -1) {
+                    attrList.add(EdgeAttribute.valueOf(attrToAdd));
+                } else {
+                    attrHm.put(prevID, attrList);
+                    attrList = new ArrayList<EdgeAttribute>();
+                    attrList.add(EdgeAttribute.valueOf(attrToAdd));
+
+                }
+                prevID = id;
+            }
+            attrHm.put(id, attrList);
             query = "SELECT * FROM mydb.EDGES";
             //Statement st = con.createStatement();
             ResultSet rs = sta.executeQuery(query);
@@ -478,23 +530,13 @@ public class Database {
                 int node1 = rs.getInt("NODE1_ID");
                 int node2 = rs.getInt("NODE2_ID");
                 int edgeId = rs.getInt("EDGE_ID");
-
-                // get all attributes in result set based on edge id
-                String getAttr = "SELECT ATTRIBUTE FROM mydb.EDGE_ATTRIBUTES WHERE EDGE_ID = " +
-                        edgeId;
-
-                ResultSet rsAttr = sta.executeQuery(getAttr);
-                ArrayList<EdgeAttribute> attrList = new ArrayList<EdgeAttribute>();
-
-                while (rsAttr.next()) {
-                    String attr = rsAttr.getString("ATTRIBUTE");
-                    EdgeAttribute attrToAdd = EdgeAttribute.valueOf(attr);
-                    attrList.add(attrToAdd);
-                }
-
                 Location loc1 = hm.get(node1);
                 Location loc2 = hm.get(node2);
-                loc1.makeAdjacentTo(loc2, attrList);
+                if (attrHm.get(edgeId) != null) {
+                    loc1.makeAdjacentTo(loc2, attrHm.get(edgeId));
+                } else {
+                    loc1.makeAdjacentTo(loc2, new ArrayList<EdgeAttribute>());
+                }
             }
 
         } catch (SQLException e) {
@@ -513,7 +555,7 @@ public class Database {
     * @param updateLocList List of nodes to be updated
     */
     private void updateNodesInDb(List<Location> addLocList, List<Location> removeLocList,
-                         List<Location> updateLocList){
+                                 List<Location> updateLocList){
         try {
             Statement sta = con.createStatement();
 
@@ -557,7 +599,7 @@ public class Database {
     * @param updateEdgeList List of edges to be updated
     */
     private void updateEdgesInDb(List<Edge> addEdgeList, List<Edge> removeEdgeList,
-                                List<Edge> updateEdgeList){
+                                 List<Edge> updateEdgeList){
         try {
             Statement sta = con.createStatement();
 

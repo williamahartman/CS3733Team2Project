@@ -19,19 +19,20 @@ public class AppLauncher{
         try {
             Database graphData = new Database();
 
-            /*
+
             DatabaseList dbList = new DatabaseList();
             Location loc1 = new Location(new Point2D.Double(0.1, 0.3), 0, new String[0]);
             Location loc2 = new Location(new Point2D.Double(0.2, 0.6), 0, new String[0]);
             Location loc3 = new Location(new Point2D.Double(0.8, 0.7), 0, new String[0]);
             Location loc4 = new Location(new Point2D.Double(0.6, 0.6), 0, new String[0]);
             Location loc5 = new Location(new Point2D.Double(0.9, 0.6), 0, new String[0]);
-            String[] names = {"HL2", "AK116"};
+            String[] names = {"HL2", "AK444"};
             Location loc6 = new Location(new Point2D.Double(0.5, 0.5), 0, names);
             String[] name = {"WB123", "CC23"};
             Location loc7 = new Location(new Point2D.Double(0.4, 0.1), 0, name);
-
-            loc1.makeAdjacentTo(loc2, new ArrayList<>());
+            List<EdgeAttribute> ea = new ArrayList<>();
+            ea.add(EdgeAttribute.valueOf("INDOORS"));
+            //loc1.makeAdjacentTo(loc2, ea);
             loc1.makeAdjacentTo(loc7, new ArrayList<>());
             loc2.makeAdjacentTo(loc6, new ArrayList<>());
             loc3.makeAdjacentTo(loc4, new ArrayList<>());
@@ -89,10 +90,17 @@ public class AppLauncher{
                 dbList.addedEdge(iter6.next());
 
             }
+            Iterator<Edge> iter7 = edge.iterator();
+            while (iter7.hasNext()) {
+                dbList.removedEdge(iter7.next());
+
+            }
+
+
 
             graphData.updateDB(dbList.getAddLocList(), dbList.getRemoveLocList(), dbList.getUpdateLocList(),
                     dbList.getAddEdgeList(), dbList.getRemoveEdgeList(), dbList.getUpdateEdgeList());
-*/
+
 
             //Make a frame
             MainAppUI app = new MainAppUI(graphData.createGraph(),

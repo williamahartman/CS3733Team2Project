@@ -3,6 +3,7 @@ package ui;
 import core.Edge;
 import core.Location;
 import core.LocationGraph;
+import dev.DevTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,6 +27,7 @@ public class MapView extends JScrollPane{
 
     private JPanel mapPanel;
     private double zoomFactor;
+    private DevTools dt;
 
     private List<Edge> graphEdgeList;
     private List<Location> locationList;
@@ -71,8 +73,9 @@ public class MapView extends JScrollPane{
                         int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
                         int x2 = (int) (e.getNode2().getPosition().x * imageRes.getWidth());
                         int y2 = (int) (e.getNode2().getPosition().y * imageRes.getHeight());
-
-                        g2d.drawLine(x1, y1, x2, y2);
+                        if(MainAppUI.edgesShown) {
+                            g2d.drawLine(x1, y1, x2, y2);
+                        }
                     }
                 }
 
@@ -146,7 +149,10 @@ public class MapView extends JScrollPane{
 
                 repaint();
             }
-
+            @Override
+            public  void mouseClicked(MouseEvent e){
+                dt.devModeCheck(e, );
+            }
             @Override
             public void mousePressed(MouseEvent e) {
                 mouseStartX = e.getXOnScreen();
@@ -273,6 +279,11 @@ public class MapView extends JScrollPane{
 
             mapPanel.add(currentButton);
             locationButtonList.add(currentButton);
+            currentButton.setVisible(true);
+            if((!MainAppUI.allNodesShown) && (currentButton.getAssociatedLocation().getNameList()[0].equals("")))
+            {
+                currentButton.setVisible(false);
+            }
         }
 
         positionButtons();

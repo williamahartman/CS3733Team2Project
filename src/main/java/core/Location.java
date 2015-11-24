@@ -60,7 +60,6 @@ public class Location {
                 return true;
             }
         }
-
         return false;
     }
 
@@ -147,6 +146,19 @@ public class Location {
                 " would be saved to disk if this were" +
                 " implemented!");
         //todo implement this!
+    }
+
+    /**
+     * Calculates distance between two locations and keeps two decimal.
+     * @param loc the location used to calculate the distance
+     * @return The two decimal number representing the distance
+     */
+    public double getTwoDecimalDistance(Location loc, int scale){
+        double distance = position.distance(loc.getPosition());
+        distance = distance * scale;
+        String temp = String.format(("%.2f"), distance);
+        distance = Double.parseDouble(temp);
+        return distance;
     }
 
     public List<Edge> getEdges() {

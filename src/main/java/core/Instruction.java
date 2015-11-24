@@ -47,11 +47,11 @@ public class Instruction {
                 Location locCurrent = locList.get(i); //current location
                 Location locNext = locList.get(i + 1); //next location
                 double locPrevX = locPrev.getPosition().getX(); //x value of previous location
-                double locPrevY = locPrev.getPosition().getY(); //y value of previous location
+                double locPrevY = -locPrev.getPosition().getY(); //y value of previous location
                 double locCurrentX = locCurrent.getPosition().getX(); //x value of current location
-                double locCurrentY = locCurrent.getPosition().getY(); //y value of current location
+                double locCurrentY = -locCurrent.getPosition().getY(); //y value of current location
                 double locNextX = locNext.getPosition().getX(); //x value of next location
-                double locNextY = locNext.getPosition().getY(); //y value of next location
+                double locNextY = -locNext.getPosition().getY(); //y value of next location
 
                 //vector1 is the vector pointing from current location to previous location
                 Point2D.Double vector1 = new Point2D.Double((locPrevX - locCurrentX), (locPrevY - locCurrentY));
@@ -86,6 +86,7 @@ public class Instruction {
                 //determines if the vector2 rotates counterclockwise or clockwise from vector1
                 //math function v1 * v2 = |v1||v2|sin(x)
                 double cross = vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX();
+                System.out.println(cross);
                 //sin(x) is negative if it rotates counterclockwise, sin(x) is positive if it rotates clockwise
                 //sin(x) is 0 if it rotates 180 degree
                 if (cross < 0) { //counterclockwise

@@ -189,9 +189,9 @@ public class MapView extends JScrollPane{
                 }
             }
         };
-        getViewport().addMouseListener(mouseAdapter);
-        getViewport().addMouseMotionListener(mouseAdapter);
-        getViewport().addMouseWheelListener(mouseAdapter);
+        mapPanel.addMouseListener(mouseAdapter);
+        mapPanel.addMouseMotionListener(mouseAdapter);
+        mapPanel.addMouseWheelListener(mouseAdapter);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 

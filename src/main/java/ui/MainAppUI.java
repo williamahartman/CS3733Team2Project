@@ -103,7 +103,7 @@ public class MainAppUI extends JFrame{
 
                 clearState(mapView);
                 addListenersToMapNodes(mapView, devToolsPanel.buildEditListener(graph, mapView));
-                mapView.addMouseListener(devToolClickListener);
+                mapView.getMapPanel().addMouseListener(devToolsPanel.buildAddLocationListener(mapView.getMapPanel()));
             } else {
                 devToolsPanel.setDevMode(false);
                 enterDevloperMode.setText("Edit Map (Developers Only!)");

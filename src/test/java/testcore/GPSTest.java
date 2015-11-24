@@ -63,9 +63,9 @@ public class GPSTest {
         listLoc.add(loc5);
         listLoc.add(loc6);
         listLoc.add(loc7);
-        Instruction i2 = new Instruction();
-        i2.stepByStepInstruction(listLoc, 1);
-        System.out.println(i2.getInstruction());
+        //Instruction i2 = new Instruction();
+        //i2.stepByStepInstruction(listLoc, 1);
+        //System.out.println(i2.getInstruction());
 
     }
 

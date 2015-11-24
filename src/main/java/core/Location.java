@@ -152,8 +152,9 @@ public class Location {
      * @param loc the location used to calculate the distance
      * @return The two decimal number representing the distance
      */
-    public double getTwoDecimalDistance(Location loc){
+    public double getTwoDecimalDistance(Location loc, int scale){
         double distance = position.distance(loc.getPosition());
+        distance = distance * scale;
         String temp = String.format(("%.2f"), distance);
         distance = Double.parseDouble(temp);
         return distance;

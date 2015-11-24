@@ -47,22 +47,24 @@ public class GPSTest {
         Location loc3 = new Location(new Point2D.Double(3, 5), 0, new String[0]);
         listLoc.add(loc0);
         //Instruction i = new Instruction();
-        //i.stepByStepInstruction(listLoc);
+        //i.stepByStepInstruction(listLoc, 1);
         //System.out.println(i.getInstruction());
         listLoc.add(loc1);
         listLoc.add(loc2);
         listLoc.add(loc3);
         Instruction i1 = new Instruction();
-        //i1.stepByStepInstruction(listLoc);
+        //i1.stepByStepInstruction(listLoc, 1);
         //System.out.println(i1.getInstruction());
         Location loc4 = new Location(new Point2D.Double(4, 5), 0, new String[0]);
         Location loc5 = new Location(new Point2D.Double(5, 5), 0, new String[0]);
         Location loc6 = new Location(new Point2D.Double(6, 5), 0, new String[0]);
+        Location loc7 = new Location(new Point2D.Double(6, 4), 0, new String[0]);
         listLoc.add(loc4);
         listLoc.add(loc5);
         listLoc.add(loc6);
+        listLoc.add(loc7);
         Instruction i2 = new Instruction();
-        i2.stepByStepInstruction(listLoc);
+        i2.stepByStepInstruction(listLoc, 1);
         System.out.println(i2.getInstruction());
 
     }

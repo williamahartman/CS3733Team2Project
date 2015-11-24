@@ -121,9 +121,6 @@ public class AStarTest {
         double d = graph.calculateDistance(path1);
         assertEquals(10.74, d, 0.0);
 
-        Instruction i = new Instruction();
-       // i.stepByStepInstruction(path1);
-      //  System.out.println(i.getInstruction());
     }
 
     @Test
@@ -170,9 +167,6 @@ public class AStarTest {
         //Test calculateDistance
         double d2 = graph.calculateDistance(path2);
         assertEquals(3.61, d2, 0.0);
-        Instruction i = new Instruction();
-        //i.stepByStepInstruction(path1);
-       // System.out.println(i.getInstruction());
     }
     @Test
     public void testAstar4()
@@ -275,7 +269,7 @@ public class AStarTest {
         double d1 = graph.calculateDistance(path1);
         assertEquals(22.85, d1, 0.0);
         Instruction i = new Instruction();
-        i.stepByStepInstruction(path1);
+        i.stepByStepInstruction(path1, 1);
         System.out.println(i.getInstruction());
     }
 

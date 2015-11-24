@@ -33,6 +33,8 @@ public class MainAppUI extends JFrame{
     private JLabel startInfo;
     private JLabel endPointInfo;
 
+    private JTextArea gps;
+
     private JButton clearButton;
     private JButton makeAStarRoute;
     public static int floorNumber;
@@ -117,12 +119,12 @@ public class MainAppUI extends JFrame{
 
         JMenu view = new JMenu("View");
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
-        JMenuItem showNodes = new JMenuItem("Show All Locations");
+        JMenuItem showNodes = new JMenuItem("Show Only Named Locations");
         toggleEdges.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setDrawAllEdges(!style.isDrawAllEdges());
 
-            mapView.repaint();
+            resetMap(mapView);
         });
         showNodes.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
@@ -135,7 +137,7 @@ public class MainAppUI extends JFrame{
                 style.setDrawAllPoints(true);
             }
 
-            mapView.updateGraph(graph, floorNumber);
+            resetMap(mapView);
         });
         view.add(toggleEdges);
         view.add(showNodes);
@@ -196,14 +198,14 @@ public class MainAppUI extends JFrame{
         endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
+        gps = new JTextArea();
+        gps.setVisible(true);
+
         clearButton = new JButton("Clear Selections");
         clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
         clearButton.setToolTipText("Remove the previously selected start and end points");
         clearButton.addActionListener(e -> clearState(mapView));
-
-        JTextArea gps = new JTextArea();
-        gps.setVisible(true);
 
 
         makeAStarRoute = new JButton("Find Shortest Route");
@@ -305,6 +307,8 @@ public class MainAppUI extends JFrame{
 
         makeAStarRoute.setEnabled(false);
         clearButton.setEnabled(false);
+
+        gps.setText("");
 
         resetMap(toReset);
     }

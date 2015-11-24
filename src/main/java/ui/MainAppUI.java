@@ -3,7 +3,7 @@ package ui;
 import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
-
+import dev.DevTools;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +32,7 @@ public class MainAppUI extends JFrame{
 
     private JButton clearButton;
     private JButton makeAStarRoute;
+    public static int floorNumber;
 
     /**
      * Constructor.
@@ -121,6 +122,7 @@ public class MainAppUI extends JFrame{
                     this.mapView.getStyle().setEdgeColor(new Color(0, 0, 0));
                     this.mapView.updateGraph(graph, 0);
                     repaint();
+                    floorNumber=0;
 
                 }
                 else if (floorNum.getSelectedItem().equals(1))
@@ -128,12 +130,14 @@ public class MainAppUI extends JFrame{
                     this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
                     this.mapView.updateGraph(graph, 1);
                     repaint();
+                    floorNumber=1;
                 }
                 else if (floorNum.getSelectedItem().equals(2))
                 {
                     this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
                     this.mapView.updateGraph(graph, 2);
                     repaint();
+                    floorNumber=2;
                 }
             });
 
@@ -276,4 +280,6 @@ public class MainAppUI extends JFrame{
             }
         }
     }
+
+
 }

@@ -301,4 +301,5 @@ public class MapView extends JScrollPane{
     public MapViewSyle getStyle() {
         return style;
     }
+
 }

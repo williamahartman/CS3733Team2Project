@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class DatabaseTest {
 
-    public void DatabaseTest() {
+    public DatabaseTest() {
         try {
             Database graphData = new Database();
             DatabaseList dbList = new DatabaseList();

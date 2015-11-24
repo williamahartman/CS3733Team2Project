@@ -122,7 +122,7 @@ public class MainAppUI extends JFrame{
                     this.mapView.getStyle().setEdgeColor(new Color(0, 0, 0));
                     this.mapView.updateGraph(graph, 0);
                     repaint();
-                    floorNumber=0;
+                    floorNumber = 0;
 
                 }
                 else if (floorNum.getSelectedItem().equals(1))
@@ -130,14 +130,14 @@ public class MainAppUI extends JFrame{
                     this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
                     this.mapView.updateGraph(graph, 1);
                     repaint();
-                    floorNumber=1;
+                    floorNumber = 1;
                 }
                 else if (floorNum.getSelectedItem().equals(2))
                 {
                     this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
                     this.mapView.updateGraph(graph, 2);
                     repaint();
-                    floorNumber=2;
+                    floorNumber = 2;
                 }
             });
 

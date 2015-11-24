@@ -38,7 +38,7 @@ public class DevTools extends JPanel {
     }
 
     private void updateGraph() {
-        mv.updateGraph(lg,MainAppUI.floorNumber);
+        mv.updateGraph(lg, MainAppUI.floorNumber);
         for (LocationButton lb : mv.getLocationButtonList()) {
             addEditListener(lb, lg, mv);
         }

@@ -6,9 +6,11 @@ import ui.MainAppUI;
 import ui.MapView;
 
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +44,6 @@ public class DevTools extends JPanel {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                System.out.println("CALLED!");
                 if (inDevMode) {
                     Point2D mousePos = mapPanel.getMousePosition();
                     Point2D.Double doubleMousePos = new Point2D.Double(
@@ -51,11 +52,8 @@ public class DevTools extends JPanel {
 
                     //Creates a new button object where the panel is clicked
                     graph.addLocation(new Location(doubleMousePos, 0, new String[0]), new HashMap<>());
-                    mapView.updateGraph(graph, MainAppUI.floorNumber);
 
-                    System.out.println("ADDING at: " + doubleMousePos);
-
-                    //TODO add the listener for the new button
+                    rebuildGraph();
                 }
             }
         };
@@ -164,10 +162,11 @@ public class DevTools extends JPanel {
         return panelLayout;
     }
 
-    public MouseAdapter buildEditListener(LocationGraph lg, MapView mapView) {
+    private MouseAdapter buildEditListener(LocationGraph lg, MapView mapView) {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                lastButtonClicked = (LocationButton) e.getSource();
                 lastButtonClicked.setBackground(Color.CYAN);
                 lastButtonClicked.repaint();
                 if (e.getButton() == 1) {//Left mouse click
@@ -178,7 +177,7 @@ public class DevTools extends JPanel {
                             //remove edge
                             if (edge != null) {
                                 originalButton.getAssociatedLocation().removeEdge(edge);
-                                mapView.updateGraph(graph, MainAppUI.floorNumber);
+                                rebuildGraph();
                                 lastButtonClicked.setBackground(Color.CYAN);
                             }
                         } else if (edge != null) { //already has edge
@@ -200,16 +199,29 @@ public class DevTools extends JPanel {
                                 .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (edge != null) {
                             originalButton.getAssociatedLocation().removeEdge(edge);
-                            mapView.updateGraph(graph, MainAppUI.floorNumber);
+                            rebuildGraph();
                         }
                     }
                 }
-                mapView.updateGraph(graph, MainAppUI.floorNumber);
+                rebuildGraph();
                 lastButtonClicked.setBackground(Color.CYAN);
                 lastButtonClicked.repaint();
             }
         };
     }
+
+    public void rebuildGraph() {
+        mapView.updateGraph(graph, MainAppUI.floorNumber);
+
+        MouseAdapter editListener = buildEditListener(graph, mapView);
+        for(LocationButton locationButton: mapView.getLocationButtonList()) {
+            locationButton.addMouseListener(editListener);
+            if(locationButton.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
+                lastButtonClicked = locationButton;
+            }
+        }
+    }
+
     public boolean getDevMode(){
         return inDevMode;
     }

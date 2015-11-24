@@ -94,7 +94,6 @@ public class MainAppUI extends JFrame{
 
         devToolsPanel = new DevTools(graph, mapView);
         devToolsPanel.setVisible(false);
-        devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
         enterDevloperMode.addActionListener(e -> {
             if (!devToolsPanel.getDevMode()) {
                 devToolsPanel.setDevMode(true);
@@ -104,8 +103,8 @@ public class MainAppUI extends JFrame{
                 enterDevloperMode.setText("Exit Developer Mode");
 
                 clearState(mapView);
-                addListenersToMapNodes(mapView, devToolsPanel.buildEditListener(graph, mapView));
                 mapView.getMapPanel().addMouseListener(devToolsPanel.buildAddLocationListener(mapView.getMapPanel()));
+                devToolsPanel.rebuildGraph();
             } else {
                 devToolsPanel.setDevMode(false);
                 enterDevloperMode.setText("Edit Map (Developers Only!)");

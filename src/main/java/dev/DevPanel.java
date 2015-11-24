@@ -35,7 +35,7 @@ public class DevPanel {
     private static LocationButton originalButton;
 
     private static void updateGraph(LocationGraph lg, MapView mapView) {
-        mapView.updateGraph(lg);
+        mapView.updateGraph(lg, 0);
 
         for (LocationButton lb: mapView.getLocationButtonList()) {
             addEditListener(lb, lg, mapView);
@@ -117,8 +117,9 @@ public class DevPanel {
                             originalButton.getAssociatedLocation().removeEdge(edge);
                         } else { //does not have an edge
                             //add an edge
-                            originalButton.getAssociatedLocation()
-                                    .makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<>());
+                            //originalButton.getAssociatedLocation()
+                                    //.makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<>());
+                            lg.addLocation(originalButton.getAssociatedLocation().createStairUp(), new HashMap<>());
                         }
                     } else {
                         JFrame buttonFrame = new JFrame();

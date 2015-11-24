@@ -10,4 +10,5 @@ public enum EdgeAttribute {
     OUTDOORS,
     HANDICAP_ACCESSIBLE,
     EDGE_REMOVED,
+    FLOOR_NUMBER,
 }

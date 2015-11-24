@@ -3,7 +3,7 @@ package ui;
 import java.awt.*;
 
 /**
- * This class holds style values for a MapView
+ * This class holds style values for a MapView.
  */
 public class MapViewSyle {
     private boolean drawAllEdges = true;
@@ -59,5 +59,13 @@ public class MapViewSyle {
 
     public Color getRouteLocationColor() {
         return routeLocationColor;
+    }
+
+    public void setLocationColor(Color locationColor) {
+        this.locationColor = locationColor;
+    }
+
+    public void setEdgeColor(Color edgeColor) {
+        this.edgeColor = edgeColor;
     }
 }

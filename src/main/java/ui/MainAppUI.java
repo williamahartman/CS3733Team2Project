@@ -100,6 +100,41 @@ public class MainAppUI extends JFrame{
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 
+        JComboBox<Integer> floorNum = new JComboBox<>();
+        floorNum.addItem(0);
+        floorNum.addItem(1);
+        floorNum.addItem(2);
+        floorNum.setSelectedItem(0);
+        floorNum.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        floorNum.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        floorNum.setToolTipText("Select Floor Number");
+        floorNum.setForeground(Color.RED);
+        floorNum.setFont(new Font("Arial", Font.BOLD, 20));
+        floorNum.addActionListener(e ->{
+
+                if (floorNum.getSelectedItem().equals(0))
+                {
+                    //display ground map
+                    this.mapView.getStyle().setEdgeColor(new Color(0, 0, 0));
+                    this.mapView.updateGraph(graph, 0);
+                    repaint();
+
+                }
+                else if (floorNum.getSelectedItem().equals(1))
+                {
+                    this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
+                    this.mapView.updateGraph(graph, 1);
+                    repaint();
+                }
+                else if (floorNum.getSelectedItem().equals(2))
+                {
+                    this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
+                    this.mapView.updateGraph(graph, 2);
+                    repaint();
+                }
+            });
+
+
         startInfo = new JLabel();
         startInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         startInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
@@ -148,8 +183,10 @@ public class MainAppUI extends JFrame{
         sidePanel.add(startInfo);
         sidePanel.add(endPointInfo);
         sidePanel.add(makeAStarRoute);
+        sidePanel.add(floorNum);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
+
 
         //Set layout and add
         setLayout(new BorderLayout());
@@ -223,7 +260,7 @@ public class MainAppUI extends JFrame{
      * @param toReset the mapView to reset
      */
     private void resetMap(MapView toReset) {
-        toReset.updateGraph(graph);
+        toReset.updateGraph(graph, 0);
         addListenersToMapNodes();
 
         //Make sure selected stuff is still respected

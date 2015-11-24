@@ -180,6 +180,41 @@ public class LocationGraph {
 
         return result;
     }
+    /**
+     * Return a list of locations whose are on a certain floor.
+     *
+     * @param floorNum The int of the floor number
+     * @return The list of Locations that are on the correct floor
+     */
+    public List<Location> locationByFloorNumber (int floorNum)
+    {
+        List<Location> floor = new ArrayList<>();
+        for (Location loc:this.getAllLocations())
+        {
+            if (loc.getFloorNumber() == floorNum)
+            {
+                floor.add(loc);
+            }
+        }
+        return floor;
+    }
+    public List<Edge> edgeByFloorNumber (int floorNum)
+    {
+        List<Edge> floorEdge = new ArrayList<>();
+        List<Location> floorLoc = locationByFloorNumber(floorNum);
+        for (Location loc:floorLoc)
+        {
+            for (Edge ed: loc.getEdges())
+            {
+                if (!floorEdge.contains(ed))
+                {
+                    floorEdge.add(ed);
+                }
+            }
+        }
+        return floorEdge;
+    }
+
 
     /**
      * Apply the EDGE_REMOVED EdgeAttribute to all edges that are associated with the passed

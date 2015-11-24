@@ -113,7 +113,7 @@ public class MapView extends JScrollPane{
         newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
         mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, getViewport().getSize()));
 
-        updateGraph(graph);
+        updateGraph(graph, 0);
         addDefaultListeners();
     }
 
@@ -202,9 +202,9 @@ public class MapView extends JScrollPane{
      *
      * @param graph The graph whose edges will be displayed
      */
-    public final void updateGraph(LocationGraph graph) {
-        this.graphEdgeList = graph.getAllEdges();
-        this.locationList = graph.getAllLocations();
+    public final void updateGraph(LocationGraph graph, int floor) {
+        this.graphEdgeList = graph.edgeByFloorNumber(floor);
+        this.locationList = graph.locationByFloorNumber(floor);
         this.routeLists = new ArrayList<>();
 
         for (LocationButton locButton: locationButtonList) {
@@ -296,5 +296,9 @@ public class MapView extends JScrollPane{
                 }
             }
         }
+    }
+
+    public MapViewSyle getStyle() {
+        return style;
     }
 }

@@ -1,6 +1,7 @@
 package core;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -168,4 +169,11 @@ public class Location {
     public void setNameList(String[] s){
         nameList = s;
     }
+    public Location createStairUp()
+    {
+        Location above = new Location(this.getPosition(), this.getFloorNumber() + 1, new String[0]);
+        this.makeAdjacentTo(above, new ArrayList<>());
+        return above;
+    }
+
 }

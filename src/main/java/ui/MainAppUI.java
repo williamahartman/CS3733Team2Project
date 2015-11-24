@@ -97,6 +97,7 @@ public class MainAppUI extends JFrame{
         JMenuItem showNodes = new JMenuItem("Show All Locations");
         toggleEdges.addActionListener(e -> {
             edgesShown = !edgesShown;
+            mapView.repaint();
         });
         showNodes.addActionListener(e -> {
             if (allNodesShown){
@@ -105,6 +106,7 @@ public class MainAppUI extends JFrame{
                 showNodes.setText("Show All Locations");
             }
             allNodesShown = !allNodesShown;
+            mapView.repaint();
         });
         view.add(toggleEdges);
         view.add(showNodes);
@@ -152,8 +154,8 @@ public class MainAppUI extends JFrame{
                     frame.setLocationRelativeTo(null);
                     frame.repaint();
                     frame.setVisible(true);
-
                     clearState(mapView);
+
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "There is no path between the selected points!",
@@ -200,6 +202,7 @@ public class MainAppUI extends JFrame{
         });
 
         clearState(mapView);
+
     }
 
     /**

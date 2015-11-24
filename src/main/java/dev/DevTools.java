@@ -2,6 +2,7 @@ package dev;
 
 import core.*;
 import ui.LocationButton;
+import ui.MainAppUI;
 import ui.MapView;
 
 import javax.swing.*;
@@ -33,6 +34,7 @@ public class DevTools extends JPanel {
         setLayout(new BorderLayout());
         this.add(createSaveButton(), BorderLayout.SOUTH);
         this.add(createEditor());
+        addEditListener(b, lg, mv);
     }
 
     private void updateGraph() {
@@ -79,10 +81,8 @@ public class DevTools extends JPanel {
         JLabel buttonLabel1 = new JLabel("Floor Number: ");
         JLabel buttonLabel2 = new JLabel("Name List:");
         JCheckBox edgeToggle = new JCheckBox("Edge Mode");
-        JCheckBox edgeDelete = new JCheckBox("Delete Edges");
 
         edgeToggle.setSelected(false);
-        edgeDelete.setSelected(false);
 
         //Fields with their initial entries
         JFormattedTextField field1 = new JFormattedTextField(b.getAssociatedLocation()
@@ -90,22 +90,15 @@ public class DevTools extends JPanel {
         JFormattedTextField field2 = new JFormattedTextField();
 
         field1.setSize(10, 50);
-        if (b.getAssociatedLocation().getNameList().length == 0) {
-            field2.setValue("Enter a String");
-        } else {
-            String tempString = "";
-            for (int i = 0; i < b.getAssociatedLocation().getNameList().length; i++) {
-                tempString = tempString.concat(b.getAssociatedLocation().getNameList()[i]);
-                tempString = tempString.concat(",");
-            }
-            field2.setValue(tempString);
-        }
+
 
         JButton okButton = new JButton("OK");
         okButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == 1) {
+                    //TODO update node attributes
+
                     //update values for Location object
                     b.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
@@ -132,7 +125,6 @@ public class DevTools extends JPanel {
         labelPanel.add(buttonLabel1);
         labelPanel.add(buttonLabel2);
         labelPanel.add(edgeToggle);
-        labelPanel.add(edgeDelete);
 
         JComboBox attributeList = new JComboBox(EdgeAttribute.values());
         attributeList.addActionListener(new ActionListener() {
@@ -148,20 +140,9 @@ public class DevTools extends JPanel {
                 if (e.getButton() == 1) {
                     originalButton = b;
                     edgeMode = edgeToggle.isSelected();
-                    edgeDelete.setVisible(edgeMode);
                     if (!edgeMode){
                         deleteEdge = false;
-                        edgeDelete.setSelected(false);
                     }
-                }
-            }
-        });
-
-        edgeDelete.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == 1){
-                    deleteEdge = edgeDelete.isSelected();
                 }
             }
         });
@@ -199,9 +180,10 @@ public class DevTools extends JPanel {
                             if (edge != null) {
                                 originalButton.getAssociatedLocation().removeEdge(edge);
                                 updateGraph();
+                                b.setBackground(Color.CYAN);
                             }
                         } else if (edge != null) { //already has edge
-                            //change edge attributes
+                            //TODO change edge attributes
                         } else { //does not have an edge
                             //add an edge
                             originalButton.getAssociatedLocation()
@@ -209,12 +191,23 @@ public class DevTools extends JPanel {
                         }
                     }
                 } else if (e.getButton() == 3) {//Right mouse click
-                    lg.removeLocation(b.getAssociatedLocation());
-                    mv.remove(b);
-                    originalButton = mv.getLocationButtonList().get(0);
-                    mv.repaint();
+                    if (!edgeMode) {
+                        lg.removeLocation(b.getAssociatedLocation());
+                        mv.remove(b);
+                        originalButton = mv.getLocationButtonList().get(0);
+                        mv.repaint();
+                    } else {
+                        Edge edge = originalButton.getAssociatedLocation()
+                                .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
+                        if (edge != null) {
+                            originalButton.getAssociatedLocation().removeEdge(edge);
+                            updateGraph();
+                        }
+                    }
                 }
                 updateGraph();
+                b.setBackground(Color.CYAN);
+                b.repaint();
             }
         });
 

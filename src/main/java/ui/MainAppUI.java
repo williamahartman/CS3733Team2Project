@@ -3,7 +3,6 @@ package ui;
 import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
-import dev.DevPanel;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -81,11 +80,15 @@ public class MainAppUI extends JFrame{
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
         refreshMap.addActionListener(e -> resetMap(mapView));
-        JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers only!)");
+        JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers Only!)");
         enterDevloperMode.addActionListener(e -> {
-            if (!DevPanel.inDevMode) {
-                DevPanel.createDevWindow(mapBackground, DEFAULT_ZOOM, graph);
+            if (!DevTools.getDevMode()) {
+                DevTools.setDevMode(true);
+                enterDevloperMode.setText("Exit Developer Mode");
                 clearState(mapView);
+            } else {
+                DevTools.setDevMode(false);
+                enterDevloperMode.setText("Edit Map (Developers Only!)");
             }
         });
 

@@ -1,15 +1,8 @@
 package ui;
 
-import core.Edge;
-import core.EdgeAttribute;
 import core.Location;
-import dev.DevPanel;
 
 import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 
 /**
  * This class is a JButton that is associated to a Location.

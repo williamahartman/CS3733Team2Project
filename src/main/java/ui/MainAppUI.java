@@ -80,6 +80,7 @@ public class MainAppUI extends JFrame{
      */
     public void setUpMainApp() {
         //Set up menubar
+        JPanel sidePanel = new JPanel();
         JMenuBar menuBar = new JMenuBar();
         JMenu editMenu = new JMenu("Edit");
 
@@ -105,6 +106,7 @@ public class MainAppUI extends JFrame{
 
             clearState(mapView);
             devToolsPanel.setVisible(devToolsPanel.getDevMode());
+            sidePanel.setVisible(!devToolsPanel.getDevMode());
         });
         JMenu view = new JMenu("View");
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
@@ -138,10 +140,10 @@ public class MainAppUI extends JFrame{
         setJMenuBar(menuBar);
 
         //Initialize Panels and buttons
-        JPanel sidePanel = new JPanel();
+
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
-
+        sidePanel.setVisible(true);
         JComboBox<Integer> floorNum = new JComboBox<>();
         floorNum.addItem(0);
         floorNum.addItem(1);
@@ -157,7 +159,7 @@ public class MainAppUI extends JFrame{
                 if (floorNum.getSelectedItem().equals(0))
                 {
                     //display ground map
-                    this.mapView.getStyle().setEdgeColor(new Color(0, 0, 0));
+                    this.mapView.getStyle().setEdgeColor(new Color(250, 120, 0));
                     this.mapView.updateGraph(graph, 0);
                     repaint();
                     floorNumber = 0;
@@ -250,7 +252,9 @@ public class MainAppUI extends JFrame{
         setLayout(new BorderLayout());
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
+        //todo ASK WILL!! Double west override even if visible is set
         devToolsPanel = new DevTools(graph, mapView);
+        devToolsPanel.setVisible(false);
         add(devToolsPanel, BorderLayout.EAST);
         addWindowFocusListener(new WindowFocusListener() {
             @Override

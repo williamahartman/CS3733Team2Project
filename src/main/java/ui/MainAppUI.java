@@ -222,8 +222,11 @@ public class MainAppUI extends JFrame{
                     mapView.addRoute(route);
                     gps.setText("");
                     Instruction instruct = new Instruction();
-                    for (String str:instruct.stepByStepInstruction(route, 1)) {
-                        gps.append(str);
+                    int count = 0;
+                    for (String str:instruct.stepByStepInstruction(route, 1))
+                    {
+                        count++;
+                        gps.append(count + ") " + str);
                     }
 
                     repaint();
@@ -281,9 +284,9 @@ public class MainAppUI extends JFrame{
      */
     private void addListenersToMapNodes(MapView view, EventListener listener) {
         for (LocationButton button: view.getLocationButtonList()) {
-            if(listener instanceof ActionListener) {
+            if (listener instanceof ActionListener) {
                 button.addActionListener((ActionListener) listener);
-            } else if(listener instanceof MouseAdapter) {
+            } else if (listener instanceof MouseAdapter) {
                 button.addMouseListener((MouseAdapter) listener);
             } else {
                 System.err.println("Could not add listener " + listener + ". No implementation for type!");

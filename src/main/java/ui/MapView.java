@@ -3,7 +3,6 @@ package ui;
 import core.Edge;
 import core.Location;
 import core.LocationGraph;
-import dev.DevTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,14 +26,13 @@ public class MapView extends JScrollPane{
 
     private JPanel mapPanel;
     private double zoomFactor;
-    private DevTools dt;
 
     private List<Edge> graphEdgeList;
     private List<Location> locationList;
     private List<LocationButton> locationButtonList;
     private List<List<Location>> routeLists;
 
-    private MapViewSyle style;
+    private MapViewStyle style;
 
     private Image backgroundImage;
 
@@ -46,7 +44,7 @@ public class MapView extends JScrollPane{
      * @param defaultZoom The zoom level the map will be at when the app starts
      * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, BufferedImage mapBackground, double defaultZoom, MapViewSyle viewStyle) {
+    public MapView(LocationGraph graph, BufferedImage mapBackground, double defaultZoom, MapViewStyle viewStyle) {
         mapPanel = new JPanel(true) {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -155,13 +153,6 @@ public class MapView extends JScrollPane{
                 mouseStartY = e.getYOnScreen();
                 setCursor(new Cursor(Cursor.MOVE_CURSOR));
             }
-            @Override
-            public void mouseClicked(MouseEvent e)
-            {
-                //dt.devModeCheck(e, mapPanel);
-                //todo in order for dev tools to register a click of the mouse
-            }
-
 
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -328,7 +319,7 @@ public class MapView extends JScrollPane{
         }
     }
 
-    public MapViewSyle getStyle() {
+    public MapViewStyle getStyle() {
         return style;
     }
 

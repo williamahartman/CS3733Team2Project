@@ -38,17 +38,26 @@ public class DevTools extends JPanel {
         this.add(createEditor());
     }
 
-    public void devModeCheck(MouseEvent e, JPanel mapPanel) {
-        if (inDevMode) {
-            Point2D mousePos = mapPanel.getMousePosition();
-            Point2D.Double doubleMousePos = new Point2D.Double(mousePos.getX(), mousePos.getY());
+    public MouseAdapter buildAddLocationListener(JPanel mapPanel) {
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (inDevMode) {
+                    Point2D mousePos = mapPanel.getMousePosition();
+                    Point2D.Double doubleMousePos = new Point2D.Double(
+                            mousePos.getX() / mapPanel.getWidth(),
+                            mousePos.getY() / mapPanel.getHeight());
 
-            //Creates a new button object where the panel is clicked
-            graph.addLocation(new Location(doubleMousePos, 0, new String[0]), new HashMap<>());
-            mapView.updateGraph(graph, MainAppUI.floorNumber);
+                    //Creates a new button object where the panel is clicked
+                    graph.addLocation(new Location(doubleMousePos, 0, new String[0]), new HashMap<>());
+                    mapView.updateGraph(graph, MainAppUI.floorNumber);
 
-            //TODO add the listener for the new button
-        }//end of dev mode check
+                    System.out.println("ADDING at: " + doubleMousePos);
+
+                    //TODO add the listener for the new button
+                }
+            }
+        };
     }
 
     private JButton createSaveButton() {
@@ -154,10 +163,8 @@ public class DevTools extends JPanel {
         return panelLayout;
     }
 
-    public void buildEditListener(LocationGraph lg, MapView mapView) {
-
-        lastButtonClicked.addMouseListener(new MouseAdapter() {
-
+    public MouseAdapter buildEditListener(LocationGraph lg, MapView mapView) {
+        return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 lastButtonClicked.setBackground(Color.CYAN);
@@ -200,7 +207,7 @@ public class DevTools extends JPanel {
                 lastButtonClicked.setBackground(Color.CYAN);
                 lastButtonClicked.repaint();
             }
-        });
+        };
     }
     public boolean getDevMode(){
         return inDevMode;

@@ -86,12 +86,12 @@ public class Instruction {
                 //determines if the vector2 rotates counterclockwise or clockwise from vector1
                 //math function v1 * v2 = |v1||v2|sin(x)
                 double cross = vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX();
-                System.out.println(cross);
+                System.out.println(cross*10000);
                 //sin(x) is negative if it rotates counterclockwise, sin(x) is positive if it rotates clockwise
                 //sin(x) is 0 if it rotates 180 degree
-                if (cross < 0) { //counterclockwise
+                if (cross*10000 < -1) { //counterclockwise
                     flag = 1; //left
-                } else if (cross > 0) { //clockwise
+                } else if (cross*10000 > 1) { //clockwise
                     flag = 2; //right
                 } else {
                     flag = 3; //straight

@@ -1,8 +1,5 @@
 package core;
 
-
-import org.w3c.dom.Attr;
-
 import java.sql.*;
 import java.util.*;
 import java.awt.geom.Point2D;
@@ -446,7 +443,7 @@ public class Database {
                 throw new SQLException("No Nodes in table \n");
             }
             locCount = rset.getInt("NUM");
-            HashMap<Integer, Location> hm = new HashMap<Integer, Location>(locCount);
+            HashMap<Integer, Location> hm = new HashMap<>(locCount);
             //create a hashmap with enough entries for the locations
             HashMap<Integer, String[]> nameHm = new HashMap<>(locCount);
 
@@ -560,7 +557,7 @@ public class Database {
                     loc1.makeAdjacentTo(loc2, attrHm.get(edgeId));
                 } else {
                     //otherwise add an empty list
-                    loc1.makeAdjacentTo(loc2, new ArrayList<EdgeAttribute>());
+                    loc1.makeAdjacentTo(loc2, new ArrayList<>());
                 }
             }
 

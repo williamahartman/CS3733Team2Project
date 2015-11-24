@@ -1,14 +1,17 @@
 package ui;
 
 import core.EdgeAttributeManager;
+import core.Instruction;
 import core.Location;
 import core.LocationGraph;
 import dev.DevTools;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.EventListener;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -34,10 +37,8 @@ public class MainAppUI extends JFrame{
     private JButton makeAStarRoute;
     public static int floorNumber;
 
-    private DevTools dt;
-
-    public static boolean edgesShown = false;
-    public static boolean allNodesShown = true;
+    private DevTools devToolsPanel;
+    private MouseListener devToolClickListener;
 
     /**
      * Constructor.
@@ -61,7 +62,7 @@ public class MainAppUI extends JFrame{
             System.exit(-1);
         }
 
-        MapViewSyle style = new MapViewSyle(
+        MapViewStyle style = new MapViewStyle(
                 true,
                 true,
                 true,
@@ -81,37 +82,60 @@ public class MainAppUI extends JFrame{
      */
     public void setUpMainApp() {
         //Set up menubar
+        JPanel sidePanel = new JPanel();
         JMenuBar menuBar = new JMenuBar();
         JMenu editMenu = new JMenu("Edit");
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
         refreshMap.addActionListener(e -> resetMap(mapView));
         JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers Only!)");
+
+        devToolsPanel = new DevTools(graph, mapView);
+        devToolsPanel.setVisible(false);
         enterDevloperMode.addActionListener(e -> {
-            if (!DevTools.getDevMode()) {
-                DevTools.setDevMode(true);
+            if (!devToolsPanel.getDevMode()) {
+                devToolsPanel.setDevMode(true);
+                remove(sidePanel);
+                devToolsPanel.setVisible(true);
+                add(devToolsPanel, BorderLayout.WEST);
                 enterDevloperMode.setText("Exit Developer Mode");
+
                 clearState(mapView);
+                devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
+                mapView.getMapPanel().addMouseListener(devToolClickListener);
+                devToolsPanel.rebuildGraph();
             } else {
-                DevTools.setDevMode(false);
+                devToolsPanel.setDevMode(false);
                 enterDevloperMode.setText("Edit Map (Developers Only!)");
+                remove(devToolsPanel);
+                add(sidePanel, BorderLayout.WEST);
+
+                resetMap(mapView);
+                mapView.removeMouseListener(devToolClickListener);
             }
         });
+
         JMenu view = new JMenu("View");
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
         JMenuItem showNodes = new JMenuItem("Show All Locations");
         toggleEdges.addActionListener(e -> {
-            edgesShown = !edgesShown;
+            MapViewStyle style = mapView.getStyle();
+            style.setDrawAllEdges(!style.isDrawAllEdges());
+
             mapView.repaint();
         });
         showNodes.addActionListener(e -> {
-            if (allNodesShown){
+            MapViewStyle style = mapView.getStyle();
+            if (style.isDrawAllPoints()){
                 showNodes.setText("Show Only Named Locations");
+                style.setDrawAllPoints(false);
+                style.setDrawNamedPoints(true);
             } else {
                 showNodes.setText("Show All Locations");
+                style.setDrawAllPoints(true);
             }
-            allNodesShown = !allNodesShown;
-            mapView.repaint();
+
+            mapView.updateGraph(graph, floorNumber);
         });
         view.add(toggleEdges);
         view.add(showNodes);
@@ -123,10 +147,10 @@ public class MainAppUI extends JFrame{
         setJMenuBar(menuBar);
 
         //Initialize Panels and buttons
-        JPanel sidePanel = new JPanel();
+
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
-
+        sidePanel.setVisible(true);
         JComboBox<Integer> floorNum = new JComboBox<>();
         floorNum.addItem(0);
         floorNum.addItem(1);
@@ -138,11 +162,10 @@ public class MainAppUI extends JFrame{
         floorNum.setForeground(Color.RED);
         floorNum.setFont(new Font("Arial", Font.BOLD, 20));
         floorNum.addActionListener(e ->{
-
                 if (floorNum.getSelectedItem().equals(0))
                 {
                     //display ground map
-                    this.mapView.getStyle().setEdgeColor(new Color(0, 0, 0));
+                    this.mapView.getStyle().setEdgeColor(new Color(250, 120, 0));
                     this.mapView.updateGraph(graph, 0);
                     repaint();
                     floorNumber = 0;
@@ -179,6 +202,10 @@ public class MainAppUI extends JFrame{
         clearButton.setToolTipText("Remove the previously selected start and end points");
         clearButton.addActionListener(e -> clearState(mapView));
 
+        JTextArea gps = new JTextArea();
+        gps.setVisible(true);
+
+
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -192,6 +219,15 @@ public class MainAppUI extends JFrame{
                 java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
                 if (route.size() > 0) {
                     mapView.addRoute(route);
+                    gps.setText("");
+                    Instruction instruct = new Instruction();
+                    int count = 0;
+                    for (String str:instruct.stepByStepInstruction(route, 1))
+                    {
+                        count++;
+                        gps.append(count + ") " + str);
+                    }
+
                     repaint();
                 } else {
                     JOptionPane.showMessageDialog(this,
@@ -210,10 +246,12 @@ public class MainAppUI extends JFrame{
         });
 
         //Add elements to the side panel
+        JScrollPane text = new JScrollPane(gps);
         sidePanel.add(startInfo);
         sidePanel.add(endPointInfo);
         sidePanel.add(makeAStarRoute);
         sidePanel.add(floorNum);
+        sidePanel.add(text, BorderLayout.CENTER);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
 
@@ -222,8 +260,9 @@ public class MainAppUI extends JFrame{
         setLayout(new BorderLayout());
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
-        dt = new DevTools(graph, mapView);
-        add(dt, BorderLayout.EAST);
+        //todo ASK WILL!! Double west override even if visible is set
+        add(devToolsPanel, BorderLayout.EAST);
+
         addWindowFocusListener(new WindowFocusListener() {
             @Override
             public void windowGainedFocus(WindowEvent e) {
@@ -242,30 +281,15 @@ public class MainAppUI extends JFrame{
     /**
      * Add the listeners to all the nodes in the map.
      */
-    private void addListenersToMapNodes() {
-        for (LocationButton button: mapView.getLocationButtonList()) {
-            button.addActionListener(e -> {
-                Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
-
-                if (startPoint == null) {
-                    startPoint = clickedLocation;
-                    ((JButton) e.getSource()).setBackground(Color.GREEN);
-                    startInfo.setText("Start Point: ("
-                            + clickedLocation.getPosition().x + ", "
-                            + clickedLocation.getPosition().y + ")");
-
-                    clearButton.setEnabled(true);
-                } else if (endPoint == null && clickedLocation != startPoint) {
-                    endPoint = clickedLocation;
-                    ((JButton) e.getSource()).setBackground(Color.RED);
-                    endPointInfo.setText("Destination Point: ("
-                            + clickedLocation.getPosition().x + ", "
-                            + clickedLocation.getPosition().y + ")");
-
-                    clearButton.setEnabled(true);
-                    makeAStarRoute.setEnabled(true);
-                }
-            });
+    private void addListenersToMapNodes(MapView view, EventListener listener) {
+        for (LocationButton button: view.getLocationButtonList()) {
+            if (listener instanceof ActionListener) {
+                button.addActionListener((ActionListener) listener);
+            } else if (listener instanceof MouseAdapter) {
+                button.addMouseListener((MouseAdapter) listener);
+            } else {
+                System.err.println("Could not add listener " + listener + ". No implementation for type!");
+            }
         }
     }
 
@@ -292,7 +316,31 @@ public class MainAppUI extends JFrame{
      */
     private void resetMap(MapView toReset) {
         toReset.updateGraph(graph, 0);
-        addListenersToMapNodes();
+        addListenersToMapNodes(mapView, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
+
+                if (startPoint == null) {
+                    startPoint = clickedLocation;
+                    ((JButton) e.getSource()).setBackground(Color.GREEN);
+                    startInfo.setText("Start Point: ("
+                            + clickedLocation.getPosition().x + ", "
+                            + clickedLocation.getPosition().y + ")");
+
+                    clearButton.setEnabled(true);
+                } else if (endPoint == null && clickedLocation != startPoint) {
+                    endPoint = clickedLocation;
+                    ((JButton) e.getSource()).setBackground(Color.RED);
+                    endPointInfo.setText("Destination Point: ("
+                            + clickedLocation.getPosition().x + ", "
+                            + clickedLocation.getPosition().y + ")");
+
+                    clearButton.setEnabled(true);
+                    makeAStarRoute.setEnabled(true);
+                }
+            }
+        });
 
         //Make sure selected stuff is still respected
         for (LocationButton locButton: mapView.getLocationButtonList()) {

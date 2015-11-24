@@ -47,11 +47,11 @@ public class Instruction {
                 Location locCurrent = locList.get(i); //current location
                 Location locNext = locList.get(i + 1); //next location
                 double locPrevX = locPrev.getPosition().getX(); //x value of previous location
-                double locPrevY = locPrev.getPosition().getY(); //y value of previous location
+                double locPrevY = -locPrev.getPosition().getY(); //y value of previous location
                 double locCurrentX = locCurrent.getPosition().getX(); //x value of current location
-                double locCurrentY = locCurrent.getPosition().getY(); //y value of current location
+                double locCurrentY = -locCurrent.getPosition().getY(); //y value of current location
                 double locNextX = locNext.getPosition().getX(); //x value of next location
-                double locNextY = locNext.getPosition().getY(); //y value of next location
+                double locNextY = -locNext.getPosition().getY(); //y value of next location
 
                 //vector1 is the vector pointing from current location to previous location
                 Point2D.Double vector1 = new Point2D.Double((locPrevX - locCurrentX), (locPrevY - locCurrentY));
@@ -65,32 +65,33 @@ public class Instruction {
                 //determines what direction user should head first
                 if (i == 0){
                     if (deg < 20 || deg > 340){
-                        instruction.add("\nHead East.");
+                        instruction.add("Head East.\n");
                     } else if (deg >= 20 && deg <= 70){
-                        instruction.add("\nHead North East.");
+                        instruction.add("Head North East.\n");
                     } else if (deg > 70 && deg < 110){
-                        instruction.add("\nHead North.");
+                        instruction.add("Head North.\n");
                     } else if (deg >= 110 && deg <= 160) {
-                        instruction.add("\nHead North West.");
+                        instruction.add("Head North West.\n");
                     } else if (deg > 160 && deg < 200){
-                        instruction.add("\nHead West.");
+                        instruction.add("Head West.\n");
                     } else if (deg >= 200 && deg <= 250){
-                        instruction.add("\nHead South West.");
+                        instruction.add("Head South West.\n");
                     } else if (deg > 250 && deg < 290){
-                        instruction.add("\nHead South.");
+                        instruction.add("Head South.\n");
                     } else if (deg >= 290 && deg <= 340){
-                        instruction.add("\nHead South Ease.");
+                        instruction.add("Head South Ease.\n");
                     }
                 }
 
                 //determines if the vector2 rotates counterclockwise or clockwise from vector1
                 //math function v1 * v2 = |v1||v2|sin(x)
                 double cross = vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX();
+                System.out.println(cross * 10000);
                 //sin(x) is negative if it rotates counterclockwise, sin(x) is positive if it rotates clockwise
                 //sin(x) is 0 if it rotates 180 degree
-                if (cross < 0) { //counterclockwise
+                if (cross * 10000 < -1) { //counterclockwise
                     flag = 1; //left
-                } else if (cross > 0) { //clockwise
+                } else if (cross * 10000 > 1) { //clockwise
                     flag = 2; //right
                 } else {
                     flag = 3; //straight
@@ -115,22 +116,22 @@ public class Instruction {
                 if (flag == 1){
                     //user should turn left and then add all distance after last turn together
                     distance = leftRightDirection(i, flag2, distance, distance2);
-                    instruction.add("\nTurn" + str + "left.");
+                    instruction.add("Turn" + str + "left.\n");
                     if (i == listSize - 2){
                         //if reach the end of the location list
-                        instruction.add("\nGo " + l2 + " miles.");
+                        instruction.add("Go " + l2 + " miles.\n");
                     }
                     distance2 = l2; //records the distance between current and next location
                     flag2 = 2; //records current action turning
                 } else if (flag == 2){
                     //user should turn left and then add all distance after last turn together
                     distance = leftRightDirection(i, flag2, distance, distance2);
-                    instruction.add("\nTurn" + str + "right.");
+                    instruction.add("Turn" + str + "right.\n");
                     distance2 = l2; //records the distance after last turn
                     flag2 = 2;
                     if (i == listSize - 2){
                         //if reach the end of the location list
-                        instruction.add("\nGo " + l2 + " miles.");
+                        instruction.add("Go " + l2 + " miles.\n");
                     }
                 } else {
                     if (flag == 3){
@@ -143,13 +144,13 @@ public class Instruction {
                     }
                     if (i == listSize - 2){
                         //if reach the end of the location list
-                        instruction.add("\nGo straight and go " + distance + " miles.");
+                        instruction.add("Go straight and go " + distance + " miles.\n");
                     }
                 }
                 i++;
             }
         }
-        instruction.add("\nYou arrive at your destination.");
+        instruction.add("You arrive at your destination.\n");
         return instruction;
     }
 
@@ -166,12 +167,12 @@ public class Instruction {
 
     private double leftRightDirection(int i, int flag2, double distance, double distance2){
         if (flag2 == 1){
-            instruction.add("\nGo straight and go " + distance + " miles.");
+            instruction.add("Go straight and go " + distance + " miles.\n");
             distance = 0;
             return distance;
         }
         if (i != 0 && i != 1) {
-            instruction.add("\nGo " + distance2 + " miles.");
+            instruction.add("Go " + distance2 + " miles.\n");
         }
         return distance;
     }

@@ -3,7 +3,6 @@ package ui;
 import core.Edge;
 import core.Location;
 import core.LocationGraph;
-import dev.DevTools;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,14 +26,13 @@ public class MapView extends JScrollPane{
 
     private JPanel mapPanel;
     private double zoomFactor;
-    private DevTools dt;
 
     private List<Edge> graphEdgeList;
     private List<Location> locationList;
     private List<LocationButton> locationButtonList;
     private List<List<Location>> routeLists;
 
-    private MapViewSyle style;
+    private MapViewStyle style;
 
     private Image backgroundImage;
 
@@ -46,7 +44,7 @@ public class MapView extends JScrollPane{
      * @param defaultZoom The zoom level the map will be at when the app starts
      * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, BufferedImage mapBackground, double defaultZoom, MapViewSyle viewStyle) {
+    public MapView(LocationGraph graph, BufferedImage mapBackground, double defaultZoom, MapViewStyle viewStyle) {
         mapPanel = new JPanel(true) {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -73,9 +71,8 @@ public class MapView extends JScrollPane{
                         int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
                         int x2 = (int) (e.getNode2().getPosition().x * imageRes.getWidth());
                         int y2 = (int) (e.getNode2().getPosition().y * imageRes.getHeight());
-                        if(MainAppUI.edgesShown) {
-                            g2d.drawLine(x1, y1, x2, y2);
-                        }
+
+                        g2d.drawLine(x1, y1, x2, y2);
                     }
                 }
 
@@ -98,7 +95,8 @@ public class MapView extends JScrollPane{
                 }
             }
         };
-
+        //this.dt = new DevTools(graph, this);
+        //todo added because we never interact with dev tools?????
         this.style = viewStyle;
 
         this.routeLists = new ArrayList<>();
@@ -191,9 +189,9 @@ public class MapView extends JScrollPane{
                 }
             }
         };
-        getViewport().addMouseListener(mouseAdapter);
-        getViewport().addMouseMotionListener(mouseAdapter);
-        getViewport().addMouseWheelListener(mouseAdapter);
+        mapPanel.addMouseListener(mouseAdapter);
+        mapPanel.addMouseMotionListener(mouseAdapter);
+        mapPanel.addMouseWheelListener(mouseAdapter);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 
@@ -213,6 +211,9 @@ public class MapView extends JScrollPane{
             mapPanel.remove(locButton);
         }
         locationButtonList.clear();
+
+        updateNodeVisibility();
+
         addButtons();
     }
 
@@ -276,14 +277,27 @@ public class MapView extends JScrollPane{
             mapPanel.add(currentButton);
             locationButtonList.add(currentButton);
             currentButton.setVisible(true);
-            if((!MainAppUI.allNodesShown) && (currentButton.getAssociatedLocation().getNameList()[0].equals("")))
-            {
-                currentButton.setVisible(false);
-            }
         }
 
         positionButtons();
         repaint();
+    }
+
+    private void updateNodeVisibility() {
+        for (LocationButton button: locationButtonList) {
+            Location loc = button.getAssociatedLocation();
+
+            if (style.isDrawAllPoints()) {
+                button.setVisible(false);
+            } else {
+                button.setVisible(true);
+            }
+
+            if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
+                button.setVisible(true);
+                button.setToolTipText(loc.getNameList()[0]);
+            }
+        }
     }
 
     /**
@@ -305,7 +319,7 @@ public class MapView extends JScrollPane{
         }
     }
 
-    public MapViewSyle getStyle() {
+    public MapViewStyle getStyle() {
         return style;
     }
 

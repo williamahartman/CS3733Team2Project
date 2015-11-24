@@ -7,9 +7,9 @@ import ui.MapView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,41 +18,43 @@ import java.util.HashMap;
  */
 public class DevTools extends JPanel {
 
-    private LocationGraph lg;
-    private MapView mv;
-    private static boolean inDevMode = false;
-    private LocationButton b;
+    private LocationGraph graph;
+    private MapView mapView;
+    private boolean inDevMode = false;
     private Edge currentEdge;
+    private LocationButton lastButtonClicked;
     private boolean deleteEdge;
     private boolean edgeMode;
     private LocationButton originalButton;
 
     public DevTools(LocationGraph newGraph, MapView newView) {
-        lg = newGraph;
-        mv = newView;
-        b = mv.getLocationButtonList().get(0);
+        graph = newGraph;
+        mapView = newView;
+
+        //TODO fix for empty location graph
+        this.lastButtonClicked = mapView.getLocationButtonList().get(0);
         setLayout(new BorderLayout());
         this.add(createSaveButton(), BorderLayout.SOUTH);
         this.add(createEditor());
-        addEditListener(b, lg, mv);
     }
 
-    private void updateGraph() {
-        mv.updateGraph(lg, MainAppUI.floorNumber);
-        for (LocationButton lb : mv.getLocationButtonList()) {
-            addEditListener(lb, lg, mv);
-        }
-    }
+    public MouseAdapter buildAddLocationListener(JPanel mapPanel) {
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (inDevMode) {
+                    Point2D mousePos = mapPanel.getMousePosition();
+                    Point2D.Double doubleMousePos = new Point2D.Double(
+                            mousePos.getX() / mapPanel.getWidth(),
+                            mousePos.getY() / mapPanel.getHeight());
 
-    public void devModeCheck(MouseEvent e, JScrollPane mvs) {
-        if (inDevMode) {
-            Point vpp = mvs.getViewport().getViewPosition();
-            //Creates a new button object where the panel is clicked
-            double x = (double) (e.getX() + vpp.x) / (double) mv.getWidth();
-            double y = (double) (e.getY() + vpp.y) / (double) mv.getHeight();
-            lg.addLocation(new Location(new Point2D.Double(x, y), 0, new String[0]), new HashMap<>());
-            updateGraph();
-        }//end of dev mode check
+                    //Creates a new button object where the panel is clicked
+                    graph.addLocation(new Location(doubleMousePos, 0, new String[0]), new HashMap<>());
+
+                    rebuildGraph();
+                }
+            }
+        };
     }
 
     private JButton createSaveButton() {
@@ -60,20 +62,16 @@ public class DevTools extends JPanel {
         saveToDatabase.addActionListener(listener -> {
             try {
                 Database graphData = new Database();
-                //graphData.updateDB(lg);
+                graphData.updateDB(graph);
                 graphData.closeConnection();
             } catch (Exception exception) {
-                JOptionPane.showMessageDialog(mv.getParent(),
+                JOptionPane.showMessageDialog(mapView.getParent(),
                         "Failed to connect to the online database (be on the internet!)",
                         "Database error!",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
         return saveToDatabase;
-    }
-
-    public void updateLastButtonClicked(LocationButton nb){
-        b = nb;
     }
 
     private JPanel createEditor() {
@@ -85,7 +83,7 @@ public class DevTools extends JPanel {
         edgeToggle.setSelected(false);
 
         //Fields with their initial entries
-        JFormattedTextField field1 = new JFormattedTextField(b.getAssociatedLocation()
+        JFormattedTextField field1 = new JFormattedTextField(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
         JFormattedTextField field2 = new JFormattedTextField();
 
@@ -100,14 +98,14 @@ public class DevTools extends JPanel {
                     //TODO update node attributes
 
                     //update values for Location object
-                    b.getAssociatedLocation().setFloorNumber((int) field1.getValue());
+                    lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
                     String[] nameList = tempString.split(",");
                     if (!field2.getValue().equals("Enter a String")) {
                         for (int i = 0; i < nameList.length; i++) {
                             nameList[i] = nameList[i].trim().toLowerCase();
                         }
-                        b.getAssociatedLocation().setNameList(nameList);
+                        lastButtonClicked.getAssociatedLocation().setNameList(nameList);
                     }
                 }
             }
@@ -127,18 +125,15 @@ public class DevTools extends JPanel {
         labelPanel.add(edgeToggle);
 
         JComboBox attributeList = new JComboBox(EdgeAttribute.values());
-        attributeList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                currentEdge.addAttribute(EdgeAttribute.values()[attributeList.getSelectedIndex()]);
-            }
-        });
+        attributeList.addActionListener(e ->
+            currentEdge.addAttribute(EdgeAttribute.values()[attributeList.getSelectedIndex()])
+        );
 
         edgeToggle.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == 1) {
-                    originalButton = b;
+                    originalButton = lastButtonClicked;
                     edgeMode = edgeToggle.isSelected();
                     if (!edgeMode){
                         deleteEdge = false;
@@ -162,60 +157,70 @@ public class DevTools extends JPanel {
         return panelLayout;
     }
 
-    public void addEditListener(LocationButton b, LocationGraph lg, MapView mapView) {
-
-        b.addMouseListener(new MouseAdapter() {
-
+    private MouseAdapter buildEditListener(LocationGraph lg) {
+        return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                updateLastButtonClicked(b);
-                b.setBackground(Color.CYAN);
-                b.repaint();
+                lastButtonClicked = (LocationButton) e.getSource();
+                lastButtonClicked.setBackground(Color.CYAN);
+                lastButtonClicked.repaint();
                 if (e.getButton() == 1) {//Left mouse click
                     if (edgeMode) {//if in Edge Mode
                         Edge edge = originalButton.getAssociatedLocation()
-                                .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
+                                .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (deleteEdge) {
                             //remove edge
                             if (edge != null) {
                                 originalButton.getAssociatedLocation().removeEdge(edge);
-                                updateGraph();
-                                b.setBackground(Color.CYAN);
+                                rebuildGraph();
+                                lastButtonClicked.setBackground(Color.CYAN);
                             }
                         } else if (edge != null) { //already has edge
                             //TODO change edge attributes
                         } else { //does not have an edge
                             //add an edge
                             originalButton.getAssociatedLocation()
-                                    .makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<>());
+                                    .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), new ArrayList<>());
                         }
                     }
                 } else if (e.getButton() == 3) {//Right mouse click
                     if (!edgeMode) {
-                        lg.removeLocation(b.getAssociatedLocation());
-                        mv.remove(b);
-                        originalButton = mv.getLocationButtonList().get(0);
-                        mv.repaint();
+                        lg.removeLocation(lastButtonClicked.getAssociatedLocation());
+                        DevTools.this.mapView.remove(lastButtonClicked);
+                        originalButton = DevTools.this.mapView.getLocationButtonList().get(0);
+                        DevTools.this.mapView.repaint();
                     } else {
                         Edge edge = originalButton.getAssociatedLocation()
-                                .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
+                                .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (edge != null) {
                             originalButton.getAssociatedLocation().removeEdge(edge);
-                            updateGraph();
+                            rebuildGraph();
                         }
                     }
                 }
-                updateGraph();
-                b.setBackground(Color.CYAN);
-                b.repaint();
+                rebuildGraph();
+                lastButtonClicked.setBackground(Color.CYAN);
+                lastButtonClicked.repaint();
             }
-        });
-
+        };
     }
-    public static boolean getDevMode(){
+
+    public void rebuildGraph() {
+        mapView.updateGraph(graph, MainAppUI.floorNumber);
+
+        MouseAdapter editListener = buildEditListener(graph);
+        for (LocationButton locationButton: mapView.getLocationButtonList()) {
+            locationButton.addMouseListener(editListener);
+            if (locationButton.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
+                lastButtonClicked = locationButton;
+            }
+        }
+    }
+
+    public boolean getDevMode(){
         return inDevMode;
     }
-    public static void setDevMode(boolean devMode){
+    public void setDevMode(boolean devMode){
         inDevMode = devMode;
     }
 }

@@ -5,7 +5,7 @@ import java.awt.*;
 /**
  * This class holds style values for a MapView.
  */
-public class MapViewSyle {
+public class MapViewStyle {
     private boolean drawAllEdges = true;
     private boolean drawAllPoints = true;
     private boolean drawNamedPoints = true;
@@ -16,9 +16,9 @@ public class MapViewSyle {
     private Color locationColor;
     private Color routeLocationColor;
 
-    public MapViewSyle(boolean drawAllEdges, boolean drawAllPoints, boolean drawNamedPoints,
-                       boolean drawRoutes, Color edgeColor, Color routeColor, Color locationColor,
-                       Color routeLocationColor) {
+    public MapViewStyle(boolean drawAllEdges, boolean drawAllPoints, boolean drawNamedPoints,
+                        boolean drawRoutes, Color edgeColor, Color routeColor, Color locationColor,
+                        Color routeLocationColor) {
         this.drawAllEdges = drawAllEdges;
         this.drawAllPoints = drawAllPoints;
         this.drawNamedPoints = drawNamedPoints;
@@ -43,6 +43,18 @@ public class MapViewSyle {
 
     public boolean isDrawRoutes() {
         return drawRoutes;
+    }
+
+    public void setDrawAllEdges(boolean drawAllEdges) {
+        this.drawAllEdges = drawAllEdges;
+    }
+
+    public void setDrawAllPoints(boolean drawAllPoints) {
+        this.drawAllPoints = drawAllPoints;
+    }
+
+    public void setDrawNamedPoints(boolean drawNamedPoints) {
+        this.drawNamedPoints = drawNamedPoints;
     }
 
     public Color getEdgeColor() {

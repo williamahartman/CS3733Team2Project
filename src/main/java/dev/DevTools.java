@@ -42,6 +42,7 @@ public class DevTools extends JPanel {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                System.out.println("CALLED!");
                 if (inDevMode) {
                     Point2D mousePos = mapPanel.getMousePosition();
                     Point2D.Double doubleMousePos = new Point2D.Double(

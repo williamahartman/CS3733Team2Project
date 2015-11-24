@@ -123,7 +123,8 @@ public class LocationGraph {
                 else
                 {
                     ArrayList<Double> locValues = new ArrayList<Double>(); // The List of G,H,F for L
-                    double gL = distanceValues.get(current).get(0) + current.getConnectingEdgeFromNeighbor(loc).getCost(attributeManager);
+                    double gL = distanceValues.get(current).get(0) +
+                            current.getConnectingEdgeFromNeighbor(loc).getCost(attributeManager);
                     // ^initial G Value
                     double hL = loc.getPosition().distance(destination.getPosition()); // H Value of L
                     locValues.add(gL); locValues.add(hL);  // creating the list of values for L

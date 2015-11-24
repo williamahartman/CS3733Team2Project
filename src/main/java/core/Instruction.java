@@ -48,10 +48,10 @@ public class Instruction {
                 Location locNext = locList.get(i + 1); //next location
                 double locPrevX = locPrev.getPosition().getX(); //x value of previous location
                 double locPrevY = locPrev.getPosition().getY(); //y value of previous location
-                double locCurrentX = locCurrent.getPosition().getX();//x value of current location
-                double locCurrentY = locCurrent.getPosition().getY();//y value of current location
-                double locNextX = locNext.getPosition().getX();//x value of next location
-                double locNextY = locNext.getPosition().getY();//y value of next location
+                double locCurrentX = locCurrent.getPosition().getX(); //x value of current location
+                double locCurrentY = locCurrent.getPosition().getY(); //y value of current location
+                double locNextX = locNext.getPosition().getX(); //x value of next location
+                double locNextY = locNext.getPosition().getY(); //y value of next location
 
                 //vector1 is the vector pointing from current location to previous location
                 Point2D.Double vector1 = new Point2D.Double((locPrevX - locCurrentX), (locPrevY - locCurrentY));
@@ -96,9 +96,12 @@ public class Instruction {
                     flag = 3; //straight
                 }
                 String str = " ";
-                double l1 = locCurrent.getTwoDecimalDistance(locPrev, scale); //distance between previous node and current node
-                double l2 = locCurrent.getTwoDecimalDistance(locNext, scale); //distance between next node and current node
-                double l3 = locPrev.getTwoDecimalDistance(locNext, scale); //distance between previous node and next node
+                double l1 = locCurrent.getTwoDecimalDistance(locPrev, scale);
+                //^distance between previous node and current node
+                double l2 = locCurrent.getTwoDecimalDistance(locNext, scale);
+                //^distance between next node and current node
+                double l3 = locPrev.getTwoDecimalDistance(locNext, scale);
+                //^distance between previous node and next node
                 if (flag != 3){
                     //calculates degree between previous edge and next edge(vector1 and vector2)
                     //Using inverse trigonometric functions and Law of cosines

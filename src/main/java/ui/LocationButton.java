@@ -3,7 +3,6 @@ package ui;
 import core.Edge;
 import core.EdgeAttribute;
 import core.Location;
-import dev.DevPanel;
 
 import javax.swing.*;
 import java.awt.*;

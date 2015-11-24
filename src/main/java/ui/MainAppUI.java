@@ -3,7 +3,6 @@ package ui;
 import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
-import dev.DevPanel;
 import dev.DevTools;
 
 import javax.imageio.ImageIO;

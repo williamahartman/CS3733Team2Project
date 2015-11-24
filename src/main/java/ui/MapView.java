@@ -73,9 +73,8 @@ public class MapView extends JScrollPane{
                         int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
                         int x2 = (int) (e.getNode2().getPosition().x * imageRes.getWidth());
                         int y2 = (int) (e.getNode2().getPosition().y * imageRes.getHeight());
-                        if(MainAppUI.edgesShown) {
-                            g2d.drawLine(x1, y1, x2, y2);
-                        }
+
+                        g2d.drawLine(x1, y1, x2, y2);
                     }
                 }
 
@@ -150,10 +149,6 @@ public class MapView extends JScrollPane{
                 repaint();
             }
             @Override
-            public  void mouseClicked(MouseEvent e){
-                dt.devModeCheck(e, );
-            }
-            @Override
             public void mousePressed(MouseEvent e) {
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
@@ -217,6 +212,9 @@ public class MapView extends JScrollPane{
             mapPanel.remove(locButton);
         }
         locationButtonList.clear();
+
+        updateNodeVisibility();
+
         addButtons();
     }
 
@@ -280,14 +278,27 @@ public class MapView extends JScrollPane{
             mapPanel.add(currentButton);
             locationButtonList.add(currentButton);
             currentButton.setVisible(true);
-            if((!MainAppUI.allNodesShown) && (currentButton.getAssociatedLocation().getNameList()[0].equals("")))
-            {
-                currentButton.setVisible(false);
-            }
         }
 
         positionButtons();
         repaint();
+    }
+
+    private void updateNodeVisibility() {
+        for (LocationButton button: locationButtonList) {
+            Location loc = button.getAssociatedLocation();
+
+            if(style.isDrawAllPoints()) {
+                button.setVisible(false);
+            } else {
+                button.setVisible(true);
+            }
+
+            if(style.isDrawNamedPoints() && loc.getNameList().length > 0) {
+                button.setVisible(true);
+                button.setToolTipText(loc.getNameList()[0]);
+            }
+        }
     }
 
     /**

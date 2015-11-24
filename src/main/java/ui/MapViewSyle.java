@@ -45,6 +45,18 @@ public class MapViewSyle {
         return drawRoutes;
     }
 
+    public void setDrawAllEdges(boolean drawAllEdges) {
+        this.drawAllEdges = drawAllEdges;
+    }
+
+    public void setDrawAllPoints(boolean drawAllPoints) {
+        this.drawAllPoints = drawAllPoints;
+    }
+
+    public void setDrawNamedPoints(boolean drawNamedPoints) {
+        this.drawNamedPoints = drawNamedPoints;
+    }
+
     public Color getEdgeColor() {
         return edgeColor;
     }

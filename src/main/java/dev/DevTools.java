@@ -6,10 +6,10 @@ import ui.MainAppUI;
 import ui.MapView;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,40 +18,36 @@ import java.util.HashMap;
  */
 public class DevTools extends JPanel {
 
-    private LocationGraph lg;
-    private MapView mv;
-    private static boolean inDevMode = false;
-    private LocationButton b;
+    private LocationGraph graph;
+    private MapView mapView;
+    private boolean inDevMode = false;
     private Edge currentEdge;
+    private LocationButton lastButtonClicked;
     private boolean deleteEdge;
     private boolean edgeMode;
     private LocationButton originalButton;
 
     public DevTools(LocationGraph newGraph, MapView newView) {
-        lg = newGraph;
-        mv = newView;
-        b = mv.getLocationButtonList().get(0);
+        graph = newGraph;
+        mapView = newView;
+
+        //TODO fix for empty location graph
+        this.lastButtonClicked = mapView.getLocationButtonList().get(0);
         setLayout(new BorderLayout());
         this.add(createSaveButton(), BorderLayout.SOUTH);
         this.add(createEditor());
-        addEditListener(b, lg, mv);
     }
 
-    private void updateGraph() {
-        mv.updateGraph(lg, MainAppUI.floorNumber);
-        for (LocationButton lb : mv.getLocationButtonList()) {
-            addEditListener(lb, lg, mv);
-        }
-    }
-
-    public void devModeCheck(MouseEvent e, JScrollPane mvs) {
+    public void devModeCheck(MouseEvent e, JPanel mapPanel) {
         if (inDevMode) {
-            Point vpp = mvs.getViewport().getViewPosition();
+            Point2D mousePos = mapPanel.getMousePosition();
+            Point2D.Double doubleMousePos = new Point2D.Double(mousePos.getX(), mousePos.getY());
+
             //Creates a new button object where the panel is clicked
-            double x = (double) (e.getX() + vpp.x) / (double) mv.getWidth();
-            double y = (double) (e.getY() + vpp.y) / (double) mv.getHeight();
-            lg.addLocation(new Location(new Point2D.Double(x, y), 0, new String[0]), new HashMap<>());
-            updateGraph();
+            graph.addLocation(new Location(doubleMousePos, 0, new String[0]), new HashMap<>());
+            mapView.updateGraph(graph, MainAppUI.floorNumber);
+
+            //TODO add the listener for the new button
         }//end of dev mode check
     }
 
@@ -60,20 +56,16 @@ public class DevTools extends JPanel {
         saveToDatabase.addActionListener(listener -> {
             try {
                 Database graphData = new Database();
-                graphData.updateDB(lg);
+                graphData.updateDB(graph);
                 graphData.closeConnection();
             } catch (Exception exception) {
-                JOptionPane.showMessageDialog(mv.getParent(),
+                JOptionPane.showMessageDialog(mapView.getParent(),
                         "Failed to connect to the online database (be on the internet!)",
                         "Database error!",
                         JOptionPane.ERROR_MESSAGE);
             }
         });
         return saveToDatabase;
-    }
-
-    public void updateLastButtonClicked(LocationButton nb){
-        b = nb;
     }
 
     private JPanel createEditor() {
@@ -100,14 +92,14 @@ public class DevTools extends JPanel {
                     //TODO update node attributes
 
                     //update values for Location object
-                    b.getAssociatedLocation().setFloorNumber((int) field1.getValue());
+                    lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
                     String[] nameList = tempString.split(",");
                     if (!field2.getValue().equals("Enter a String")) {
                         for (int i = 0; i < nameList.length; i++) {
                             nameList[i] = nameList[i].trim().toLowerCase();
                         }
-                        b.getAssociatedLocation().setNameList(nameList);
+                        lastButtonClicked.getAssociatedLocation().setNameList(nameList);
                     }
                 }
             }
@@ -162,15 +154,14 @@ public class DevTools extends JPanel {
         return panelLayout;
     }
 
-    public void addEditListener(LocationButton b, LocationGraph lg, MapView mapView) {
+    public ChangeListener buildEditListener(LocationGraph lg, MapView mapView) {
 
-        b.addMouseListener(new MouseAdapter() {
+        lastButtonClicked.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                updateLastButtonClicked(b);
-                b.setBackground(Color.CYAN);
-                b.repaint();
+                lastButtonClicked.setBackground(Color.CYAN);
+                lastButtonClicked.repaint();
                 if (e.getButton() == 1) {//Left mouse click
                     if (edgeMode) {//if in Edge Mode
                         Edge edge = originalButton.getAssociatedLocation()
@@ -193,9 +184,9 @@ public class DevTools extends JPanel {
                 } else if (e.getButton() == 3) {//Right mouse click
                     if (!edgeMode) {
                         lg.removeLocation(b.getAssociatedLocation());
-                        mv.remove(b);
-                        originalButton = mv.getLocationButtonList().get(0);
-                        mv.repaint();
+                        DevTools.this.mapView.remove(b);
+                        originalButton = DevTools.this.mapView.getLocationButtonList().get(0);
+                        DevTools.this.mapView.repaint();
                     } else {
                         Edge edge = originalButton.getAssociatedLocation()
                                 .getConnectingEdgeFromNeighbor(b.getAssociatedLocation());
@@ -212,10 +203,10 @@ public class DevTools extends JPanel {
         });
 
     }
-    public static boolean getDevMode(){
+    public boolean getDevMode(){
         return inDevMode;
     }
-    public static void setDevMode(boolean devMode){
+    public void setDevMode(boolean devMode){
         inDevMode = devMode;
     }
 }

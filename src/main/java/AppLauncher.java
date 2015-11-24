@@ -98,8 +98,7 @@ public class AppLauncher{
 
 
 
-            graphData.updateDB(dbList.getAddLocList(), dbList.getRemoveLocList(), dbList.getUpdateLocList(),
-                    dbList.getAddEdgeList(), dbList.getRemoveEdgeList(), dbList.getUpdateEdgeList());
+            graphData.updateDB(dbList);
 
 
             //Make a frame

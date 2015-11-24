@@ -548,18 +548,25 @@ public class Database {
     }
 
     /*
-    * Update all nodes in the database
+    * Update the database with all new locations/edges
     *
-    * @param addLocList List of nodes to be added
-    * @param deleteLocList List of nodes to be removed
-    * @param updateLocList List of nodes to be updated
+    * @param dbList Class that contains all necessary node and edge lists
     */
-    private void updateNodesInDb(List<Location> addLocList, List<Location> removeLocList,
-                                 List<Location> updateLocList){
+    public void updateDB(DatabaseList dbList){
         try {
             Statement sta = con.createStatement();
 
-            // Compare the delete list to the update list
+            // GET LISTS
+            // Get add, remove, update lists for nodes and edges
+            List<Location> addLocList = dbList.getAddLocList();
+            List<Location> removeLocList = dbList.getRemoveLocList();
+            List<Location> updateLocList = dbList.getUpdateLocList();
+            List<Edge> addEdgeList = dbList.getAddEdgeList();
+            List<Edge> removeEdgeList = dbList.getRemoveEdgeList();
+            List<Edge> updateEdgeList = dbList.getUpdateEdgeList();
+
+            // COMPARE LISTS
+            // Compare the node delete list to node update list
             // If any location is in both lists, remove from the update list
             for (int i = 0; i < updateLocList.size(); i++) {
                 if (removeLocList.contains(updateLocList.get(i))) {
@@ -570,14 +577,65 @@ public class Database {
                 }
             }
 
+            // Compare edge add list to edge delete list
+            // If any edge is in both lists, remove from the delete list
+            for (int i = 0; i < removeEdgeList.size(); i++) {
+                if (addEdgeList.contains(removeEdgeList.get(i))) {
+                    System.out.print("Took edge out from remove edge list\n");
+                    removeEdgeList.remove(i);
+                }
+            }
+
+            // Compare edge delete list to edge update list
+            // If any edge is in both lists, remove from the update list
+            for (int j = 0; j < updateEdgeList.size(); j++) {
+                if (removeEdgeList.contains(updateEdgeList.get(j))) {
+                    updateEdgeList.remove(j);
+                }
+            }
+
+
+            /*System.out.print("Add node: ");
+            System.out.print(addLocList.size());
+            System.out.print("\nUpdate node: ");
+            System.out.print(updateLocList.size());
+            System.out.print("\nRemove node: ");
+            System.out.print(removeLocList.size());
+            System.out.print("\nAdd edge: ");
+            System.out.print(addEdgeList.size());
+            System.out.print("\nUpdate edge: ");
+            System.out.print(updateEdgeList.size());
+            System.out.print("\nRemove edge: ");
+            System.out.print(removeEdgeList.size());
+*/
+
+            // CALL FUNCTIONS BELOW
             // Add all nodes from add list
             for (int j = 0; j < addLocList.size(); j++) {
                 addNode(addLocList.get(j));
             }
 
+            // Add all edges from add list
+            for (int n = 0; n < addEdgeList.size(); n++) {
+                addEdge(addEdgeList.get(n));
+            }
+
             // Update all nodes from update list
             for (int k = 0; k < updateLocList.size(); k++) {
                 updateNode(updateLocList.get(k));
+            }
+
+            // Update all edges from update list
+            for (int k = 0; k < updateEdgeList.size(); k++) {
+                updateEdge(updateEdgeList.get(k));
+            }
+
+            // Delete all edges from delete list
+            // Will NOT throw an exception if edge doesn't exist
+            for (int m = 0; m < removeEdgeList.size(); m++) {
+                Location loc1 = removeEdgeList.get(m).getNode1();
+                Location loc2 = removeEdgeList.get(m).getNode2();
+                removeEdge(loc1, loc2);
             }
 
             // Delete all nodes from delete list
@@ -589,78 +647,6 @@ public class Database {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-
-    /*
-    * Update all nodes in the database
-    *
-    * @param addEdgeList List of edges to be added
-    * @param deleteEdgeList List of edges to be removed
-    * @param updateEdgeList List of edges to be updated
-    */
-    private void updateEdgesInDb(List<Edge> addEdgeList, List<Edge> removeEdgeList,
-                                 List<Edge> updateEdgeList){
-        try {
-            Statement sta = con.createStatement();
-
-            // Compare add list to delete list
-            // If any edge is in both lists, remove from the delete list
-            for (int i = 0; i < removeEdgeList.size(); i++) {
-                if (addEdgeList.contains(removeEdgeList.get(i))) {
-                    removeEdgeList.remove(i);
-                }
-            }
-
-            // Compare delete list to update list
-            // If any edge is in both lists, remove from the update list
-            for (int j = 0; j < updateEdgeList.size(); j++) {
-                if (removeEdgeList.contains(updateEdgeList.get(j))) {
-                    updateEdgeList.remove(j);
-                }
-            }
-
-            // Add all nodes from add list
-            // Call addNode(Location loc)
-            for (int n = 0; n < addEdgeList.size(); n++) {
-                addEdge(addEdgeList.get(n));
-            }
-
-            // Update all nodes from update list
-            // Call updateNode(Location loc)
-            for (int k = 0; k < updateEdgeList.size(); k++) {
-                updateEdge(updateEdgeList.get(k));
-            }
-
-            // Delete all nodes from delete list
-            // Will NOT throw an exception if node doesn't exist
-            // Call removeNode(Location loc)
-            for (int m = 0; m < removeEdgeList.size(); m++) {
-                Location loc1 = removeEdgeList.get(m).getNode1();
-                Location loc2 = removeEdgeList.get(m).getNode2();
-                removeEdge(loc1, loc2);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /*
-    * Update the database with all new locations/edges
-    *
-    * @param addLocList List of nodes to be added
-    * @param removeLocList List of nodes to be removed
-    * @param updateLocList List of nodes to be updated
-    * @param addEdgeList List of edges to be added
-    * @param removeEdgeList List of edges to be removed
-    * @param updateEdgeList List of edges to be updated
-    *
-    */
-    public void updateDB(List<Location> addLocList, List<Location> removeLocList,
-                         List<Location> updateLocList, List<Edge> addEdgeList,
-                         List<Edge> removeEdgeList, List<Edge> updateEdgeList){
-        updateNodesInDb(addLocList, removeLocList, updateLocList);
-        updateEdgesInDb(addEdgeList, removeEdgeList, updateEdgeList);
     }
 
     public void closeConnection() {

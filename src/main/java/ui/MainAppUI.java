@@ -5,11 +5,9 @@ import core.Instruction;
 import core.Location;
 import core.LocationGraph;
 import dev.DevTools;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.EventListenerList;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -103,7 +101,8 @@ public class MainAppUI extends JFrame{
                 enterDevloperMode.setText("Exit Developer Mode");
 
                 clearState(mapView);
-                mapView.getMapPanel().addMouseListener(devToolsPanel.buildAddLocationListener(mapView.getMapPanel()));
+                devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
+                mapView.getMapPanel().addMouseListener(devToolClickListener);
                 devToolsPanel.rebuildGraph();
             } else {
                 devToolsPanel.setDevMode(false);

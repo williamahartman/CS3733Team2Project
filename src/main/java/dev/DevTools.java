@@ -7,8 +7,6 @@ import ui.MapView;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -127,12 +125,9 @@ public class DevTools extends JPanel {
         labelPanel.add(edgeToggle);
 
         JComboBox attributeList = new JComboBox(EdgeAttribute.values());
-        attributeList.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                currentEdge.addAttribute(EdgeAttribute.values()[attributeList.getSelectedIndex()]);
-            }
-        });
+        attributeList.addActionListener(e ->
+            currentEdge.addAttribute(EdgeAttribute.values()[attributeList.getSelectedIndex()])
+        );
 
         edgeToggle.addMouseListener(new MouseAdapter() {
             @Override
@@ -162,7 +157,7 @@ public class DevTools extends JPanel {
         return panelLayout;
     }
 
-    private MouseAdapter buildEditListener(LocationGraph lg, MapView mapView) {
+    private MouseAdapter buildEditListener(LocationGraph lg) {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -213,10 +208,10 @@ public class DevTools extends JPanel {
     public void rebuildGraph() {
         mapView.updateGraph(graph, MainAppUI.floorNumber);
 
-        MouseAdapter editListener = buildEditListener(graph, mapView);
-        for(LocationButton locationButton: mapView.getLocationButtonList()) {
+        MouseAdapter editListener = buildEditListener(graph);
+        for (LocationButton locationButton: mapView.getLocationButtonList()) {
             locationButton.addMouseListener(editListener);
-            if(locationButton.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
+            if (locationButton.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
                 lastButtonClicked = locationButton;
             }
         }

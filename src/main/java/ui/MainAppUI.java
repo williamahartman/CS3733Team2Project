@@ -34,6 +34,11 @@ public class MainAppUI extends JFrame{
     private JButton makeAStarRoute;
     public static int floorNumber;
 
+    private DevTools dt;
+
+    public static boolean edgesShown = false;
+    public static boolean allNodesShown = true;
+
     /**
      * Constructor.
      *
@@ -92,10 +97,28 @@ public class MainAppUI extends JFrame{
                 enterDevloperMode.setText("Edit Map (Developers Only!)");
             }
         });
-
+        JMenu view = new JMenu("View");
+        JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
+        JMenuItem showNodes = new JMenuItem("Show All Locations");
+        toggleEdges.addActionListener(e -> {
+            edgesShown = !edgesShown;
+            mapView.repaint();
+        });
+        showNodes.addActionListener(e -> {
+            if (allNodesShown){
+                showNodes.setText("Show Only Named Locations");
+            } else {
+                showNodes.setText("Show All Locations");
+            }
+            allNodesShown = !allNodesShown;
+            mapView.repaint();
+        });
+        view.add(toggleEdges);
+        view.add(showNodes);
         editMenu.add(refreshMap);
         editMenu.add(enterDevloperMode);
         menuBar.add(editMenu);
+        menuBar.add(view);
 
         setJMenuBar(menuBar);
 

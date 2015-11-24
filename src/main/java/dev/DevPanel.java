@@ -6,6 +6,7 @@ import core.Location;
 import core.LocationGraph;
 import ui.LocationButton;
 import ui.MapView;
+import ui.MapViewSyle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,8 +27,6 @@ import java.util.HashMap;
  *
  */
 public class DevPanel {
-    private static final double MINIMUM_ZOOM = 0.1;
-    private static final double MAXIMUM_ZOOM = 2;
 
     // booleans to toggle developer features
     public static boolean inDevMode = false;
@@ -36,86 +35,44 @@ public class DevPanel {
     private static LocationButton originalButton;
 
     private static void updateGraph(LocationGraph lg, MapView mapView) {
-        mapView.resetGraphData(lg);
+        mapView.updateGraph(lg, 0);
 
         for (LocationButton lb: mapView.getLocationButtonList()) {
             addEditListener(lb, lg, mapView);
         }
     }
 
-    public static void devModeCheck(MouseEvent e, JPanel p, JViewport vp, LocationGraph lg, MapView mapView){
+    public static void devModeCheck(JPanel p, LocationGraph lg){
         if (inDevMode) {
-            Point vpp = vp.getViewPosition();
             //Creates a new button object where the panel is clicked
-            double x = (double) (e.getX() + vpp.x) / (double) p.getWidth();
-            double y = (double) (e.getY() + vpp.y) / (double) p.getHeight();
+            double x = p.getMousePosition().x;
+            double y = p.getMousePosition().y;
             lg.addLocation(new Location(new Point2D.Double(x, y), 0, new String[0]), new HashMap<>());
-
-            updateGraph(lg, mapView);
-        }//end of dev mode check
+        }
     }
 
     public static void createDevWindow(BufferedImage backgroundImage, double defaultZoom, LocationGraph lg){
-        MapView mapView = new MapView(lg, backgroundImage, defaultZoom);
+        MapViewSyle style = new MapViewSyle(
+                true,
+                true,
+                true,
+                true,
+                new Color(250, 120, 0),
+                new Color(15, 78, 152),
+                new Color(232, 189, 19),
+                new Color(49, 113, 152));
+        MapView mapView = new MapView(lg, backgroundImage, defaultZoom, style);
 
         JFrame frame = new JFrame();
 
-        //Make the scroll pane, set up click and drag
-        JScrollPane mapScrollPane = new JScrollPane(mapView);
-        mapScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        mapScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        MouseAdapter mouseAdapter = new MouseAdapter() {
-            int mouseStartX = 0;
-            int mouseStartY = 0;
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                JViewport viewPort = mapScrollPane.getViewport();
-                Point vpp = viewPort.getViewPosition();
-                vpp.translate(mouseStartX - e.getXOnScreen(), mouseStartY - e.getYOnScreen());
-                mapView.scrollRectToVisible(new Rectangle(vpp, viewPort.getSize()));
-
-                mouseStartX = e.getXOnScreen();
-                mouseStartY = e.getYOnScreen();
-                mapView.repaint();
-            }
-            @Override
+        mapView.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e){
-                DevPanel.devModeCheck(e, mapView, mapScrollPane.getViewport(), lg, mapView);
+                DevPanel.devModeCheck(mapView.getMapPanel(), lg);
                 updateGraph(lg, mapView);
             }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                mouseStartX = e.getXOnScreen();
-                mouseStartY = e.getYOnScreen();
-                mapScrollPane.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                mapScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                if ((mapView.getZoomFactor() > MINIMUM_ZOOM || e.getWheelRotation() < 0) &&
-                        (mapView.getZoomFactor() < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
-                    mapView.zoomIncrementBy(e.getWheelRotation() * -0.01);
-                    updateGraph(lg, mapView);
-
-                    mapScrollPane.validate();
-                }
-            }
-        };
-
-        mapScrollPane.getViewport().addMouseListener(mouseAdapter);
-        mapScrollPane.getViewport().addMouseMotionListener(mouseAdapter);
-        mapScrollPane.getViewport().addMouseWheelListener(mouseAdapter);
-        mapScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        });
 
         frame.addWindowListener(new WindowAdapter() {
-
             @Override
             public void windowClosing(WindowEvent e) {
                 DevPanel.inDevMode = false;
@@ -138,7 +95,7 @@ public class DevPanel {
 
 
         frame.setLayout(new BorderLayout());
-        frame.add(mapScrollPane);
+        frame.add(mapView);
         frame.add(saveToDatabase, BorderLayout.SOUTH);
         frame.setMinimumSize(new Dimension(800, 600));
         frame.setVisible(true);
@@ -160,8 +117,9 @@ public class DevPanel {
                             originalButton.getAssociatedLocation().removeEdge(edge);
                         } else { //does not have an edge
                             //add an edge
-                            originalButton.getAssociatedLocation()
-                                    .makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<>());
+                            //originalButton.getAssociatedLocation()
+                                    //.makeAdjacentTo(b.getAssociatedLocation(), new ArrayList<>());
+                            lg.addLocation(originalButton.getAssociatedLocation().createStairUp(), new HashMap<>());
                         }
                     } else {
                         JFrame buttonFrame = new JFrame();

@@ -39,5 +39,4 @@ public class AppLauncher{
             System.exit(-1);
         }
     }
-
 }

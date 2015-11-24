@@ -19,8 +19,6 @@ public class MainAppUI extends JFrame{
     private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
     private static final double DEFAULT_ZOOM = 0.4;
-    private static final double MINIMUM_ZOOM = 0.1;
-    private static final double MAXIMUM_ZOOM = 2;
 
     private BufferedImage mapBackground;
 
@@ -57,7 +55,18 @@ public class MainAppUI extends JFrame{
                     JOptionPane.ERROR_MESSAGE);
             System.exit(-1);
         }
-        this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM);
+
+        MapViewSyle style = new MapViewSyle(
+                true,
+                true,
+                true,
+                true,
+                new Color(250, 120, 0),
+                new Color(15, 78, 152),
+                new Color(255, 240, 0),
+                new Color(79, 189, 255));
+
+        this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM, style);
         startPoint = null;
         endPoint = null;
     }
@@ -91,6 +100,41 @@ public class MainAppUI extends JFrame{
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
 
+        JComboBox<Integer> floorNum = new JComboBox<>();
+        floorNum.addItem(0);
+        floorNum.addItem(1);
+        floorNum.addItem(2);
+        floorNum.setSelectedItem(0);
+        floorNum.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        floorNum.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        floorNum.setToolTipText("Select Floor Number");
+        floorNum.setForeground(Color.RED);
+        floorNum.setFont(new Font("Arial", Font.BOLD, 20));
+        floorNum.addActionListener(e ->{
+
+                if (floorNum.getSelectedItem().equals(0))
+                {
+                    //display ground map
+                    this.mapView.getStyle().setEdgeColor(new Color(0, 0, 0));
+                    this.mapView.updateGraph(graph, 0);
+                    repaint();
+
+                }
+                else if (floorNum.getSelectedItem().equals(1))
+                {
+                    this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
+                    this.mapView.updateGraph(graph, 1);
+                    repaint();
+                }
+                else if (floorNum.getSelectedItem().equals(2))
+                {
+                    this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
+                    this.mapView.updateGraph(graph, 2);
+                    repaint();
+                }
+            });
+
+
         startInfo = new JLabel();
         startInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         startInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
@@ -117,14 +161,8 @@ public class MainAppUI extends JFrame{
 
                 java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
                 if (route.size() > 0) {
-                    AStarRouteDisplay routeDisplay = new AStarRouteDisplay(graph, mapBackground, DEFAULT_ZOOM, route);
-                    frame.add(addToScrollPane(routeDisplay));
-
-                    frame.setLocationRelativeTo(null);
-                    frame.repaint();
-                    frame.setVisible(true);
-
-                    clearState(mapView);
+                    mapView.addRoute(route);
+                    repaint();
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "There is no path between the selected points!",
@@ -145,15 +183,14 @@ public class MainAppUI extends JFrame{
         sidePanel.add(startInfo);
         sidePanel.add(endPointInfo);
         sidePanel.add(makeAStarRoute);
+        sidePanel.add(floorNum);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
 
-        //Build the map view scrollable stuff
-        JScrollPane mapScrollPane = addToScrollPane(mapView);
 
         //Set layout and add
         setLayout(new BorderLayout());
-        add(mapScrollPane);
+        add(mapView);
         add(sidePanel, BorderLayout.WEST);
 
         addWindowFocusListener(new WindowFocusListener() {
@@ -202,69 +239,6 @@ public class MainAppUI extends JFrame{
     }
 
     /**
-     * Add a passed panel to a new JScrollPane, return it.
-     *
-     * @param panel The panel that will be added
-     * @return The JScrollPane containing the panel
-     */
-    private JScrollPane addToScrollPane(JPanel panel) {
-        //Make the scroll pane, set up click and drag
-        JScrollPane resultScrollPane = new JScrollPane(panel);
-        resultScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-        resultScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        MouseAdapter mouseAdapter = new MouseAdapter() {
-            int mouseStartX = 0;
-            int mouseStartY = 0;
-
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                JViewport viewPort = resultScrollPane.getViewport();
-                Point vpp = viewPort.getViewPosition();
-                vpp.translate(mouseStartX - e.getXOnScreen(), mouseStartY - e.getYOnScreen());
-                panel.scrollRectToVisible(new Rectangle(vpp, viewPort.getSize()));
-
-                mouseStartX = e.getXOnScreen();
-                mouseStartY = e.getYOnScreen();
-                panel.repaint();
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                mouseStartX = e.getXOnScreen();
-                mouseStartY = e.getYOnScreen();
-                resultScrollPane.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                resultScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
-            }
-
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent e) {
-                //This is gross. Refactor it later!
-                if (panel instanceof MapView) {
-                    MapView mapViewPanel = (MapView) panel;
-
-                    if ((mapViewPanel.getZoomFactor() > MINIMUM_ZOOM || e.getWheelRotation() < 0) &&
-                            (mapViewPanel.getZoomFactor() < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
-                        mapViewPanel.zoomIncrementBy(e.getWheelRotation() * -0.01);
-                        resetMap(mapViewPanel);
-                        mapViewPanel.getParent().validate();
-                    }
-                }
-            }
-
-        };
-        resultScrollPane.getViewport().addMouseListener(mouseAdapter);
-        resultScrollPane.getViewport().addMouseMotionListener(mouseAdapter);
-        resultScrollPane.getViewport().addMouseWheelListener(mouseAdapter);
-        resultScrollPane.setCursor(new Cursor(Cursor.HAND_CURSOR));
-
-        return resultScrollPane;
-    }
-
-    /**
      * Clear the state of the App, returning it to the default state.
      */
     private void clearState(MapView toReset) {
@@ -286,7 +260,7 @@ public class MainAppUI extends JFrame{
      * @param toReset the mapView to reset
      */
     private void resetMap(MapView toReset) {
-        toReset.resetGraphData(graph);
+        toReset.updateGraph(graph, 0);
         addListenersToMapNodes();
 
         //Make sure selected stuff is still respected
@@ -299,5 +273,4 @@ public class MainAppUI extends JFrame{
             }
         }
     }
-
 }

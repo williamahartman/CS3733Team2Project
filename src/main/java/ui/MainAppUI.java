@@ -223,7 +223,7 @@ public class MainAppUI extends JFrame{
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
         dt = new DevTools(graph, mapView);
-        add(dt, BorderLayout.WEST);
+        add(dt, BorderLayout.EAST);
         addWindowFocusListener(new WindowFocusListener() {
             @Override
             public void windowGainedFocus(WindowEvent e) {

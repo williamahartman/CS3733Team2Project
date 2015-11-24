@@ -150,10 +150,6 @@ public class MapView extends JScrollPane{
                 repaint();
             }
             @Override
-            public  void mouseClicked(MouseEvent e){
-                dt.devModeCheck(e, );
-            }
-            @Override
             public void mousePressed(MouseEvent e) {
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();

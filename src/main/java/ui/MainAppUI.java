@@ -42,6 +42,8 @@ public class MainAppUI extends JFrame{
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
 
+    private EdgeAttributeManager attributeManager;
+
     /**
      * Constructor.
      *
@@ -75,6 +77,9 @@ public class MainAppUI extends JFrame{
                 new Color(79, 189, 255));
 
         this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM, style);
+
+        this.attributeManager = new EdgeAttributeManager();
+
         startPoint = null;
         endPoint = null;
     }
@@ -117,6 +122,13 @@ public class MainAppUI extends JFrame{
             }
         });
 
+        JMenuItem routePreferences = new JMenuItem("Route Preferences");
+        routePreferences.addActionListener(e -> {
+            EdgeWeightMenu routePreferencesWindow = new EdgeWeightMenu(attributeManager);
+            routePreferencesWindow.setUpEdgeWeightMenu();
+            routePreferencesWindow.setVisible(true);
+        });
+
         JMenu view = new JMenu("View");
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
         JMenuItem showNodes = new JMenuItem("Show Only Named Locations");
@@ -141,7 +153,7 @@ public class MainAppUI extends JFrame{
         });
         view.add(toggleEdges);
         view.add(showNodes);
-        editMenu.add(refreshMap);
+        editMenu.add(routePreferences);
         editMenu.add(enterDevloperMode);
         menuBar.add(editMenu);
         menuBar.add(view);
@@ -164,30 +176,30 @@ public class MainAppUI extends JFrame{
         floorNum.setForeground(Color.RED);
         floorNum.setFont(new Font("Arial", Font.BOLD, 20));
         floorNum.addActionListener(e ->{
-                if (floorNum.getSelectedItem().equals(0))
-                {
-                    //display ground map
-                    this.mapView.getStyle().setEdgeColor(new Color(250, 120, 0));
-                    this.mapView.updateGraph(graph, 0);
-                    repaint();
-                    floorNumber = 0;
+            if (floorNum.getSelectedItem().equals(0))
+            {
+                //display ground map
+                this.mapView.getStyle().setEdgeColor(new Color(250, 120, 0));
+                this.mapView.updateGraph(graph, 0);
+                repaint();
+                floorNumber = 0;
 
-                }
-                else if (floorNum.getSelectedItem().equals(1))
-                {
-                    this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
-                    this.mapView.updateGraph(graph, 1);
-                    repaint();
-                    floorNumber = 1;
-                }
-                else if (floorNum.getSelectedItem().equals(2))
-                {
-                    this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
-                    this.mapView.updateGraph(graph, 2);
-                    repaint();
-                    floorNumber = 2;
-                }
-            });
+            }
+            else if (floorNum.getSelectedItem().equals(1))
+            {
+                this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
+                this.mapView.updateGraph(graph, 1);
+                repaint();
+                floorNumber = 1;
+            }
+            else if (floorNum.getSelectedItem().equals(2))
+            {
+                this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
+                this.mapView.updateGraph(graph, 2);
+                repaint();
+                floorNumber = 2;
+            }
+        });
 
 
         startInfo = new JLabel();
@@ -218,7 +230,7 @@ public class MainAppUI extends JFrame{
                 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 frame.setMinimumSize(new Dimension(1024, 768));
 
-                java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
+                java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
                     mapView.addRoute(route);
                     gps.setText("");
@@ -262,7 +274,6 @@ public class MainAppUI extends JFrame{
         setLayout(new BorderLayout());
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
-        //todo ASK WILL!! Double west override even if visible is set
         add(devToolsPanel, BorderLayout.EAST);
 
         addWindowFocusListener(new WindowFocusListener() {

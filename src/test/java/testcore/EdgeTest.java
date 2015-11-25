@@ -25,7 +25,7 @@ public class EdgeTest {
 
         Edge testEdge1 = new Edge(empty, empty, new ArrayList<>());
         Edge testEdge2 = new Edge(empty, empty, Arrays.asList(EdgeAttribute.INDOORS));
-        Edge testEdge3 = new Edge(empty, empty, Arrays.asList(EdgeAttribute.OUTDOORS,
+        Edge testEdge3 = new Edge(empty, empty, Arrays.asList(EdgeAttribute.FLOOR1,
                 EdgeAttribute.INDOORS, EdgeAttribute.EDGE_REMOVED));
 
         assertEquals("Edge1 for EDGE_REMOVED", false,
@@ -35,9 +35,9 @@ public class EdgeTest {
         assertEquals("Edge2 for INDOORS", true,
                 testEdge2.hasAttribute(EdgeAttribute.INDOORS));
         assertEquals("Edge3 for HANDICAP_ACCESSIBLE", false,
-                testEdge3.hasAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE));
+                testEdge3.hasAttribute(EdgeAttribute.BASEMENT1));
         assertEquals("Edge3 for OUTDOORS", true,
-                testEdge3.hasAttribute(EdgeAttribute.OUTDOORS));
+                testEdge3.hasAttribute(EdgeAttribute.FLOOR1));
         assertEquals("Edge3 for INDOORS", true,
                 testEdge3.hasAttribute(EdgeAttribute.INDOORS));
         assertEquals("Edge3 for EDGE_REMOVED", true,

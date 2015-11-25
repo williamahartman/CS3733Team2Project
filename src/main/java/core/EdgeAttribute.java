@@ -8,15 +8,15 @@ package core;
 public enum EdgeAttribute {
         //should delete indoors and handicap_accessible
     INDOORS,
-    OUTDOORS,
     NOT_HANDICAP_ACCESSIBLE,
-    HANDICAP_ACCESSIBLE,
     EDGE_REMOVED,
     FLOOR1,
     FLOOR2,
     FLOOR3,
+    FLOOR4,
     BASEMENT1,
     BASEMENT2,
     BASEMENT3,
+    STAIRS,
     BETWEEN_LEVELS,
 }

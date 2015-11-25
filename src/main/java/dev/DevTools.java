@@ -79,15 +79,19 @@ public class DevTools extends JPanel {
         JLabel buttonLabel1 = new JLabel("Floor Number: ");
         JLabel buttonLabel2 = new JLabel("Name List:");
         JCheckBox edgeToggle = new JCheckBox("Edge Mode");
+        JCheckBox indoors = new JCheckBox("Indoors");
+        JCheckBox handicapAccess = new JCheckBox("Handicap Accessible");
+        JLabel blank1 = new JLabel("");
+        JLabel blank2 = new JLabel("");
 
         edgeToggle.setSelected(false);
+        indoors.setSelected(false);
+        handicapAccess.setSelected(false);
 
         //Fields with their initial entries
         JFormattedTextField field1 = new JFormattedTextField(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
         JFormattedTextField field2 = new JFormattedTextField();
-
-        field1.setSize(10, 50);
 
 
         JButton okButton = new JButton("OK");
@@ -122,13 +126,9 @@ public class DevTools extends JPanel {
         JPanel labelPanel = new JPanel(new GridLayout(0, 1));
         labelPanel.add(buttonLabel1);
         labelPanel.add(buttonLabel2);
-        labelPanel.add(edgeToggle);
 
-        JComboBox attributeList = new JComboBox(EdgeAttribute.values());
-        attributeList.addActionListener(e ->
-            currentEdge.addAttribute(EdgeAttribute.values()[attributeList.getSelectedIndex()])
-        );
 
+        //Mouse listener for changing into and out of edge mode
         edgeToggle.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -142,17 +142,50 @@ public class DevTools extends JPanel {
             }
         });
 
+        //Mouse listener for indoors edge attribute
+        indoors.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == 1) {
+                    if (indoors.isSelected()){
+                        currentEdge.addAttribute(EdgeAttribute.INDOORS);
+                    } else {
+                        currentEdge.removeAttribute(EdgeAttribute.INDOORS);
+                    }
+                }
+            }
+        });
+
+        //Mouse listener for handicap accessible edge attribute
+        handicapAccess.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == 1) {
+                    if (indoors.isSelected()){
+                        currentEdge.addAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE);
+                    } else {
+                        currentEdge.removeAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE);
+                    }
+                }
+            }
+        });
+
         //Panel displaying all the fields
         JPanel textPanel = new JPanel(new GridLayout(0, 1));
         textPanel.add(field1);
         textPanel.add(field2);
         textPanel.add(okButton);
-        textPanel.add(attributeList);
+        textPanel.add(blank1);
+        textPanel.add(blank2);
 
         //Panel created to display both the label panel and the field panel
         JPanel panelLayout = new JPanel(new BorderLayout());
         panelLayout.add(labelPanel, BorderLayout.WEST);
         panelLayout.add(textPanel, BorderLayout.LINE_END);
+
+        labelPanel.add(edgeToggle);
+        labelPanel.add(indoors);
+        labelPanel.add(handicapAccess);
 
         return panelLayout;
     }
@@ -162,20 +195,17 @@ public class DevTools extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 lastButtonClicked = (LocationButton) e.getSource();
-                lastButtonClicked.setBackground(Color.CYAN);
                 lastButtonClicked.repaint();
                 if (e.getButton() == 1) {//Left mouse click
                     if (edgeMode) {//if in Edge Mode
-                        Edge edge = originalButton.getAssociatedLocation()
+                        currentEdge = originalButton.getAssociatedLocation()
                                 .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (deleteEdge) {
                             //remove edge
-                            if (edge != null) {
-                                originalButton.getAssociatedLocation().removeEdge(edge);
-                                rebuildGraph();
-                                lastButtonClicked.setBackground(Color.CYAN);
+                            if (currentEdge != null) {
+                                originalButton.getAssociatedLocation().removeEdge(currentEdge);
                             }
-                        } else if (edge != null) { //already has edge
+                        } else if (currentEdge != null) { //already has edge
                             //TODO change edge attributes
                         } else { //does not have an edge
                             //add an edge
@@ -194,13 +224,14 @@ public class DevTools extends JPanel {
                                 .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (edge != null) {
                             originalButton.getAssociatedLocation().removeEdge(edge);
-                            rebuildGraph();
                         }
                     }
                 }
                 rebuildGraph();
-                lastButtonClicked.setBackground(Color.CYAN);
-                lastButtonClicked.repaint();
+                if (!edgeMode) {
+                    lastButtonClicked.setBackground(Color.CYAN);
+                    lastButtonClicked.repaint();
+                }
             }
         };
     }

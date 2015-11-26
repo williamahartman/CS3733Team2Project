@@ -27,6 +27,14 @@ public class DevTools extends JPanel {
     private boolean edgeMode;
     private LocationButton originalButton;
 
+    //Edge attribute check boxes
+    JCheckBox indoors = new JCheckBox("Indoors");
+    JCheckBox handicapAccess = new JCheckBox("Handicap Accessible");
+
+    //Fields with their initial entries (for floor numbers & location names)
+    JFormattedTextField field1 = new JFormattedTextField();
+    JFormattedTextField field2 = new JFormattedTextField();
+
     public DevTools(LocationGraph newGraph, MapView newView) {
         graph = newGraph;
         mapView = newView;
@@ -38,6 +46,7 @@ public class DevTools extends JPanel {
         this.add(createEditor());
     }
 
+    //Mouse adapter for creating LocationButtons
     public MouseAdapter buildAddLocationListener(JPanel mapPanel) {
         return new MouseAdapter() {
             @Override
@@ -57,6 +66,7 @@ public class DevTools extends JPanel {
         };
     }
 
+    //Creates button to save information to the database
     private JButton createSaveButton() {
         JButton saveToDatabase = new JButton("Save to database");
         saveToDatabase.addActionListener(listener -> {
@@ -74,33 +84,31 @@ public class DevTools extends JPanel {
         return saveToDatabase;
     }
 
+    //Makes the panels, buttons, fields, and labels for the dev panel
     private JPanel createEditor() {
         //Labels that appear on the left side and describe the open fields
         JLabel buttonLabel1 = new JLabel("Floor Number: ");
         JLabel buttonLabel2 = new JLabel("Name List:");
+
+        //Check box to show whether you are in 'edge mode' (where only edges are changed) or not
         JCheckBox edgeToggle = new JCheckBox("Edge Mode");
-        JCheckBox indoors = new JCheckBox("Indoors");
-        JCheckBox handicapAccess = new JCheckBox("Handicap Accessible");
+        //initially edge mode is off
+        edgeToggle.setSelected(false);
+
+        //Blank labels created to make the formatting of the panel better
         JLabel blank1 = new JLabel("");
         JLabel blank2 = new JLabel("");
 
-        edgeToggle.setSelected(false);
-        indoors.setSelected(false);
-        handicapAccess.setSelected(false);
-
-        //Fields with their initial entries
-        JFormattedTextField field1 = new JFormattedTextField(lastButtonClicked.getAssociatedLocation()
+        field1.setValue(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
-        JFormattedTextField field2 = new JFormattedTextField();
 
-
+        //Creates an OK button that updates the nodes with their inputted floor numbers & location names when clicked
         JButton okButton = new JButton("OK");
         okButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == 1) {
                     //TODO update node attributes
-
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
@@ -114,19 +122,6 @@ public class DevTools extends JPanel {
                 }
             }
         });
-
-        field1.setColumns(10);
-        field2.setColumns(10);
-
-        //Attach labels to fields
-        buttonLabel1.setLabelFor(field1);
-        buttonLabel2.setLabelFor(field2);
-
-        //Panel displaying all the labels
-        JPanel labelPanel = new JPanel(new GridLayout(0, 1));
-        labelPanel.add(buttonLabel1);
-        labelPanel.add(buttonLabel2);
-
 
         //Mouse listener for changing into and out of edge mode
         edgeToggle.addMouseListener(new MouseAdapter() {
@@ -170,6 +165,21 @@ public class DevTools extends JPanel {
             }
         });
 
+        field1.setColumns(10);
+        field2.setColumns(10);
+
+        //Attach labels to fields
+        buttonLabel1.setLabelFor(field1);
+        buttonLabel2.setLabelFor(field2);
+
+        //Panel displaying all the labels
+        JPanel labelPanel = new JPanel(new GridLayout(0, 1));
+        labelPanel.add(buttonLabel1);
+        labelPanel.add(buttonLabel2);
+        labelPanel.add(edgeToggle);
+        labelPanel.add(indoors);
+        labelPanel.add(handicapAccess);
+
         //Panel displaying all the fields
         JPanel textPanel = new JPanel(new GridLayout(0, 1));
         textPanel.add(field1);
@@ -183,21 +193,29 @@ public class DevTools extends JPanel {
         panelLayout.add(labelPanel, BorderLayout.WEST);
         panelLayout.add(textPanel, BorderLayout.LINE_END);
 
-        labelPanel.add(edgeToggle);
-        labelPanel.add(indoors);
-        labelPanel.add(handicapAccess);
-
         return panelLayout;
     }
 
+    /** Mouse listener that checks for clicks on nodes.
+     *  -- changes the behavior when edge mode is selected
+     */
     private MouseAdapter buildEditListener(LocationGraph lg) {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 lastButtonClicked = (LocationButton) e.getSource();
                 lastButtonClicked.repaint();
-                if (e.getButton() == 1) {//Left mouse click
-                    if (edgeMode) {//if in Edge Mode
+
+                //Updates the location names and floor number of a node
+                field1.setValue(lastButtonClicked.getAssociatedLocation().getFloorNumber());
+                StringBuilder locationNames = new StringBuilder();
+                for (int i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length; i++){
+                    locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);
+                    locationNames.append(',');
+                }
+                field2.setValue(locationNames.toString());
+                if (e.getButton() == 1) { //Left mouse click
+                    if (edgeMode) { //if in Edge Mode
                         currentEdge = originalButton.getAssociatedLocation()
                                 .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (deleteEdge) {
@@ -206,7 +224,12 @@ public class DevTools extends JPanel {
                                 originalButton.getAssociatedLocation().removeEdge(currentEdge);
                             }
                         } else if (currentEdge != null) { //already has edge
-                            //TODO change edge attributes
+                            //update the check boxes to reflect the edge attributes of the edge selected
+                            handicapAccess.setSelected(currentEdge.hasAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE));
+                            indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
+                            System.out.println("Handicap " +
+                                    currentEdge.hasAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE));
+                            System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
                         } else { //does not have an edge
                             //add an edge
                             originalButton.getAssociatedLocation()
@@ -248,10 +271,6 @@ public class DevTools extends JPanel {
         }
     }
 
-    public boolean getDevMode(){
-        return inDevMode;
-    }
-    public void setDevMode(boolean devMode){
-        inDevMode = devMode;
-    }
+    public boolean getDevMode(){ return inDevMode; }
+    public void setDevMode(boolean devMode){ inDevMode = devMode; }
 }

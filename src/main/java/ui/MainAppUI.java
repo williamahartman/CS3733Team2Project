@@ -117,15 +117,45 @@ public class MainAppUI extends JFrame{
             }
         });
 
+        //Sets up the 'view' menu bar
         JMenu view = new JMenu("View");
+
+        //'View' contains toggleEdges, showNodes, and changeStyle
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
         JMenuItem showNodes = new JMenuItem("Show Only Named Locations");
+        JMenu changeStyle = new JMenu("Change Style");
+
+        //changeStyle contains defaultStyle, WPIStyle, monochromaticStyle
+        JMenuItem defaultStyle = new JMenuItem("Default Style");
+        JMenuItem WPIStyle = new JMenuItem("WPI Style");
+        JMenuItem blueStyle = new JMenuItem("Blue Style");
+        JMenuItem neonFunkStyle = new JMenuItem("Neon Funk Style");
+        JMenuItem vintageStyle = new JMenuItem("Vintage Style");
+
+        //Sets up menu hierarchy
+        setJMenuBar(menuBar);
+        menuBar.add(editMenu);
+        menuBar.add(view);
+        view.add(toggleEdges);
+        view.add(showNodes);
+        view.add(changeStyle);
+        editMenu.add(refreshMap);
+        editMenu.add(enterDevloperMode);
+        changeStyle.add(defaultStyle);
+        changeStyle.add(WPIStyle);
+        changeStyle.add(blueStyle);
+        changeStyle.add(neonFunkStyle);
+        changeStyle.add(vintageStyle);
+
+        //Action listener for toggling edges. Turns all edges on or off
         toggleEdges.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setDrawAllEdges(!style.isDrawAllEdges());
 
             resetMap(mapView);
         });
+
+        //Action listener for showing only named nodes, or all the nodes. Currently not functioning correctly.
         showNodes.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             if (style.isDrawAllPoints()){
@@ -136,20 +166,64 @@ public class MainAppUI extends JFrame{
                 showNodes.setText("Show All Locations");
                 style.setDrawAllPoints(true);
             }
-
             resetMap(mapView);
         });
-        view.add(toggleEdges);
-        view.add(showNodes);
-        editMenu.add(refreshMap);
-        editMenu.add(enterDevloperMode);
-        menuBar.add(editMenu);
-        menuBar.add(view);
 
-        setJMenuBar(menuBar);
+        /**
+         * Action listener for default style
+         * Only changes the colors of the nodes/edges
+         * Doesn't change the edge or node toggle states
+         */
+        defaultStyle.addActionListener(e -> {
+            MapViewStyle style = mapView.getStyle();
+            style.setLocationColor(new Color(255, 240, 0));
+            style.setEdgeColor(new Color(250, 120, 0));
+            style.setRouteLocationColor(new Color(79, 189, 255));
+            style.setRouteColor(new Color(15, 78, 152));
+            resetMap(mapView);
+        });
+
+        //Action listener for WPI style
+        WPIStyle.addActionListener(e -> {
+            MapViewStyle style = mapView.getStyle();
+            style.setLocationColor(new Color(0, 0, 0));
+            style.setEdgeColor(new Color(100, 100, 100));
+            style.setRouteLocationColor(new Color(255, 0, 0));
+            style.setRouteColor(new Color(100, 0, 0));
+            resetMap(mapView);
+        });
+
+        //Action listener for Blue Style
+        blueStyle.addActionListener(e -> {
+            MapViewStyle style = mapView.getStyle();
+            style.setLocationColor(new Color(16, 78, 139));
+            style.setEdgeColor(new Color(125, 158, 192));
+            style.setRouteLocationColor(new Color(0, 245, 255));
+            style.setRouteColor(new Color(151, 255, 255));
+            resetMap(mapView);
+        });
+
+        //Action listener for Neon Funk Style (Inspired by Chiara)
+        neonFunkStyle.addActionListener(e -> {
+            MapViewStyle style = mapView.getStyle();
+            style.setLocationColor(new Color(255, 0, 255));
+            style.setEdgeColor(new Color(0, 255, 0));
+            style.setRouteLocationColor(new Color(255, 255, 0));
+            style.setRouteColor(new Color(0, 245, 255));
+            resetMap(mapView);
+        });
+
+        //Action listener for Vintage Style
+        vintageStyle.addActionListener(e -> {
+            MapViewStyle style = mapView.getStyle();
+            style.setLocationColor(new Color(139, 71, 93));
+            style.setEdgeColor(new Color(255, 99, 71));
+            style.setRouteLocationColor(new Color(255, 185, 15));
+            style.setRouteColor(new Color(0, 134, 139));
+            resetMap(mapView);
+        });
 
         //Initialize Panels and buttons
-
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
         sidePanel.setVisible(true);

@@ -73,6 +73,8 @@ public class MapViewStyle {
         return routeLocationColor;
     }
 
+    public void setRouteColor(Color routeColor) { this.routeColor = routeColor; }
+
     public void setLocationColor(Color locationColor) {
         this.locationColor = locationColor;
     }
@@ -80,4 +82,6 @@ public class MapViewStyle {
     public void setEdgeColor(Color edgeColor) {
         this.edgeColor = edgeColor;
     }
+
+    public void setRouteLocationColor(Color routeLocationColor) { this.routeLocationColor = routeLocationColor; }
 }

@@ -61,9 +61,7 @@ public class MapViewStyle {
         return edgeColor;
     }
 
-    public Color getRouteColor() {
-        return routeColor;
-    }
+    public Color getRouteColor() { return routeColor; }
 
     public Color getLocationColor() {
         return locationColor;

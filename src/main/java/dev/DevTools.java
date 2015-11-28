@@ -4,6 +4,7 @@ import core.*;
 import ui.LocationButton;
 import ui.MainAppUI;
 import ui.MapView;
+import ui.MapViewStyle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -87,7 +88,7 @@ public class DevTools extends JPanel {
     //Makes the panels, buttons, fields, and labels for the dev panel
     private JPanel createEditor() {
         //Labels that appear on the left side and describe the open fields
-        JLabel buttonLabel1 = new JLabel("Floor Number: ");
+        JLabel buttonLabel1 = new JLabel("Floor Number:");
         JLabel buttonLabel2 = new JLabel("Name List:");
 
         //Check box to show whether you are in 'edge mode' (where only edges are changed) or not
@@ -98,6 +99,10 @@ public class DevTools extends JPanel {
         //Blank labels created to make the formatting of the panel better
         JLabel blank1 = new JLabel("");
         JLabel blank2 = new JLabel("");
+        JLabel blank3 = new JLabel("");
+        JLabel blank4 = new JLabel("");
+        JLabel blank5 = new JLabel("");
+        JLabel blank6 = new JLabel("");
 
         field1.setValue(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
@@ -108,7 +113,6 @@ public class DevTools extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == 1) {
-                    //TODO update node attributes
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
@@ -165,33 +169,36 @@ public class DevTools extends JPanel {
             }
         });
 
-        field1.setColumns(10);
-        field2.setColumns(10);
+        field1.setColumns(15);
 
         //Attach labels to fields
         buttonLabel1.setLabelFor(field1);
         buttonLabel2.setLabelFor(field2);
 
         //Panel displaying all the labels
-        JPanel labelPanel = new JPanel(new GridLayout(0, 1));
+        JPanel labelPanel = new JPanel(new GridLayout(0, 1, 10, 20));
+        //labelPanel.add(blank4);
         labelPanel.add(buttonLabel1);
         labelPanel.add(buttonLabel2);
         labelPanel.add(edgeToggle);
         labelPanel.add(indoors);
         labelPanel.add(handicapAccess);
+        labelPanel.add(blank3);
 
         //Panel displaying all the fields
-        JPanel textPanel = new JPanel(new GridLayout(0, 1));
+        JPanel textPanel = new JPanel(new GridLayout(0, 1, 10, 20));
         textPanel.add(field1);
         textPanel.add(field2);
-        textPanel.add(okButton);
         textPanel.add(blank1);
-        textPanel.add(blank2);
+        textPanel.add(blank5);
+        textPanel.add(blank6);
+        textPanel.add(blank4);
 
         //Panel created to display both the label panel and the field panel
         JPanel panelLayout = new JPanel(new BorderLayout());
         panelLayout.add(labelPanel, BorderLayout.WEST);
-        panelLayout.add(textPanel, BorderLayout.LINE_END);
+        panelLayout.add(textPanel, BorderLayout.EAST); //LINE_END
+        panelLayout.add(okButton, BorderLayout.SOUTH);
 
         return panelLayout;
     }

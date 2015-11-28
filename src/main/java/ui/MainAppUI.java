@@ -93,6 +93,7 @@ public class MainAppUI extends JFrame{
         JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers Only!)");
 
         devToolsPanel = new DevTools(graph, mapView);
+        devToolsPanel.setBackground(new Color(255, 0, 0));
         devToolsPanel.setVisible(false);
         enterDevloperMode.addActionListener(e -> {
             if (!devToolsPanel.getDevMode()) {
@@ -235,12 +236,13 @@ public class MainAppUI extends JFrame{
         floorNum.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         floorNum.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
         floorNum.setToolTipText("Select Floor Number");
-        floorNum.setForeground(Color.RED);
         floorNum.setFont(new Font("Arial", Font.BOLD, 20));
         floorNum.addActionListener(e ->{
+            //TODO Change based on the style
                 if (floorNum.getSelectedItem().equals(0))
                 {
                     //display ground map
+
                     this.mapView.getStyle().setEdgeColor(new Color(250, 120, 0));
                     this.mapView.updateGraph(graph, 0);
                     repaint();

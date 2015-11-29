@@ -29,31 +29,38 @@ public class Database {
         /*
         TABLES IN THE DATABASE:
 
-        CREATE TABLE mydb.NODES(
+        CREATE TABLE mapData.NODES(
             NODE_ID int not null AUTO_INCREMENT,
             POS_X double not null,
             POS_Y double not null,
             FLOOR_NUM int not null,
-            PRIMARY KEY (NODE_ID))
+            PRIMARY KEY (NODE_ID));
 
-        ALTER TABLE mydb.NODES
-                ADD CONSTRAINT uniquePosition UNIQUE (POS_X, POS_Y, FLOOR_NUM)
+        ALTER TABLE mapData.NODES
+                ADD CONSTRAINT uniquePosition UNIQUE (POS_X, POS_Y, FLOOR_NUM);
 
-        CREATE TABLE mydb.EDGES(
+        CREATE TABLE mapData.EDGES(
                 EDGE_ID int not null AUTO_INCREMENT,
                 NODE1_ID int not null,
                 NODE2_ID int not null,
-                PRIMARY KEY(EDGE_ID))
-        ALTER TABLE mydb.EDGES
-                ADD CONSTRAINT uniquePosition UNIQUE (NODE1_ID, NODE2_ID)
+                PRIMARY KEY(EDGE_ID));
 
-        CREATE TABLE mydb.NAMES(
+        ALTER TABLE mapData.EDGES
+                ADD CONSTRAINT uniquePosition UNIQUE (NODE1_ID, NODE2_ID);
+
+        ALTER TABLE mapData.EDGES
+                ADD FOREIGN KEY (NODE1_ID)
+                REFERENCES mapData.NODES(NODE_ID);
+
+        CREATE TABLE mapData.NAMES(
                 NODE_ID int not null,
-                NAME varchar(30) not null)
+                NAME varchar(30) not null);
 
-        CREATE TABLE mydb.EDGE_ATTRIBUTES(
+        CREATE TABLE mapData.EDGE_ATTRIBUTES(
                 EDGE_ID int not null,
-                ATTRIBUTE varchar(30) not null)
+                ATTRIBUTE varchar(30) not null);
+
+        grant select on mapData.* to 'user'@'%' identified by 'guest';
         */
     }
 

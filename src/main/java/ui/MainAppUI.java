@@ -95,24 +95,39 @@ public class MainAppUI extends JFrame{
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
         refreshMap.addActionListener(e -> resetMap(mapView));
+
         JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers Only!)");
+
+        DevPassword passBox = new DevPassword("aztec", "wash");
 
         devToolsPanel = new DevTools(graph, mapView);
         devToolsPanel.setVisible(false);
         enterDevloperMode.addActionListener(e -> {
+            //int passResult = passBox.passwordBox();
             if (!devToolsPanel.getDevMode()) {
-                devToolsPanel.setDevMode(true);
-                remove(sidePanel);
-                devToolsPanel.setVisible(true);
-                add(devToolsPanel, BorderLayout.WEST);
-                enterDevloperMode.setText("Exit Developer Mode");
-
-                clearState(mapView);
-                devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
-                mapView.getMapPanel().addMouseListener(devToolClickListener);
-                devToolsPanel.rebuildGraph();
+                int passResult = 0;
+                passResult = passBox.passwordBox();
+                if (passResult == 1) {
+                    devToolsPanel.setDevMode(true);
+                    remove(sidePanel);
+                    System.out.println(passResult);
+                    devToolsPanel.setVisible(true);
+                    add(devToolsPanel, BorderLayout.WEST);
+                    enterDevloperMode.setText("Exit Developer Mode");
+                    clearState(mapView);
+                    devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
+                    mapView.getMapPanel().addMouseListener(devToolClickListener);
+                    devToolsPanel.rebuildGraph();
+                    repaint();
+                }
+                else if (passResult == 2) {
+                    JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
+                            "Incorrect!", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
                 devToolsPanel.setDevMode(false);
+                //passResult = 0;
+                //System.out.println(passResult);
                 enterDevloperMode.setText("Edit Map (Developers Only!)");
                 remove(devToolsPanel);
                 add(sidePanel, BorderLayout.WEST);
@@ -175,25 +190,20 @@ public class MainAppUI extends JFrame{
         floorNum.setToolTipText("Select Floor Number");
         floorNum.setForeground(Color.RED);
         floorNum.setFont(new Font("Arial", Font.BOLD, 20));
-        floorNum.addActionListener(e ->{
-            if (floorNum.getSelectedItem().equals(0))
-            {
+        floorNum.addActionListener(e -> {
+            if (floorNum.getSelectedItem().equals(0)) {
                 //display ground map
                 this.mapView.getStyle().setEdgeColor(new Color(250, 120, 0));
                 this.mapView.updateGraph(graph, 0);
                 repaint();
                 floorNumber = 0;
 
-            }
-            else if (floorNum.getSelectedItem().equals(1))
-            {
+            } else if (floorNum.getSelectedItem().equals(1)) {
                 this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
                 this.mapView.updateGraph(graph, 1);
                 repaint();
                 floorNumber = 1;
-            }
-            else if (floorNum.getSelectedItem().equals(2))
-            {
+            } else if (floorNum.getSelectedItem().equals(2)) {
                 this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
                 this.mapView.updateGraph(graph, 2);
                 repaint();
@@ -236,8 +246,7 @@ public class MainAppUI extends JFrame{
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
-                    for (String str:instruct.stepByStepInstruction(route, 1))
-                    {
+                    for (String str : instruct.stepByStepInstruction(route, 1)) {
                         count++;
                         gps.append(count + ") " + str);
                     }

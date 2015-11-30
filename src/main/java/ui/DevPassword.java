@@ -26,6 +26,8 @@ public class DevPassword extends JFrame{
 
     /**
      * Set up the box for the verification pop-up.
+     * Depending on the selection and what information was entered,
+     * either log into Dev mode or stay in the User mode
      */
     public int passwordBox() {
         //Set up titles for the fields.

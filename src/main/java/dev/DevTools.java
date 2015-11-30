@@ -27,6 +27,7 @@ public class DevTools extends JPanel {
     private boolean deleteEdge;
     private boolean edgeMode;
     private LocationButton originalButton;
+    private DatabaseList dblist;
 
     //Edge attribute check boxes
     JCheckBox indoors = new JCheckBox("Indoors");
@@ -39,6 +40,7 @@ public class DevTools extends JPanel {
     public DevTools(LocationGraph newGraph, MapView newView) {
         graph = newGraph;
         mapView = newView;
+        dblist = new DatabaseList();
 
         //TODO fix for empty location graph
         this.lastButtonClicked = mapView.getLocationButtonList().get(0);
@@ -59,8 +61,9 @@ public class DevTools extends JPanel {
                             mousePos.getY() / mapPanel.getHeight());
 
                     //Creates a new button object where the panel is clicked
-                    graph.addLocation(new Location(doubleMousePos, 0, new String[0]), new HashMap<>());
-
+                    Location locAdd = new Location(doubleMousePos, 0, new String[0]);
+                    graph.addLocation(locAdd, new HashMap<>());
+                    dblist.addedLocation(locAdd);
                     rebuildGraph();
                 }
             }
@@ -130,6 +133,7 @@ public class DevTools extends JPanel {
                             nameList[i] = nameList[i].trim().toLowerCase();
                         }
                         lastButtonClicked.getAssociatedLocation().setNameList(nameList);
+                        dblist.updatedLocation(lastButtonClicked.getAssociatedLocation());
                     }
                 }
             }
@@ -159,6 +163,7 @@ public class DevTools extends JPanel {
                     } else {
                         currentEdge.removeAttribute(EdgeAttribute.INDOORS);
                     }
+                    dblist.updatedEdge(currentEdge);
                 }
             }
         });
@@ -173,6 +178,7 @@ public class DevTools extends JPanel {
                     } else {
                         currentEdge.removeAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE);
                     }
+                    dblist.updatedEdge(currentEdge);
                 }
             }
         });
@@ -237,6 +243,7 @@ public class DevTools extends JPanel {
                             //remove edge
                             if (currentEdge != null) {
                                 originalButton.getAssociatedLocation().removeEdge(currentEdge);
+                                dblist.removedEdge(currentEdge);
                             }
                         } else if (currentEdge != null) { //already has edge
                             //update the check boxes to reflect the edge attributes of the edge selected
@@ -249,6 +256,7 @@ public class DevTools extends JPanel {
                             //add an edge
                             originalButton.getAssociatedLocation()
                                     .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), new ArrayList<>());
+                            //// TODO: 11/30/2015 Figure out how to create edge to add to list 
                         }
                     }
                 } else if (e.getButton() == 3) {//Right mouse click
@@ -262,6 +270,7 @@ public class DevTools extends JPanel {
                                 .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (edge != null) {
                             originalButton.getAssociatedLocation().removeEdge(edge);
+                            dblist.removedEdge(edge); 
                         }
                     }
                 }

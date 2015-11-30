@@ -42,6 +42,8 @@ public class MainAppUI extends JFrame{
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
 
+    private EdgeAttributeManager attributeManager;
+
     /**
      * Constructor.
      *
@@ -75,6 +77,9 @@ public class MainAppUI extends JFrame{
                 new Color(79, 189, 255));
 
         this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM, style);
+
+        this.attributeManager = new EdgeAttributeManager();
+
         startPoint = null;
         endPoint = null;
     }

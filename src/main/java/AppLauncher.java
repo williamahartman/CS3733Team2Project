@@ -1,8 +1,12 @@
-import core.Database;
 import ui.MainAppUI;
-
+import core.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
+import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 /**
  * This is a baby easy example of a swing app. This can turn into the real
@@ -14,6 +18,7 @@ public class AppLauncher{
     public static void main(String[] args) {
         try {
             Database graphData = new Database();
+
 
             //Make a frame
             MainAppUI app = new MainAppUI(graphData.createGraph(),

@@ -77,7 +77,7 @@ public class DevTools extends JPanel {
         saveToDatabase.addActionListener(listener -> {
             try {
                 Database graphData = new Database();
-                graphData.updateDB(graph);
+                //graphData.updateDB(graph);
                 graphData.closeConnection();
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(mapView.getParent(),

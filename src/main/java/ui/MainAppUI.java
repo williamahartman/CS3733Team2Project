@@ -101,6 +101,7 @@ public class MainAppUI extends JFrame{
                 remove(sidePanel);
                 devToolsPanel.setVisible(true);
                 add(devToolsPanel, BorderLayout.WEST);
+                repaint();
                 enterDevloperMode.setText("Exit Developer Mode");
 
                 clearState(mapView);
@@ -112,6 +113,7 @@ public class MainAppUI extends JFrame{
                 enterDevloperMode.setText("Edit Map (Developers Only!)");
                 remove(devToolsPanel);
                 add(sidePanel, BorderLayout.WEST);
+                repaint();
 
                 resetMap(mapView);
                 mapView.removeMouseListener(devToolClickListener);

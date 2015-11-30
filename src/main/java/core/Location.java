@@ -71,10 +71,10 @@ public class Location {
      * @param edgeAttributes The list of EdgeAttributes that will be applied to the new edge
      */
 
-    public void makeAdjacentTo(Location nextLocation, List<EdgeAttribute> edgeAttributes) {
+    public Edge makeAdjacentTo(Location nextLocation, List<EdgeAttribute> edgeAttributes) {
         //Don't add an edge if the current Location is passed.
         if (nextLocation == this) {
-            return;
+            return null;
         }
 
         Edge connectionToNeighbor = getConnectingEdgeFromNeighbor(nextLocation);
@@ -85,9 +85,11 @@ public class Location {
 
             //Make the connection two way
             nextLocation.makeAdjacentTo(this, edgeAttributes);
+            return e;
         } else {
             //If there is an existing one way connection, take that edge and make it two way
             edgeList.add(connectionToNeighbor);
+            return connectionToNeighbor;
         }
     }
     /**

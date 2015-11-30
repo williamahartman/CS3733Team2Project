@@ -27,6 +27,7 @@ public class DevTools extends JPanel {
     private boolean deleteEdge;
     private boolean edgeMode;
     private LocationButton originalButton;
+    private DatabaseList dblist;
 
     //Edge attribute check boxes
     JCheckBox indoors = new JCheckBox("Indoors");
@@ -39,6 +40,7 @@ public class DevTools extends JPanel {
     public DevTools(LocationGraph newGraph, MapView newView) {
         graph = newGraph;
         mapView = newView;
+        dblist = new DatabaseList();
 
         //TODO fix for empty location graph
         this.lastButtonClicked = mapView.getLocationButtonList().get(0);
@@ -59,8 +61,9 @@ public class DevTools extends JPanel {
                             mousePos.getY() / mapPanel.getHeight());
 
                     //Creates a new button object where the panel is clicked
-                    graph.addLocation(new Location(doubleMousePos, 0, new String[0]), new HashMap<>());
-
+                    Location locAdd = new Location(doubleMousePos, 0, new String[0]);
+                    graph.addLocation(locAdd, new HashMap<>());
+                    dblist.addedLocation(locAdd);
                     rebuildGraph();
                 }
             }
@@ -70,6 +73,7 @@ public class DevTools extends JPanel {
     //Creates button to save information to the database
     private JButton createSaveButton() {
         JButton saveToDatabase = new JButton("Save to database");
+        saveToDatabase.setToolTipText("Commit the changes made to the online database.");
         saveToDatabase.addActionListener(listener -> {
             try {
                 Database graphData = new Database();
@@ -95,7 +99,10 @@ public class DevTools extends JPanel {
         JCheckBox edgeToggle = new JCheckBox("Edge Mode");
         //initially edge mode is off
         edgeToggle.setSelected(false);
-
+        edgeToggle.setToolTipText("<html>Click to activate Edge Mode.<br>" +
+            "In Edge Mode, clicking on a new node will make an edge between it and the last node clicked " +
+            "before entering edge mode.<br>Similarly, right-clicking on a node will delete " +
+            "the edge between it and the last node clicked before entering Edge Mode.</html>");
         //Blank labels created to make the formatting of the panel better
         JLabel blank1 = new JLabel("");
         JLabel blank2 = new JLabel("");
@@ -105,9 +112,13 @@ public class DevTools extends JPanel {
 
         field1.setValue(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
-
+        field1.setToolTipText("<html>The floor number associated with the currently selected node.<br>" +
+                "Only valid integers will be accepted.</html>");
+        field2.setToolTipText("<html>The list of names that this node should be searchable by.<br>" +
+                "Separate multiple names with a comma.</html>");
         //Creates an OK button that updates the nodes with their inputted floor numbers & location names when clicked
         JButton okButton = new JButton("OK");
+        okButton.setToolTipText("Apply changes to the local version of this map object.");
         okButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -121,6 +132,7 @@ public class DevTools extends JPanel {
                             nameList[i] = nameList[i].trim().toLowerCase();
                         }
                         lastButtonClicked.getAssociatedLocation().setNameList(nameList);
+                        dblist.updatedLocation(lastButtonClicked.getAssociatedLocation());
                     }
                 }
             }
@@ -150,6 +162,7 @@ public class DevTools extends JPanel {
                     } else {
                         currentEdge.removeAttribute(EdgeAttribute.INDOORS);
                     }
+                    dblist.updatedEdge(currentEdge);
                 }
             }
         });
@@ -164,6 +177,7 @@ public class DevTools extends JPanel {
                     } else {
                         currentEdge.removeAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE);
                     }
+                    dblist.updatedEdge(currentEdge);
                 }
             }
         });
@@ -228,6 +242,7 @@ public class DevTools extends JPanel {
                             //remove edge
                             if (currentEdge != null) {
                                 originalButton.getAssociatedLocation().removeEdge(currentEdge);
+                                dblist.removedEdge(currentEdge);
                             }
                         } else if (currentEdge != null) { //already has edge
                             //update the check boxes to reflect the edge attributes of the edge selected
@@ -238,8 +253,11 @@ public class DevTools extends JPanel {
                             System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
                         } else { //does not have an edge
                             //add an edge
-                            originalButton.getAssociatedLocation()
+                            Edge newEdge = originalButton.getAssociatedLocation()
                                     .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), new ArrayList<>());
+                            if (newEdge != null) {
+                                dblist.addedEdge(newEdge);
+                            }
                         }
                     }
                 } else if (e.getButton() == 3) {//Right mouse click
@@ -253,6 +271,7 @@ public class DevTools extends JPanel {
                                 .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (edge != null) {
                             originalButton.getAssociatedLocation().removeEdge(edge);
+                            dblist.removedEdge(edge);
                         }
                     }
                 }

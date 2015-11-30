@@ -126,7 +126,12 @@ public class DevTools extends JPanel {
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
-                    String[] nameList = tempString.split(",");
+                    String[] nameList;
+                    if (tempString.contains(",")) {
+                        nameList = tempString.split(",");
+                    } else {
+                        nameList = new String[]{tempString};
+                    }
                     if (!field2.getValue().equals("Enter a String")) {
                         for (int i = 0; i < nameList.length; i++) {
                             nameList[i] = nameList[i].trim().toLowerCase();
@@ -173,9 +178,9 @@ public class DevTools extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == 1) {
                     if (indoors.isSelected()){
-                        currentEdge.addAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE);
+                        currentEdge.addAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
                     } else {
-                        currentEdge.removeAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE);
+                        currentEdge.removeAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
                     }
                     dblist.updatedEdge(currentEdge);
                 }
@@ -246,10 +251,10 @@ public class DevTools extends JPanel {
                             }
                         } else if (currentEdge != null) { //already has edge
                             //update the check boxes to reflect the edge attributes of the edge selected
-                            handicapAccess.setSelected(currentEdge.hasAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE));
+                            handicapAccess.setSelected(currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
                             indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
                             System.out.println("Handicap " +
-                                    currentEdge.hasAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE));
+                                    currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
                             System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
                         } else { //does not have an edge
                             //add an edge

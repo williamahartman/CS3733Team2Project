@@ -504,10 +504,16 @@ public class Database {
                 int floor = res.getInt("FLOOR_NUM");
                 //create a new location with the row's info and
                 //the corresponding name list from the hashmap
-                Location loc = new Location (
-                        coords,
-                        floor, nameHm.get(nodeId));
-
+                Location loc;
+                if (nameHm.get(nodeId) != null) {
+                     loc = new Location(
+                            coords,
+                            floor, nameHm.get(nodeId));
+                } else {
+                    loc = new Location(
+                            coords,
+                            floor, new String[0]);
+                }
                 // Add locations and node id to a hash map
                 hm.put(nodeId, loc);
                 graph.addLocation(loc, new HashMap<>());

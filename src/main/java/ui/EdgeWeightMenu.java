@@ -31,7 +31,7 @@ public class EdgeWeightMenu extends JFrame{
     public void setUpEdgeWeightMenu() {
         Hashtable<Integer, JLabel> sliderLabelTable = new Hashtable<>();
         sliderLabelTable.put(0, new JLabel("Avoid"));
-        sliderLabelTable.put(1, new JLabel("Neural"));
+        sliderLabelTable.put(1, new JLabel("Neutral"));
         sliderLabelTable.put(2, new JLabel("Prefer"));
 
         JSlider preferIndoors = new JSlider(JSlider.HORIZONTAL, 0, 2, 1);

@@ -6,7 +6,6 @@ package core;
  * edges out of the graph.
  */
 public enum EdgeAttribute {
-        //should delete indoors and handicap_accessible
     INDOORS,
     OUTDOORS,
     HANDICAP_ACCESSIBLE,

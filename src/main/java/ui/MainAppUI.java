@@ -103,9 +103,9 @@ public class MainAppUI extends JFrame{
         devToolsPanel = new DevTools(graph, mapView);
         devToolsPanel.setVisible(false);
         enterDevloperMode.addActionListener(e -> {
-            //int passResult = passBox.passwordBox();
             if (!devToolsPanel.getDevMode()) {
                 int passResult = 0;
+                //Open the password sign-in
                 passResult = passBox.passwordBox();
                 if (passResult == 1) {
                     devToolsPanel.setDevMode(true);
@@ -126,8 +126,6 @@ public class MainAppUI extends JFrame{
                 }
             } else {
                 devToolsPanel.setDevMode(false);
-                //passResult = 0;
-                //System.out.println(passResult);
                 enterDevloperMode.setText("Edit Map (Developers Only!)");
                 remove(devToolsPanel);
                 add(sidePanel, BorderLayout.WEST);

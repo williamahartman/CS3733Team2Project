@@ -348,17 +348,18 @@ public class MainAppUI extends JFrame{
         //todo ASK WILL!! Double west override even if visible is set
         add(devToolsPanel, BorderLayout.EAST);
 
-        addWindowFocusListener(new WindowFocusListener() {
-            @Override
-            public void windowGainedFocus(WindowEvent e) {
-                resetMap(mapView);
-            }
 
-            @Override
-            public void windowLostFocus(WindowEvent e) {
-                resetMap(mapView);
-            }
-        });
+//        addWindowFocusListener(new WindowFocusListener() {
+//            @Override
+//            public void windowGainedFocus(WindowEvent e) {
+//                resetMap(mapView);
+//            }
+//
+//            @Override
+//            public void windowLostFocus(WindowEvent e) {
+//                resetMap(mapView);
+//            }
+//        });
 
         clearState(mapView);
     }

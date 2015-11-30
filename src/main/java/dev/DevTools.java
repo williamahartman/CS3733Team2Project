@@ -77,7 +77,7 @@ public class DevTools extends JPanel {
         saveToDatabase.addActionListener(listener -> {
             try {
                 Database graphData = new Database();
-                //graphData.updateDB(graph);
+                graphData.updateDB(dblist);
                 graphData.closeConnection();
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(mapView.getParent(),
@@ -130,15 +130,16 @@ public class DevTools extends JPanel {
                     if (tempString.contains(",")) {
                         nameList = tempString.split(",");
                     } else {
-                        nameList = new String[]{tempString};
+                        nameList = new String[]{lastButtonClicked.getAssociatedLocation().getNameList()[0]};
                     }
                     if (!field2.getValue().equals("Enter a String")) {
                         for (int i = 0; i < nameList.length; i++) {
                             nameList[i] = nameList[i].trim().toLowerCase();
                         }
                         lastButtonClicked.getAssociatedLocation().setNameList(nameList);
-                        dblist.updatedLocation(lastButtonClicked.getAssociatedLocation());
+
                     }
+                    dblist.updatedLocation(lastButtonClicked.getAssociatedLocation());
                 }
             }
         });
@@ -234,10 +235,15 @@ public class DevTools extends JPanel {
                 //Updates the location names and floor number of a node
                 field1.setValue(lastButtonClicked.getAssociatedLocation().getFloorNumber());
                 StringBuilder locationNames = new StringBuilder();
-                for (int i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length; i++){
+                int i = 0;
+                if (lastButtonClicked.getAssociatedLocation().getNameList().length != 0) {
+                    for (i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length - 1; i++) {
+                        locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);
+                        locationNames.append(',');
+                    }
                     locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);
-                    locationNames.append(',');
                 }
+
                 field2.setValue(locationNames.toString());
                 if (e.getButton() == 1) { //Left mouse click
                     if (edgeMode) { //if in Edge Mode
@@ -267,6 +273,7 @@ public class DevTools extends JPanel {
                     }
                 } else if (e.getButton() == 3) {//Right mouse click
                     if (!edgeMode) {
+                        dblist.removedLocation(lastButtonClicked.getAssociatedLocation());
                         lg.removeLocation(lastButtonClicked.getAssociatedLocation());
                         DevTools.this.mapView.remove(lastButtonClicked);
                         originalButton = DevTools.this.mapView.getLocationButtonList().get(0);

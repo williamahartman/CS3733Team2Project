@@ -70,6 +70,7 @@ public class DevTools extends JPanel {
     //Creates button to save information to the database
     private JButton createSaveButton() {
         JButton saveToDatabase = new JButton("Save to database");
+        saveToDatabase.setToolTipText("Commit the changes made to the online database.");
         saveToDatabase.addActionListener(listener -> {
             try {
                 Database graphData = new Database();
@@ -95,7 +96,10 @@ public class DevTools extends JPanel {
         JCheckBox edgeToggle = new JCheckBox("Edge Mode");
         //initially edge mode is off
         edgeToggle.setSelected(false);
-
+        edgeToggle.setToolTipText("<html>Click to activate Edge Mode.<br>" +
+            "In Edge Mode, clicking on a new node will make an edge between it and the last node clicked " +
+            "before entering edge mode.<br>Similarly, right-clicking on a node will delete " +
+            "the edge between it and the last node clicked before entering Edge Mode.</html>");
         //Blank labels created to make the formatting of the panel better
         JLabel blank1 = new JLabel("");
         JLabel blank2 = new JLabel("");
@@ -106,9 +110,13 @@ public class DevTools extends JPanel {
 
         field1.setValue(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
-
+        field1.setToolTipText("<html>The floor number associated with the currently selected node.<br>" +
+                "Only valid integers will be accepted.</html>");
+        field2.setToolTipText("<html>The list of names that this node should be searchable by.<br>" +
+                "Separate multiple names with a comma.</html>");
         //Creates an OK button that updates the nodes with their inputted floor numbers & location names when clicked
         JButton okButton = new JButton("OK");
+        okButton.setToolTipText("Apply changes to the local version of this map object.");
         okButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {

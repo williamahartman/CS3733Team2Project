@@ -174,7 +174,7 @@ public class MainAppUI extends JFrame{
                 showNodes.setText("Show All Locations");
                 style.setDrawAllPoints(true);
             }
-            resetMap(mapView);
+            mapView.updateGraph(graph, floorNumber);
         });
 
         /**

@@ -211,10 +211,8 @@ public class MapView extends JScrollPane{
             mapPanel.remove(locButton);
         }
         locationButtonList.clear();
-
-        updateNodeVisibility();
-
         addButtons();
+        updateNodeVisibility();
     }
 
     /**
@@ -288,15 +286,16 @@ public class MapView extends JScrollPane{
             Location loc = button.getAssociatedLocation();
 
             if (style.isDrawAllPoints()) {
-                button.setVisible(false);
-            } else {
                 button.setVisible(true);
+            } else {
+                button.setVisible(false);
             }
 
             if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
                 button.setVisible(true);
                 button.setToolTipText(loc.getNameList()[0]);
             }
+            button.repaint();
         }
     }
 

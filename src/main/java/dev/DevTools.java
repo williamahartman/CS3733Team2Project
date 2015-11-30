@@ -109,7 +109,6 @@ public class DevTools extends JPanel {
         JLabel blank3 = new JLabel("");
         JLabel blank4 = new JLabel("");
         JLabel blank5 = new JLabel("");
-        JLabel blank6 = new JLabel("");
 
         field1.setValue(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
@@ -205,7 +204,7 @@ public class DevTools extends JPanel {
         textPanel.add(field2);
         textPanel.add(blank1);
         textPanel.add(blank5);
-        textPanel.add(blank6);
+        textPanel.add(blank2);
         textPanel.add(blank4);
 
         //Panel created to display both the label panel and the field panel

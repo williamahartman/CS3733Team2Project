@@ -254,9 +254,11 @@ public class DevTools extends JPanel {
                             System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
                         } else { //does not have an edge
                             //add an edge
-                            originalButton.getAssociatedLocation()
+                            Edge newEdge = originalButton.getAssociatedLocation()
                                     .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), new ArrayList<>());
-                            //// TODO: 11/30/2015 Figure out how to create edge to add to list 
+                            if (newEdge != null) {
+                                dblist.addedEdge(newEdge);
+                            }
                         }
                     }
                 } else if (e.getButton() == 3) {//Right mouse click
@@ -270,7 +272,7 @@ public class DevTools extends JPanel {
                                 .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (edge != null) {
                             originalButton.getAssociatedLocation().removeEdge(edge);
-                            dblist.removedEdge(edge); 
+                            dblist.removedEdge(edge);
                         }
                     }
                 }

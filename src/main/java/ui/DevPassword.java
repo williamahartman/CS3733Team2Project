@@ -39,6 +39,8 @@ public class DevPassword extends JFrame{
         JPasswordField password = new JPasswordField();
         label.add(password);
 
+        //Decide whether the user logged in using the correct credentials, tried
+        //to log in using wrong ones, or selected cancel.
         int result = JOptionPane.showConfirmDialog(null, label,
                 "Are You an Authorized Developer?", JOptionPane.OK_CANCEL_OPTION);
         int flag = 0;

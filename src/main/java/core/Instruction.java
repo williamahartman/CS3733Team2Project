@@ -7,8 +7,10 @@ import java.util.*;
  */
 public class Instruction {
     private List<String> instruction;
+    private double totalDistance;
     public Instruction(){
-        this.instruction = new ArrayList<String>();
+        this.instruction = new ArrayList<>();
+        this.totalDistance = 0;
     }
 
     /**
@@ -20,8 +22,9 @@ public class Instruction {
      */
 
     public List<String> stepByStepInstruction(List<Location> locList, int scale) {
+        totalDistance = 0.0;
         int i = 0;
-        int flag = 0; //records the relation between previous edge and next edge
+        int flag; //records the relation between previous edge and next edge
         int flag2 = 0; //records the relation between previous edge and the edge before previous edge
         double distance = 0;
         double distance2 = 0;
@@ -86,52 +89,59 @@ public class Instruction {
                 //determines if the vector2 rotates counterclockwise or clockwise from vector1
                 //math function v1 * v2 = |v1||v2|sin(x)
                 double cross = vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX();
-                System.out.println(cross * 10000);
                 //sin(x) is negative if it rotates counterclockwise, sin(x) is positive if it rotates clockwise
                 //sin(x) is 0 if it rotates 180 degree
-                if (cross * 10000 < -1) { //counterclockwise
+                if (cross < 0) { //counterclockwise
                     flag = 1; //left
-                } else if (cross * 10000 > 1) { //clockwise
+                } else if (cross  > 0) { //clockwise
                     flag = 2; //right
                 } else {
                     flag = 3; //straight
                 }
                 String str = " ";
-                double l1 = locCurrent.getTwoDecimalDistance(locPrev, scale);
+
+                double l1 = locCurrent.getPosition().distance(locPrev.getPosition());
                 //^distance between previous node and current node
-                double l2 = locCurrent.getTwoDecimalDistance(locNext, scale);
+                double l2 = locCurrent.getPosition().distance(locNext.getPosition());
                 //^distance between next node and current node
-                double l3 = locPrev.getTwoDecimalDistance(locNext, scale);
+                double l3 = locPrev.getPosition().distance(locNext.getPosition());
                 //^distance between previous node and next node
+
                 if (flag != 3){
                     //calculates degree between previous edge and next edge(vector1 and vector2)
                     //Using inverse trigonometric functions and Law of cosines
                     double degree = Math.toDegrees(Math.acos((l1 * l1 + l2 * l2 - l3 * l3) / (2 * l1 * l2)));
-                    if (degree > 120){
+                    if (degree >= 170 || degree <= 10){
+                        flag = 3; //treats the small turn as going straight
+                    } else if (degree > 120 && degree < 170){
                         str = " slightly ";
-                    } else if (degree < 60){
+                    } else if (degree < 60 && degree > 10){
                         str = " hard ";
                     }
                 }
                 if (flag == 1){
                     //user should turn left and then add all distance after last turn together
-                    distance = leftRightDirection(i, flag2, distance, distance2);
+                    distance = leftRightDirection(scale, i, flag2, distance, distance2);
                     instruction.add("Turn" + str + "left.\n");
                     if (i == listSize - 2){
+                        l2 = this.make2Decimal(l2, scale);
                         //if reach the end of the location list
-                        instruction.add("Go " + l2 + " miles.\n");
+                        instruction.add("Go " + l2 + " feet.\n");
+                        totalDistance += l2;
                     }
                     distance2 = l2; //records the distance between current and next location
                     flag2 = 2; //records current action turning
                 } else if (flag == 2){
                     //user should turn left and then add all distance after last turn together
-                    distance = leftRightDirection(i, flag2, distance, distance2);
+                    distance = leftRightDirection(scale, i, flag2, distance, distance2);
                     instruction.add("Turn" + str + "right.\n");
                     distance2 = l2; //records the distance after last turn
                     flag2 = 2;
                     if (i == listSize - 2){
+                        l2 = this.make2Decimal(l2, scale);
                         //if reach the end of the location list
-                        instruction.add("Go " + l2 + " miles.\n");
+                        instruction.add("Go " + l2 + " feet.\n");
+                        totalDistance += l2;
                     }
                 } else {
                     if (flag == 3){
@@ -143,39 +153,67 @@ public class Instruction {
                         flag2 = 1; //records current action is going straight
                     }
                     if (i == listSize - 2){
+                        distance = this.make2Decimal(distance, scale);
                         //if reach the end of the location list
-                        instruction.add("Go straight and go " + distance + " miles.\n");
+                        instruction.add("Go straight and go " + distance + " feet.\n");
+                        totalDistance += distance;
                     }
                 }
                 i++;
             }
         }
         instruction.add("You arrive at your destination.\n");
+
+        totalDistance = this.make2Decimal(totalDistance, 1);
+        instruction.add(0, "The total distance is " + totalDistance + " feet.\n");
+        //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
+        int timeNeed = (int) totalDistance / 273;
+        instruction.add(1, "On average it takes " + timeNeed + " minutes to arrive your destination.\n");
+
         return instruction;
     }
 
+    /**
+     *
+     * A helper function to make the distance be two decimal number.
+     * @param distance distance wanted to save two decimal
+     * @param scale scale of map
+     * @return the distance
+     */
+    private double make2Decimal(double distance, int scale){
+        distance = distance * scale;
+        String temp = String.format(("%.2f"), distance);
+        distance = Double.parseDouble(temp);
+        return distance;
+    }
 
     /**
      *
      * A helper function to add instruction.
-     * @param i
-     * @param flag2
-     * @param distance
-     * @param distance2
+     * @param i int
+     * @param flag2 indicates previous action
+     * @param distance distance
+     * @param distance2 records the distance after last turn
      * @return the distance
      */
 
-    private double leftRightDirection(int i, int flag2, double distance, double distance2){
+    private double leftRightDirection(int scale, int i, int flag2, double distance, double distance2){
         if (flag2 == 1){
-            instruction.add("Go straight and go " + distance + " miles.\n");
+            distance = this.make2Decimal(distance, scale);
+            instruction.add("Go straight and go " + distance + " feet.\n");
+            totalDistance += distance;
             distance = 0;
             return distance;
         }
         if (i != 0 && i != 1) {
-            instruction.add("Go " + distance2 + " miles.\n");
+            distance2 = this.make2Decimal(distance2, scale);
+            instruction.add("Go " + distance2 + " feet.\n");
+            totalDistance += distance2;
         }
         return distance;
     }
+
+
     public List<String> getInstruction(){
         return instruction;
     }

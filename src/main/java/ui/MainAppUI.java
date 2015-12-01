@@ -34,9 +34,13 @@ public class MainAppUI extends JFrame{
     private JLabel endPointInfo;
 
     private JTextArea gps;
+    private JTextField searchText;
+    private String locToSearch;
 
     private JButton clearButton;
     private JButton makeAStarRoute;
+    private JButton searchButton;
+
     public static int floorNumber;
 
     private DevTools devToolsPanel;
@@ -260,30 +264,30 @@ public class MainAppUI extends JFrame{
         floorNum.setFont(new Font("Arial", Font.BOLD, 20));
         floorNum.addActionListener(e ->{
             //TODO Change based on the style
-                if (floorNum.getSelectedItem().equals(0))
-                {
-                    //display ground map
-                    floorNumber = 0;
-                    this.mapView.updateGraph(graph, 0);
-                    repaint();
+            if (floorNum.getSelectedItem().equals(0))
+            {
+                //display ground map
+                floorNumber = 0;
+                this.mapView.updateGraph(graph, 0);
+                repaint();
 
 
-                }
-                else if (floorNum.getSelectedItem().equals(1))
-                {
-                    floorNumber = 1;
-                    this.mapView.updateGraph(graph, 1);
-                    repaint();
+            }
+            else if (floorNum.getSelectedItem().equals(1))
+            {
+                floorNumber = 1;
+                this.mapView.updateGraph(graph, 1);
+                repaint();
 
-                }
-                else if (floorNum.getSelectedItem().equals(2))
-                {
-                    floorNumber = 2;
-                    this.mapView.updateGraph(graph, 2);
-                    repaint();
+            }
+            else if (floorNum.getSelectedItem().equals(2))
+            {
+                floorNumber = 2;
+                this.mapView.updateGraph(graph, 2);
+                repaint();
 
-                }
-            });
+            }
+        });
 
 
         startInfo = new JLabel();
@@ -343,6 +347,52 @@ public class MainAppUI extends JFrame{
             }
         });
 
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchText = new JTextField(20);
+        searchText.setVisible(true);
+        searchText.setPreferredSize(new Dimension(170, 30));
+        searchText.setMaximumSize(new Dimension(170, 30));
+
+        searchButton = new JButton("Search");
+        searchButton.setPreferredSize(new Dimension(90, 30));
+        searchButton.setMaximumSize(new Dimension(90, 30));
+        searchButton.setToolTipText("Search the location on map.");
+        searchButton.addActionListener(e -> {
+            locToSearch = null; //the location user want to search
+            try {
+                clearState(mapView);
+                locToSearch = searchText.getText(); //gets the name from text field
+                //if there is no entering
+                if (locToSearch.length() == 0) {
+                    //if no location is entered
+                    JOptionPane.showMessageDialog(this, "Please Enter a Location.");
+                } else {
+                    //search the name in nameLList for all locations in the graph
+                    java.util.List<Location> loc = graph.searchLocationByName(locToSearch);
+                    if (loc.size() > 0) {
+                        //if locations are found
+                        JFrame frameSearch = new JFrame("Search");
+                        frameSearch.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                        frameSearch.setMinimumSize(new Dimension(1024, 768));
+                        mapView.addToSearchList(loc);
+                        repaint();
+                        clearButton.setEnabled(true);
+                    } else {
+                        //if no location is found
+                        JOptionPane.showMessageDialog(this, "Location is not found.");
+                    }
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
+            }
+
+        });
+
+
+        //Add elements to the search panel
+        searchPanel.add(searchText);
+        searchPanel.add(searchButton);
+
         //Add elements to the side panel
         JScrollPane text = new JScrollPane(gps);
         sidePanel.add(startInfo);
@@ -350,6 +400,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(makeAStarRoute);
         sidePanel.add(floorNum);
         sidePanel.add(text, BorderLayout.CENTER);
+        sidePanel.add(searchPanel);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
 

@@ -61,7 +61,7 @@ public class DevTools extends JPanel {
                             mousePos.getY() / mapPanel.getHeight());
 
                     //Creates a new button object where the panel is clicked
-                    Location locAdd = new Location(doubleMousePos, 0, new String[0]);
+                    Location locAdd = new Location(doubleMousePos, MainAppUI.floorNumber, new String[0]);
                     graph.addLocation(locAdd, new HashMap<>());
                     dblist.addedLocation(locAdd);
                     rebuildGraph();

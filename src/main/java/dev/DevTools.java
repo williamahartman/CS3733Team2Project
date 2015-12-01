@@ -132,7 +132,9 @@ public class DevTools extends JPanel {
                     if (tempString.contains(",")) {
                         nameList = tempString.split(",");
                     }
-                    else {
+                    else if (tempString.length() >0){
+                        nameList = new String[]{tempString};
+                    } else{
                         nameList = new String[0];
                     }
                     if (!(field2.getValue() == null)) {

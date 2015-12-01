@@ -175,11 +175,11 @@ public class MainAppUI extends JFrame{
         showNodes.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             if (style.isDrawAllPoints()){
-                showNodes.setText("Show Only Named Locations");
+                showNodes.setText("Show All Locations");
                 style.setDrawAllPoints(false);
                 style.setDrawNamedPoints(true);
             } else {
-                showNodes.setText("Show All Locations");
+                showNodes.setText("Show Only Named Locations");
                 style.setDrawAllPoints(true);
             }
             mapView.updateGraph(graph, floorNumber);

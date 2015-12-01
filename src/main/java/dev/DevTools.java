@@ -78,7 +78,7 @@ public class DevTools extends JPanel {
             try {
                 Database graphData = new Database();
                 graphData.updateDB(dblist);
-                dblist=new DatabaseList();
+                dblist = new DatabaseList();
                 graphData.closeConnection();
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(mapView.getParent(),

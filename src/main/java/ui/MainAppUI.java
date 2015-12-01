@@ -251,12 +251,12 @@ public class MainAppUI extends JFrame{
         //Action listener for Vintage Style
         colorBlindStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
-            style.setLocationColor(new Color(255, 0, 92));
-            style.setEdgeColor(new Color(255, 160, 180), 0);
-            style.setEdgeColor(new Color(254, 223, 228), 1);
-            style.setEdgeColor(new Color(205, 49, 21), 2);
-            style.setRouteLocationColor(new Color(87, 198, 244));
-            style.setRouteColor(new Color(0, 151, 196));
+            style.setLocationColor(new Color(0, 0, 255));
+            style.setEdgeColor(new Color(200, 0, 0), 0);
+            style.setEdgeColor(new Color(225, 32, 32), 1);
+            style.setEdgeColor(new Color(225, 100, 100), 2);
+            style.setRouteLocationColor(new Color(0, 0, 0));
+            style.setRouteColor(new Color(255, 185, 15));
             resetMap(mapView);
         });
 

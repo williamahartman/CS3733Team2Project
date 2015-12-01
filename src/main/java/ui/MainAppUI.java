@@ -76,6 +76,10 @@ public class MainAppUI extends JFrame{
                 new Color(255, 240, 0),
                 new Color(79, 189, 255));
 
+        style.setEdgeColor(new Color(255, 60, 0), 1);
+        style.setEdgeColor(new Color(255, 30, 0), 2);
+
+
         this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM, style);
 
         this.attributeManager = new EdgeAttributeManager();
@@ -185,7 +189,9 @@ public class MainAppUI extends JFrame{
         defaultStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(255, 240, 0));
-            style.setEdgeColor(new Color(250, 120, 0));
+            style.setEdgeColor(new Color(250, 120, 0), 0);
+            style.setEdgeColor(new Color(255, 60, 0), 1);
+            style.setEdgeColor(new Color(255, 30, 0), 2);
             style.setRouteLocationColor(new Color(79, 189, 255));
             style.setRouteColor(new Color(15, 78, 152));
             resetMap(mapView);
@@ -195,9 +201,11 @@ public class MainAppUI extends JFrame{
         WPIStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(0, 0, 0));
-            style.setEdgeColor(new Color(169, 176, 183));
+            style.setEdgeColor(new Color(100, 100, 100), 0);
+            style.setEdgeColor(new Color(70, 70, 70), 1);
+            style.setEdgeColor(new Color(40, 40, 40), 2);
             style.setRouteLocationColor(new Color(255, 0, 0));
-            style.setRouteColor(new Color(172, 43, 55));
+            style.setRouteColor(new Color(100, 0, 0));
             resetMap(mapView);
         });
 
@@ -205,7 +213,9 @@ public class MainAppUI extends JFrame{
         blueStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(16, 78, 139));
-            style.setEdgeColor(new Color(125, 158, 192));
+            style.setEdgeColor(new Color(125, 158, 192), 0);
+            style.setEdgeColor(new Color(105, 138, 172), 1);
+            style.setEdgeColor(new Color(85, 118, 152), 2);
             style.setRouteLocationColor(new Color(0, 245, 255));
             style.setRouteColor(new Color(151, 255, 255));
             resetMap(mapView);
@@ -215,7 +225,9 @@ public class MainAppUI extends JFrame{
         neonFunkStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(255, 0, 255));
-            style.setEdgeColor(new Color(0, 255, 0));
+            style.setEdgeColor(new Color(0, 255, 0), 0);
+            style.setEdgeColor(new Color(0, 150, 0), 1);
+            style.setEdgeColor(new Color(0, 100, 0), 2);
             style.setRouteLocationColor(new Color(255, 255, 0));
             style.setRouteColor(new Color(0, 245, 255));
             resetMap(mapView);
@@ -225,7 +237,9 @@ public class MainAppUI extends JFrame{
         vintageStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(139, 71, 93));
-            style.setEdgeColor(new Color(255, 99, 71));
+            style.setEdgeColor(new Color(255, 99, 71), 0);
+            style.setEdgeColor(new Color(225, 70, 40), 1);
+            style.setEdgeColor(new Color(205, 49, 21), 2);
             style.setRouteLocationColor(new Color(255, 185, 15));
             style.setRouteColor(new Color(0, 134, 139));
             resetMap(mapView);
@@ -242,7 +256,6 @@ public class MainAppUI extends JFrame{
         floorNum.setSelectedItem(0);
         floorNum.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         floorNum.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
-        floorNum.setMinimumSize(new Dimension(SIDEPANEL_WIDTH, 30));
         floorNum.setToolTipText("Select Floor Number");
         floorNum.setFont(new Font("Arial", Font.BOLD, 20));
         floorNum.addActionListener(e ->{
@@ -250,26 +263,25 @@ public class MainAppUI extends JFrame{
                 if (floorNum.getSelectedItem().equals(0))
                 {
                     //display ground map
-
-                    this.mapView.getStyle().setEdgeColor(new Color(250, 120, 0));
+                    floorNumber = 0;
                     this.mapView.updateGraph(graph, 0);
                     repaint();
-                    floorNumber = 0;
+
 
                 }
                 else if (floorNum.getSelectedItem().equals(1))
                 {
-                    this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
+                    floorNumber = 1;
                     this.mapView.updateGraph(graph, 1);
                     repaint();
-                    floorNumber = 1;
+
                 }
                 else if (floorNum.getSelectedItem().equals(2))
                 {
-                    this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
+                    floorNumber = 2;
                     this.mapView.updateGraph(graph, 2);
                     repaint();
-                    floorNumber = 2;
+
                 }
             });
 
@@ -277,15 +289,12 @@ public class MainAppUI extends JFrame{
         startInfo = new JLabel();
         startInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         startInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
-        startInfo.setMinimumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
         endPointInfo = new JLabel();
         endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
-        endPointInfo.setMinimumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
         gps = new JTextArea();
-        gps.setEditable(false);
         gps.setVisible(true);
 
         clearButton = new JButton("Clear Selections");
@@ -336,13 +345,11 @@ public class MainAppUI extends JFrame{
 
         //Add elements to the side panel
         JScrollPane text = new JScrollPane(gps);
-        text.setSize(new Dimension(100, 100));
-        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
         sidePanel.add(startInfo);
         sidePanel.add(endPointInfo);
         sidePanel.add(makeAStarRoute);
         sidePanel.add(floorNum);
-        sidePanel.add(text);
+        sidePanel.add(text, BorderLayout.CENTER);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
 

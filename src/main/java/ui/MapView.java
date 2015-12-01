@@ -36,6 +36,8 @@ public class MapView extends JScrollPane{
 
     private Image backgroundImage;
 
+    //Pretty floors go here
+
     /**
      * Constructor.
      *

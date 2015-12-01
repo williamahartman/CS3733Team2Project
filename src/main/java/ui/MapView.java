@@ -6,25 +6,28 @@ import core.LocationGraph;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
  * This is a panel that displays edges from a map. An image background is displayed bellow
  * these edges.
  */
-public class MapView extends JScrollPane{
+public class MapView extends JPanel{
     private static final double START_XFRAC = 0.38;
     private static final double START_YFRAC = 0.3;
     private static final int NODE_BUTTON_SIZE = 10;
     private static final double MINIMUM_ZOOM = 0.1;
     private static final double MAXIMUM_ZOOM = 2;
 
+    private JScrollPane scrollPane;
     private JPanel mapPanel;
     private double zoomFactor;
 
@@ -35,7 +38,7 @@ public class MapView extends JScrollPane{
 
     private MapViewStyle style;
 
-    private String[] floorsImagePath;
+    private String[] floorsImagePaths;
     private int currentFloorNumber;
 
     private Image backgroundImage;
@@ -51,8 +54,7 @@ public class MapView extends JScrollPane{
      */
     public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, double defaultZoom,
                    MapViewStyle viewStyle) {
-        this.floorsImagePath = floorImagePaths;
-
+        //Make the panel
         mapPanel = new JPanel(true) {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -103,10 +105,12 @@ public class MapView extends JScrollPane{
                 }
             }
         };
+
+        this.floorsImagePaths = floorImagePaths;
         this.currentFloorNumber = defaultFloor;
         setCurrentImage();
-        this.style = viewStyle;
 
+        this.style = viewStyle;
         this.routeLists = new ArrayList<>();
         locationButtonList = new ArrayList<>();
         zoomFactor = defaultZoom;
@@ -114,17 +118,40 @@ public class MapView extends JScrollPane{
         mapPanel.setPreferredSize(getImagePixelSize());
         mapPanel.setLayout(null);
 
-        setViewportView(mapPanel);
+        scrollPane = new JScrollPane();
+        scrollPane.setViewportView(mapPanel);
 
         Point newViewportPos = new Point();
         newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
         newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
-        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, getViewport().getSize()));
-
-        this.currentFloorNumber = defaultFloor;
+        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
 
         updateGraph(graph);
         addDefaultListeners();
+
+        //Add the slider
+        JSlider floorSlider = new JSlider(JSlider.HORIZONTAL);
+        floorSlider.setMinimum(0);
+        floorSlider.setMaximum(floorImagePaths.length - 1);
+        floorSlider.setValue(defaultFloor);
+        floorSlider.setPaintTicks(true);
+        floorSlider.setMajorTickSpacing(1);
+        floorSlider.setBorder(BorderFactory.createTitledBorder("Floor Displayed"));
+
+        Hashtable<Integer, JLabel> sliderLabelTable = new Hashtable<>();
+        sliderLabelTable.put(defaultFloor, new JLabel("Ground Level"));
+
+        floorSlider.addChangeListener(e ->  {
+            JSlider source = (JSlider) e.getSource();
+
+            if (!source.getValueIsAdjusting()) {
+                currentFloorNumber = source.getValue();
+                updateGraph(graph);
+            }
+        });
+        setLayout(new BorderLayout());
+        add(floorSlider, BorderLayout.NORTH);
+        add(scrollPane);
     }
 
     /**
@@ -138,8 +165,8 @@ public class MapView extends JScrollPane{
     }
 
     private void setCurrentImage() {
-        if(currentFloorNumber >= 0 && currentFloorNumber < floorsImagePath.length) {
-            String path = floorsImagePath[currentFloorNumber];
+        if (currentFloorNumber >= 0 && currentFloorNumber < floorsImagePaths.length) {
+            String path = floorsImagePaths[currentFloorNumber];
             Image oldImage = backgroundImage;
 
             try {
@@ -158,18 +185,18 @@ public class MapView extends JScrollPane{
     }
 
     private void addDefaultListeners() {
-        setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         MouseAdapter mouseAdapter = new MouseAdapter() {
             int mouseStartX = 0;
             int mouseStartY = 0;
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                Point vpp = getViewport().getViewPosition();
+                Point vpp = scrollPane.getViewport().getViewPosition();
 
                 vpp.translate(mouseStartX - e.getXOnScreen(), mouseStartY - e.getYOnScreen());
-                mapPanel.scrollRectToVisible(new Rectangle(vpp, getViewport().getSize()));
+                mapPanel.scrollRectToVisible(new Rectangle(vpp, scrollPane.getViewport().getSize()));
 
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
@@ -193,10 +220,10 @@ public class MapView extends JScrollPane{
                 if ((zoomFactor > MINIMUM_ZOOM || e.getWheelRotation() < 0) &&
                         (zoomFactor < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
 
-                    Point viewPortPos = getViewport().getViewPosition();
+                    Point viewPortPos = scrollPane.getViewport().getViewPosition();
 
-                    double viewportWidth = getViewport().getWidth();
-                    double viewportHeight = getViewport().getHeight();
+                    double viewportWidth = scrollPane.getViewport().getWidth();
+                    double viewportHeight = scrollPane.getViewport().getHeight();
 
                     double imageWidth = getImagePixelSize().getWidth();
                     double imageHeight = getImagePixelSize().getHeight();
@@ -212,15 +239,15 @@ public class MapView extends JScrollPane{
                     newViewportPos.x = (int) ((xPosFrac * getImagePixelSize().getWidth()) - (viewportWidth / 2.0));
                     newViewportPos.y = (int) ((yPosFrac * getImagePixelSize().getHeight()) - (viewportHeight / 2.0));
 
-                    mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, getViewport().getSize()));
+                    mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
 
                     repaint();
                 }
             }
         };
-        mapPanel.addMouseListener(mouseAdapter);
-        mapPanel.addMouseMotionListener(mouseAdapter);
-        mapPanel.addMouseWheelListener(mouseAdapter);
+        scrollPane.addMouseListener(mouseAdapter);
+        scrollPane.addMouseMotionListener(mouseAdapter);
+        scrollPane.addMouseWheelListener(mouseAdapter);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
 

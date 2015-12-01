@@ -195,9 +195,9 @@ public class MainAppUI extends JFrame{
         WPIStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(0, 0, 0));
-            style.setEdgeColor(new Color(100, 100, 100));
+            style.setEdgeColor(new Color(169, 176, 183));
             style.setRouteLocationColor(new Color(255, 0, 0));
-            style.setRouteColor(new Color(100, 0, 0));
+            style.setRouteColor(new Color(172, 43, 55));
             resetMap(mapView);
         });
 
@@ -242,6 +242,7 @@ public class MainAppUI extends JFrame{
         floorNum.setSelectedItem(0);
         floorNum.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         floorNum.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        floorNum.setMinimumSize(new Dimension(SIDEPANEL_WIDTH, 30));
         floorNum.setToolTipText("Select Floor Number");
         floorNum.setFont(new Font("Arial", Font.BOLD, 20));
         floorNum.addActionListener(e ->{
@@ -276,12 +277,15 @@ public class MainAppUI extends JFrame{
         startInfo = new JLabel();
         startInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         startInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        startInfo.setMinimumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
         endPointInfo = new JLabel();
         endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        endPointInfo.setMinimumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
         gps = new JTextArea();
+        gps.setEditable(false);
         gps.setVisible(true);
 
         clearButton = new JButton("Clear Selections");
@@ -332,11 +336,13 @@ public class MainAppUI extends JFrame{
 
         //Add elements to the side panel
         JScrollPane text = new JScrollPane(gps);
+        text.setSize(new Dimension(100, 100));
+        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
         sidePanel.add(startInfo);
         sidePanel.add(endPointInfo);
         sidePanel.add(makeAStarRoute);
         sidePanel.add(floorNum);
-        sidePanel.add(text, BorderLayout.CENTER);
+        sidePanel.add(text);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
 

@@ -126,13 +126,16 @@ public class DevTools extends JPanel {
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
+                    System.out.println(tempString.length());
+                    System.out.println(tempString);
                     String[] nameList;
                     if (tempString.contains(",")) {
                         nameList = tempString.split(",");
-                    } else {
-                        nameList = new String[]{lastButtonClicked.getAssociatedLocation().getNameList()[0]};
                     }
-                    if (!field2.getValue().equals("Enter a String")) {
+                    else {
+                        nameList = new String[0];
+                    }
+                    if (!(field2.getValue() == null)) {
                         for (int i = 0; i < nameList.length; i++) {
                             nameList[i] = nameList[i].trim().toLowerCase();
                         }
@@ -236,12 +239,11 @@ public class DevTools extends JPanel {
                 field1.setValue(lastButtonClicked.getAssociatedLocation().getFloorNumber());
                 StringBuilder locationNames = new StringBuilder();
                 int i = 0;
-                if (lastButtonClicked.getAssociatedLocation().getNameList().length != 0) {
-                    for (i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length - 1; i++) {
+                if (lastButtonClicked.getAssociatedLocation().getNameList().length > 0) {
+                    for (i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length; i++) {
                         locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);
                         locationNames.append(',');
                     }
-                    locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);
                 }
 
                 field2.setValue(locationNames.toString());
@@ -259,7 +261,7 @@ public class DevTools extends JPanel {
                             //update the check boxes to reflect the edge attributes of the edge selected
                             handicapAccess.setSelected(currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
                             indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
-                            System.out.println("Handicap " +
+                            System.out.println("Not Handicap " +
                                     currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
                             System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
                         } else { //does not have an edge

@@ -16,8 +16,7 @@ public class AppLauncher{
             Database graphData = new Database();
 
             //Make a frame
-            MainAppUI app = new MainAppUI(graphData.createGraph(),
-                    "campusmap.png");
+            MainAppUI app = new MainAppUI(graphData.createGraph());
             graphData.closeConnection();
 
             app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

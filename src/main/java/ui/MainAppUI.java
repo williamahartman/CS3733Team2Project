@@ -6,11 +6,9 @@ import core.Location;
 import core.LocationGraph;
 import dev.DevTools;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.util.EventListener;
 
 /**
@@ -21,8 +19,6 @@ public class MainAppUI extends JFrame{
     private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
     private static final double DEFAULT_ZOOM = 0.4;
-
-    private BufferedImage mapBackground;
 
     private MapView mapView;
     private LocationGraph graph;
@@ -37,7 +33,6 @@ public class MainAppUI extends JFrame{
 
     private JButton clearButton;
     private JButton makeAStarRoute;
-    public static int floorNumber;
 
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
@@ -46,23 +41,10 @@ public class MainAppUI extends JFrame{
      * Constructor.
      *
      * @param graph The graph that will be shown
-     * @param backgroundImagePath The path to the image that will be used as a background
      */
-    public MainAppUI(LocationGraph graph, String backgroundImagePath) {
+    public MainAppUI(LocationGraph graph) {
         super(FRAME_TITLE);
         this.graph = graph;
-
-        try {
-            mapBackground = ImageIO.read(ClassLoader.getSystemResourceAsStream(backgroundImagePath));
-        } catch (Exception e) {
-            //Close the program with an error message if we can't load stuff.
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this,
-                    "The map image failed to load!",
-                    "Asset Load Failed!",
-                    JOptionPane.ERROR_MESSAGE);
-            System.exit(-1);
-        }
 
         MapViewStyle style = new MapViewStyle(
                 true,
@@ -74,7 +56,15 @@ public class MainAppUI extends JFrame{
                 new Color(255, 240, 0),
                 new Color(79, 189, 255));
 
-        this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM, style);
+        this.mapView = new MapView(graph,
+                new String[]{
+                        "campusmap-3.png",
+                        "campusmap-2.png",
+                        "campusmap-1.png",
+                        "campusmap1.png",
+                        "campusmap2.png",
+                        "campusmap3.png"},
+                3, DEFAULT_ZOOM, style);
         startPoint = null;
         endPoint = null;
     }
@@ -92,33 +82,33 @@ public class MainAppUI extends JFrame{
         refreshMap.addActionListener(e -> resetMap(mapView));
         JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers Only!)");
 
-        devToolsPanel = new DevTools(graph, mapView);
-        devToolsPanel.setBackground(new Color(255, 0, 0));
-        devToolsPanel.setVisible(false);
-        enterDevloperMode.addActionListener(e -> {
-            if (!devToolsPanel.getDevMode()) {
-                devToolsPanel.setDevMode(true);
-                remove(sidePanel);
-                devToolsPanel.setVisible(true);
-                add(devToolsPanel, BorderLayout.WEST);
-                repaint();
-                enterDevloperMode.setText("Exit Developer Mode");
-
-                clearState(mapView);
-                devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
-                mapView.getMapPanel().addMouseListener(devToolClickListener);
-                devToolsPanel.rebuildGraph();
-            } else {
-                devToolsPanel.setDevMode(false);
-                enterDevloperMode.setText("Edit Map (Developers Only!)");
-                remove(devToolsPanel);
-                add(sidePanel, BorderLayout.WEST);
-                repaint();
-
-                resetMap(mapView);
-                mapView.removeMouseListener(devToolClickListener);
-            }
-        });
+//        devToolsPanel = new DevTools(graph, mapView);
+//        devToolsPanel.setBackground(new Color(255, 0, 0));
+//        devToolsPanel.setVisible(false);
+//        enterDevloperMode.addActionListener(e -> {
+//            if (!devToolsPanel.getDevMode()) {
+//                devToolsPanel.setDevMode(true);
+//                remove(sidePanel);
+//                devToolsPanel.setVisible(true);
+//                add(devToolsPanel, BorderLayout.WEST);
+//                repaint();
+//                enterDevloperMode.setText("Exit Developer Mode");
+//
+//                clearState(mapView);
+//                devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
+//                mapView.getMapPanel().addMouseListener(devToolClickListener);
+//                devToolsPanel.rebuildGraph();
+//            } else {
+//                devToolsPanel.setDevMode(false);
+//                enterDevloperMode.setText("Edit Map (Developers Only!)");
+//                remove(devToolsPanel);
+//                add(sidePanel, BorderLayout.WEST);
+//                repaint();
+//
+//                resetMap(mapView);
+//                mapView.removeMouseListener(devToolClickListener);
+//            }
+//        });
 
         //Sets up the 'view' menu bar
         JMenu view = new JMenu("View");
@@ -246,24 +236,21 @@ public class MainAppUI extends JFrame{
                     //display ground map
 
                     this.mapView.getStyle().setEdgeColor(new Color(250, 120, 0));
-                    this.mapView.updateGraph(graph, 0);
+                    this.mapView.updateGraph(graph);
                     repaint();
-                    floorNumber = 0;
 
                 }
                 else if (floorNum.getSelectedItem().equals(1))
                 {
                     this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
-                    this.mapView.updateGraph(graph, 1);
+                    this.mapView.updateGraph(graph);
                     repaint();
-                    floorNumber = 1;
                 }
                 else if (floorNum.getSelectedItem().equals(2))
                 {
                     this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
-                    this.mapView.updateGraph(graph, 2);
+                    this.mapView.updateGraph(graph);
                     repaint();
-                    floorNumber = 2;
                 }
             });
 
@@ -341,7 +328,7 @@ public class MainAppUI extends JFrame{
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
         //todo ASK WILL!! Double west override even if visible is set
-        add(devToolsPanel, BorderLayout.EAST);
+//        add(devToolsPanel, BorderLayout.EAST);
 
         addWindowFocusListener(new WindowFocusListener() {
             @Override
@@ -397,7 +384,7 @@ public class MainAppUI extends JFrame{
      * @param toReset the mapView to reset
      */
     private void resetMap(MapView toReset) {
-        toReset.updateGraph(graph, 0);
+        toReset.updateGraph(graph);
         addListenersToMapNodes(mapView, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

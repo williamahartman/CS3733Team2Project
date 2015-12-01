@@ -275,7 +275,7 @@ public class DevTools extends JPanel {
     }
 
     public void rebuildGraph() {
-        mapView.updateGraph(graph, MainAppUI.floorNumber);
+        mapView.updateGraph(graph);
 
         MouseAdapter editListener = buildEditListener(graph);
         for (LocationButton locationButton: mapView.getLocationButtonList()) {

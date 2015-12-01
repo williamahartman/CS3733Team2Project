@@ -267,9 +267,9 @@ public class LocationGraph {
     public void removeLocation(Location loc){
         locationList.remove(loc);
         List<Edge> edgeList = loc.getEdges();
-        for (int i = 0; i < edgeList.size(); i++) {
-            loc.removeEdge(edgeList.get(i));
-
+        int n = edgeList.size();
+        for (int i = 0; i < n; i++) {
+            loc.removeEdge(edgeList.get(0));
         }
     }
     /**

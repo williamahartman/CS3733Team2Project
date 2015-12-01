@@ -62,27 +62,47 @@ public class Instruction {
                 Point2D.Double vector2 = new Point2D.Double((locNextX - locCurrentX), (locNextY - locCurrentY));
 
                 //calculates the length of vector2
-                double vector2Length = vector2.distance(0, 0);
+                //double vector2Length = vector2.distance(0, 0);
                 //calculate the degree between vector2 and the positive side of x axis
-                double deg = Math.toDegrees(Math.acos(vector2.getX() / vector2Length));
+                //double deg = Math.toDegrees(Math.acos(vector2.getX() / vector2Length));
                 //determines what direction user should head first
+
+                Point2D.Double point1 = new Point2D.Double(locCurrentX, locCurrentY);
+                Point2D.Double point2 = new Point2D.Double(locNextX, locNextY);
+                Point2D.Double point3 = new Point2D.Double(locNextX, locCurrentY);
+                double le1 = point1.distance(point2);
+                //^distance between previous node and current node
+                double le2 = point1.distance(point3);
+                //^distance between next node and current node
+                double le3 = point2.distance(point3);
+                //^distance between previous node and next node
+
+                double deg = Math.toDegrees(Math.acos(le2 / le1));
                 if (i == 0){
-                    if (deg < 20 || deg > 340){
-                        instruction.add("Head East.\n");
-                    } else if (deg >= 20 && deg <= 70){
-                        instruction.add("Head North East.\n");
-                    } else if (deg > 70 && deg < 110){
-                        instruction.add("Head North.\n");
-                    } else if (deg >= 110 && deg <= 160) {
-                        instruction.add("Head North West.\n");
-                    } else if (deg > 160 && deg < 200){
-                        instruction.add("Head West.\n");
-                    } else if (deg >= 200 && deg <= 250){
-                        instruction.add("Head South West.\n");
-                    } else if (deg > 250 && deg < 290){
-                        instruction.add("Head South.\n");
-                    } else if (deg >= 290 && deg <= 340){
-                        instruction.add("Head South Ease.\n");
+                    if (locNextY == locCurrentY){
+                        if (locNextX > locCurrentX){
+                            instruction.add("Head East\n");
+                        } else if (locNextX < locCurrentY){
+                            instruction.add("Head West\n");
+                        }
+                    } else if (locNextX == locCurrentX){
+                        if (locNextY > locCurrentY){
+                            instruction.add("Head South\n");
+                        } else if (locNextY < locCurrentY){
+                            instruction.add("Head North\n");
+                        }
+                    } else if (locNextX > locCurrentX){
+                        if (locNextY < locCurrentY){
+                            addFirstDirection(deg, "East", "South");
+                        } else {
+                            addFirstDirection(deg, "East", "North");
+                        }
+                    } else if (locNextX < locCurrentX) {
+                        if (locNextY < locCurrentY) {
+                            addFirstDirection(deg, "West", "South");
+                        } else {
+                            addFirstDirection(deg, "West", "North");
+                        }
                     }
                 }
 
@@ -188,7 +208,6 @@ public class Instruction {
     }
 
     /**
-     *
      * A helper function to add instruction.
      * @param i int
      * @param flag2 indicates previous action
@@ -213,6 +232,23 @@ public class Instruction {
         return distance;
     }
 
+    /**
+     *
+     * A helper function to add first direction to instruction.
+     * @param deg measures the direction
+     * @param str1 direction possible
+     * @param str2 direction possible
+     */
+
+    private void addFirstDirection(double deg, String str1, String str2){
+        if (deg < 10){
+            instruction.add("Head " + str1 +"\n");
+        } else if (deg > 80){
+            instruction.add("Head " + str2 + "\n");
+        } else {
+            instruction.add("Head " + str2 + " " + str1 + "\n");
+        }
+    }
 
     public List<String> getInstruction(){
         return instruction;

@@ -7,6 +7,7 @@ import ui.MapView;
 import ui.MapViewStyle;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -45,7 +46,7 @@ public class DevTools extends JPanel {
         //TODO fix for empty location graph
         this.lastButtonClicked = mapView.getLocationButtonList().get(0);
         setLayout(new BorderLayout());
-        this.add(createSaveButton(), BorderLayout.SOUTH);
+        //this.add(createSaveButton(), BorderLayout.SOUTH);
         this.add(createEditor());
     }
 
@@ -70,24 +71,24 @@ public class DevTools extends JPanel {
         };
     }
 
-    //Creates button to save information to the database
-    private JButton createSaveButton() {
-        JButton saveToDatabase = new JButton("Save to database");
-        saveToDatabase.setToolTipText("Commit the changes made to the online database.");
-        saveToDatabase.addActionListener(listener -> {
-            try {
-                Database graphData = new Database();
-                graphData.updateDB(dblist);
-                graphData.closeConnection();
-            } catch (Exception exception) {
-                JOptionPane.showMessageDialog(mapView.getParent(),
-                        "Failed to connect to the online database (be on the internet!)",
-                        "Database error!",
-                        JOptionPane.ERROR_MESSAGE);
-            }
-        });
-        return saveToDatabase;
-    }
+//    //Creates button to save information to the database
+//    private JButton createSaveButton() {
+//        JButton saveToDatabase = new JButton("Save to database");
+//        saveToDatabase.setToolTipText("Commit the changes made to the online database.");
+//        saveToDatabase.addActionListener(listener -> {
+//            try {
+//                Database graphData = new Database();
+//                graphData.updateDB(dblist);
+//                graphData.closeConnection();
+//            } catch (Exception exception) {
+//                JOptionPane.showMessageDialog(mapView.getParent(),
+//                        "Failed to connect to the online database (be on the internet!)",
+//                        "Database error!",
+//                        JOptionPane.ERROR_MESSAGE);
+//            }
+//        });
+//        return saveToDatabase;
+//    }
 
     //Makes the panels, buttons, fields, and labels for the dev panel
     private JPanel createEditor() {
@@ -109,6 +110,7 @@ public class DevTools extends JPanel {
         JLabel blank3 = new JLabel("");
         JLabel blank4 = new JLabel("");
         JLabel blank5 = new JLabel("");
+        JLabel blank6 = new JLabel("");
 
         field1.setValue(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
@@ -200,29 +202,73 @@ public class DevTools extends JPanel {
         buttonLabel2.setLabelFor(field2);
 
         //Panel displaying all the labels
-        JPanel labelPanel = new JPanel(new GridLayout(0, 1, 10, 20));
-        //labelPanel.add(blank4);
-        labelPanel.add(buttonLabel1);
-        labelPanel.add(buttonLabel2);
-        labelPanel.add(edgeToggle);
-        labelPanel.add(indoors);
-        labelPanel.add(handicapAccess);
-        labelPanel.add(blank3);
+        JPanel labelPanel1 = new JPanel(new GridLayout(0, 1, 5, 20));
+        JPanel labelPanel2 = new JPanel(new GridLayout(0, 1, 5, 20));
+        labelPanel1.add(buttonLabel1);
+        labelPanel1.add(buttonLabel2);
+        labelPanel1.add(blank3);
+        labelPanel1.add(blank5);
+
+        labelPanel2.add(edgeToggle);
+        labelPanel2.add(blank2);
+        labelPanel2.add(blank6);
+
 
         //Panel displaying all the fields
-        JPanel textPanel = new JPanel(new GridLayout(0, 1, 10, 20));
-        textPanel.add(field1);
-        textPanel.add(field2);
-        textPanel.add(blank1);
-        textPanel.add(blank5);
-        textPanel.add(blank2);
-        textPanel.add(blank4);
+        JPanel textPanel1 = new JPanel(new GridLayout(0, 1, 5, 20));
+        JPanel textPanel2 = new JPanel(new GridLayout(0, 1, 5, 20));
+        textPanel1.add(field1);
+        textPanel1.add(field2);
+        textPanel1.add(okButton);
+        textPanel1.add(blank1);
+
+        textPanel2.add(handicapAccess);
+        textPanel2.add(indoors);
+        textPanel2.add(blank4);
+
+        //create save to database button
+        JButton saveToDatabase = new JButton("Save to database");
+        saveToDatabase.setToolTipText("Commit the changes made to the online database.");
+        saveToDatabase.addActionListener(listener -> {
+            try {
+                Database graphData = new Database();
+                graphData.updateDB(dblist);
+                graphData.closeConnection();
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(mapView.getParent(),
+                        "Failed to connect to the online database (be on the internet!)",
+                        "Database error!",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        TitledBorder title;
+        title = BorderFactory.createTitledBorder("Edge Attributes");
+        title.setTitleJustification(TitledBorder.CENTER);
+        textPanel2.setBorder(title);
 
         //Panel created to display both the label panel and the field panel
+        JPanel panel1 = new JPanel(new BorderLayout());
+        JPanel panel2 = new JPanel(new BorderLayout());
         JPanel panelLayout = new JPanel(new BorderLayout());
-        panelLayout.add(labelPanel, BorderLayout.WEST);
-        panelLayout.add(textPanel, BorderLayout.EAST); //LINE_END
-        panelLayout.add(okButton, BorderLayout.SOUTH);
+
+        panel1.add(labelPanel1, BorderLayout.WEST);
+        panel1.add(textPanel1, BorderLayout.EAST);
+
+        panel2.add(labelPanel2, BorderLayout.WEST);
+        panel2.add(textPanel2, BorderLayout.EAST);
+        panel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel2.setPreferredSize(new Dimension(330, 50));
+
+        panelLayout.add(panel1, BorderLayout.PAGE_START);
+        JSeparator separator1 = new JSeparator(SwingConstants.HORIZONTAL);
+        separator1.setPreferredSize(new Dimension(330, 5));
+        panelLayout.add(separator1, BorderLayout.LINE_END);
+        panelLayout.add(panel2, BorderLayout.LINE_START);
+
+        panelLayout.add(saveToDatabase, BorderLayout.SOUTH);
+        panelLayout.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panelLayout.setPreferredSize(new Dimension(350, 768));
 
         return panelLayout;
     }

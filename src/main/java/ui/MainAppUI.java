@@ -248,6 +248,7 @@ public class MainAppUI extends JFrame{
         //Initialize Panels and buttons
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        sidePanel.setPreferredSize(new Dimension(350, 768));
         sidePanel.setVisible(true);
         JComboBox<Integer> floorNum = new JComboBox<>();
         floorNum.addItem(0);
@@ -345,12 +346,12 @@ public class MainAppUI extends JFrame{
 
         //Add elements to the side panel
         JScrollPane text = new JScrollPane(gps);
-        sidePanel.add(startInfo);
-        sidePanel.add(endPointInfo);
-        sidePanel.add(makeAStarRoute);
+        sidePanel.add(startInfo, BorderLayout.CENTER);
+        sidePanel.add(endPointInfo, BorderLayout.CENTER);
+        sidePanel.add(makeAStarRoute, BorderLayout.CENTER);
         sidePanel.add(floorNum);
         sidePanel.add(text, BorderLayout.CENTER);
-        sidePanel.add(Box.createVerticalGlue());
+        sidePanel.add(Box.createVerticalGlue(), BorderLayout.CENTER);
         sidePanel.add(clearButton);
 
 
@@ -358,7 +359,6 @@ public class MainAppUI extends JFrame{
         setLayout(new BorderLayout());
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
-        //todo ASK WILL!! Double west override even if visible is set
         add(devToolsPanel, BorderLayout.EAST);
 
 
@@ -425,17 +425,17 @@ public class MainAppUI extends JFrame{
                 if (startPoint == null) {
                     startPoint = clickedLocation;
                     ((JButton) e.getSource()).setBackground(Color.GREEN);
-                    startInfo.setText("Start Point: ("
-                            + clickedLocation.getPosition().x + ", "
-                            + clickedLocation.getPosition().y + ")");
+                    if (clickedLocation.getNameList().length == 0){
+                        startInfo.setText("Start Point:  Unnamed Location");
+                    } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
 
                     clearButton.setEnabled(true);
                 } else if (endPoint == null && clickedLocation != startPoint) {
                     endPoint = clickedLocation;
                     ((JButton) e.getSource()).setBackground(Color.RED);
-                    endPointInfo.setText("Destination Point: ("
-                            + clickedLocation.getPosition().x + ", "
-                            + clickedLocation.getPosition().y + ")");
+                    if (clickedLocation.getNameList().length == 0){
+                        endPointInfo.setText("Destination Point:  Unnamed Location");
+                    } else { endPointInfo.setText("Destination Point:  " + clickedLocation.getNameList()[0]); }
 
                     clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);

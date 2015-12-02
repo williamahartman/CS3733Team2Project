@@ -64,6 +64,13 @@ public class Edge {
     }
 
     /**
+     * Makes the current Edge no longer associated with a passed EdgeAttribute.
+     *
+     * @param attribute The EdgeAttribute that will be disassociated with this Edge
+     */
+    public void removeAttribute(EdgeAttribute attribute) { associatedAttributes.remove(attribute); }
+
+    /**
      * Magically save everything somehow.
      */
     public void saveToDisk() {

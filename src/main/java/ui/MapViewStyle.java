@@ -12,6 +12,8 @@ public class MapViewStyle {
     private boolean drawRoutes = true;
 
     private Color edgeColor;
+    private Color floor1EdgeColor;
+    private Color floor2EdgeColor;
     private Color routeColor;
     private Color locationColor;
     private Color routeLocationColor;
@@ -58,12 +60,16 @@ public class MapViewStyle {
     }
 
     public Color getEdgeColor() {
-        return edgeColor;
+        if (MainAppUI.floorNumber == 0){
+            return edgeColor;
+        } else if (MainAppUI.floorNumber == 1){
+            return floor1EdgeColor;
+        } else if (MainAppUI.floorNumber == 2){
+            return floor2EdgeColor;
+        } else return edgeColor;
     }
 
-    public Color getRouteColor() {
-        return routeColor;
-    }
+    public Color getRouteColor() { return routeColor; }
 
     public Color getLocationColor() {
         return locationColor;
@@ -73,11 +79,21 @@ public class MapViewStyle {
         return routeLocationColor;
     }
 
+    public void setRouteColor(Color routeColor) { this.routeColor = routeColor; }
+
     public void setLocationColor(Color locationColor) {
         this.locationColor = locationColor;
     }
 
-    public void setEdgeColor(Color edgeColor) {
-        this.edgeColor = edgeColor;
+    public void setEdgeColor(Color edgeColor, int floorNumber) {
+        if (floorNumber == 0){
+            this.edgeColor = edgeColor;
+        } else if (floorNumber == 1){
+            this.floor1EdgeColor = edgeColor;
+        } else if (floorNumber == 2){
+            this.floor2EdgeColor = edgeColor;
+        }
     }
+
+    public void setRouteLocationColor(Color routeLocationColor) { this.routeLocationColor = routeLocationColor; }
 }

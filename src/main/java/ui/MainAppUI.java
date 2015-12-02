@@ -6,12 +6,10 @@ import core.Location;
 import core.LocationGraph;
 import dev.DevTools;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.util.EventListener;
 
 /**
@@ -22,8 +20,6 @@ public class MainAppUI extends JFrame{
     private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
     private static final double DEFAULT_ZOOM = 0.4;
-
-    private BufferedImage mapBackground;
 
     private MapView mapView;
     private LocationGraph graph;
@@ -42,8 +38,6 @@ public class MainAppUI extends JFrame{
     private JButton makeAStarRoute;
     private JButton searchButton;
 
-    public static int floorNumber;
-
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
 
@@ -53,23 +47,10 @@ public class MainAppUI extends JFrame{
      * Constructor.
      *
      * @param graph The graph that will be shown
-     * @param backgroundImagePath The path to the image that will be used as a background
      */
-    public MainAppUI(LocationGraph graph, String backgroundImagePath) {
+    public MainAppUI(LocationGraph graph) {
         super(FRAME_TITLE);
         this.graph = graph;
-
-        try {
-            mapBackground = ImageIO.read(ClassLoader.getSystemResourceAsStream(backgroundImagePath));
-        } catch (Exception e) {
-            //Close the program with an error message if we can't load stuff.
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this,
-                    "The map image failed to load!",
-                    "Asset Load Failed!",
-                    JOptionPane.ERROR_MESSAGE);
-            System.exit(-1);
-        }
 
         MapViewStyle style = new MapViewStyle(
                 true,
@@ -84,8 +65,16 @@ public class MainAppUI extends JFrame{
         style.setEdgeColor(new Color(100, 100, 100), 1);
         style.setEdgeColor(new Color(40, 40, 40), 2);
 
-        this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM, style);
-
+        this.mapView = new MapView(graph,
+                new String[]{
+                        "campusmap-3.png",
+                        "campusmap-2.png",
+                        "campusmap-1.png",
+                        "campusmap1.png",
+                        "campusmap2.png",
+                        "campusmap3.png"},
+                3, DEFAULT_ZOOM, style);
+        this.mapView.setButtonListener(buildRouteSelectListener());
         this.attributeManager = new EdgeAttributeManager();
 
         startPoint = null;
@@ -112,23 +101,25 @@ public class MainAppUI extends JFrame{
         devToolsPanel.setVisible(false);
         enterDevloperMode.addActionListener(e -> {
             if (!devToolsPanel.getDevMode()) {
+                devToolsPanel.reset();
+
                 int passResult = 0;
                 //Open the password sign-in
                 passResult = passBox.passwordBox();
                 if (passResult == 1) {
                     devToolsPanel.setDevMode(true);
                     remove(sidePanel);
-                    System.out.println(passResult);
                     devToolsPanel.setVisible(true);
                     add(devToolsPanel, BorderLayout.WEST);
+                    repaint();
                     enterDevloperMode.setText("Exit Developer Mode");
+
+                    //Update mapView for use with devtools
                     clearState(mapView);
                     devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
-                    mapView.getMapPanel().addMouseListener(devToolClickListener);
-                    devToolsPanel.rebuildGraph();
-                    repaint();
-                }
-                else if (passResult == 2) {
+                    mapView.getScrollPane().addMouseListener(devToolClickListener);
+                    mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
+                } else if (passResult == 2) {
                     JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
                             "Incorrect!", JOptionPane.ERROR_MESSAGE);
                 }
@@ -139,8 +130,10 @@ public class MainAppUI extends JFrame{
                 add(sidePanel, BorderLayout.WEST);
                 repaint();
 
-                resetMap(mapView);
+                //Get mapView back to the way it was
                 mapView.removeMouseListener(devToolClickListener);
+                mapView.setButtonListener(buildRouteSelectListener());
+                resetMap(mapView);
             }
         });
 
@@ -159,7 +152,6 @@ public class MainAppUI extends JFrame{
         JMenuItem neonFunkStyle = new JMenuItem("Neon Funk Style");
         JMenuItem vintageStyle = new JMenuItem("Vintage Style");
         JMenuItem colorBlindStyle = new JMenuItem("Colorblind Accessible Style");
-
 
         //Sets up menu hierarchy
         setJMenuBar(menuBar);
@@ -185,7 +177,7 @@ public class MainAppUI extends JFrame{
             resetMap(mapView);
         });
 
-        //Action listener for showing only named nodes, or all the nodes. Currently not functioning correctly.
+        //Action listener for showing only named nodes, or all the nodes.
         showNodes.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             if (style.isDrawAllPoints()){
@@ -196,7 +188,7 @@ public class MainAppUI extends JFrame{
                 showNodes.setText("Show Only Named Locations");
                 style.setDrawAllPoints(true);
             }
-            mapView.updateGraph(graph, floorNumber);
+            mapView.updateGraph(graph);
         });
 
         /**
@@ -280,41 +272,6 @@ public class MainAppUI extends JFrame{
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
         sidePanel.setPreferredSize(new Dimension(350, 768));
         sidePanel.setVisible(true);
-        JComboBox<Integer> floorNum = new JComboBox<>();
-        floorNum.addItem(0);
-        floorNum.addItem(1);
-        floorNum.addItem(2);
-        floorNum.setSelectedItem(0);
-        floorNum.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
-        floorNum.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
-        floorNum.setToolTipText("Select Floor Number");
-        floorNum.setFont(new Font("Arial", Font.BOLD, 20));
-        floorNum.addActionListener(e ->{
-                if (floorNum.getSelectedItem().equals(0))
-                {
-                    //display ground map
-                    floorNumber = 0;
-                    this.mapView.updateGraph(graph, 0);
-                    repaint();
-
-
-                }
-                else if (floorNum.getSelectedItem().equals(1))
-                {
-                    floorNumber = 1;
-                    this.mapView.updateGraph(graph, 1);
-                    repaint();
-
-                }
-                else if (floorNum.getSelectedItem().equals(2))
-                {
-                    floorNumber = 2;
-                    this.mapView.updateGraph(graph, 2);
-                    repaint();
-
-                }
-            });
-
 
         startInfo = new JLabel();
         startInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
@@ -334,7 +291,6 @@ public class MainAppUI extends JFrame{
         clearButton.setToolTipText("Remove the previously selected start and end points");
         clearButton.addActionListener(e -> clearState(mapView));
 
-
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -345,7 +301,7 @@ public class MainAppUI extends JFrame{
                 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 frame.setMinimumSize(new Dimension(1024, 768));
 
-                java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
+                java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
                     mapView.addRoute(route);
                     gps.setText("");
@@ -473,14 +429,8 @@ public class MainAppUI extends JFrame{
         resetMap(toReset);
     }
 
-    /**
-     * Reset the state of just the map. (none of the class data)
-     *
-     * @param toReset the mapView to reset
-     */
-    private void resetMap(MapView toReset) {
-        toReset.updateGraph(graph, 0);
-        addListenersToMapNodes(mapView, new ActionListener() {
+    private ActionListener buildRouteSelectListener() {
+        return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
@@ -504,7 +454,16 @@ public class MainAppUI extends JFrame{
                     makeAStarRoute.setEnabled(true);
                 }
             }
-        });
+        };
+    }
+
+    /**
+     * Reset the state of just the map. (none of the class data)
+     *
+     * @param toReset the mapView to reset
+     */
+    private void resetMap(MapView toReset) {
+        toReset.updateGraph(graph);
 
         //Make sure selected stuff is still respected
         for (LocationButton locButton: mapView.getLocationButtonList()) {
@@ -516,6 +475,4 @@ public class MainAppUI extends JFrame{
             }
         }
     }
-
-
 }

@@ -4,26 +4,27 @@ import core.Edge;
 import core.Location;
 import core.LocationGraph;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.image.BufferedImage;
+import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.EventListener;
+import java.util.Hashtable;
 import java.util.List;
 
 /**
  * This is a panel that displays edges from a map. An image background is displayed bellow
  * these edges.
  */
-public class MapView extends JScrollPane{
+public class MapView extends JPanel{
     private static final double START_XFRAC = 0.38;
     private static final double START_YFRAC = 0.3;
     private static final int NODE_BUTTON_SIZE = 10;
     private static final double MINIMUM_ZOOM = 0.1;
     private static final double MAXIMUM_ZOOM = 2;
 
+    private JScrollPane scrollPane;
     private JPanel mapPanel;
     private double zoomFactor;
 
@@ -35,17 +36,25 @@ public class MapView extends JScrollPane{
 
     private MapViewStyle style;
 
+    private String[] floorsImagePaths;
+    private int currentFloorNumber;
+
     private Image backgroundImage;
+
+    private EventListener buttonListener;
 
     /**
      * Constructor.
      *
      * @param graph The LocationGraph whose edges will be displayed
-     * @param mapBackground The image that will be used as the background
+     * @param floorImagePaths The image that will be used as the background
+     * @param defaultFloor The floor the be the main floor
      * @param defaultZoom The zoom level the map will be at when the app starts
      * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, BufferedImage mapBackground, double defaultZoom, MapViewStyle viewStyle) {
+    public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, double defaultZoom,
+                   MapViewStyle viewStyle) {
+        //Make the panel
         mapPanel = new JPanel(true) {
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -66,7 +75,7 @@ public class MapView extends JScrollPane{
                 g2d.setStroke(new BasicStroke(4));
                 if (style.isDrawAllEdges()) {
                     for (Edge e : graphEdgeList) {
-                        g2d.setColor(style.getEdgeColor());
+                        g2d.setColor(style.getEdgeColor(currentFloorNumber));
 
                         int x1 = (int) (e.getNode1().getPosition().x * imageRes.getWidth());
                         int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
@@ -94,6 +103,8 @@ public class MapView extends JScrollPane{
                         }
                     }
                 }
+
+                //Draw arrows on search results
                 if (searchList != null && searchList.size() > 0){
                     for (Location loc: searchList) {
                         g2d.setColor(Color.RED);
@@ -106,31 +117,55 @@ public class MapView extends JScrollPane{
                 }
             }
         };
-        //this.dt = new DevTools(graph, this);
-        //todo added because we never interact with dev tools?????
+
+        this.floorsImagePaths = floorImagePaths;
+        this.currentFloorNumber = defaultFloor;
+        setCurrentImage();
+
         this.style = viewStyle;
         this.searchList = new ArrayList<>();
         this.routeLists = new ArrayList<>();
-        this.backgroundImage = mapBackground;
         locationButtonList = new ArrayList<>();
         zoomFactor = defaultZoom;
 
         mapPanel.setPreferredSize(getImagePixelSize());
         mapPanel.setLayout(null);
 
-        setViewportView(mapPanel);
+        scrollPane = new JScrollPane();
+        scrollPane.setViewportView(mapPanel);
 
         Point newViewportPos = new Point();
         newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
         newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
-        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, getViewport().getSize()));
+        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
 
-        updateGraph(graph, 0);
+        updateGraph(graph);
         addDefaultListeners();
+
+        //Add the slider
+        JSlider floorSlider = new JSlider(JSlider.HORIZONTAL);
+        floorSlider.setMinimum(0);
+        floorSlider.setMaximum(floorImagePaths.length - 1);
+        floorSlider.setValue(defaultFloor);
+        floorSlider.setPaintTicks(true);
+        floorSlider.setMajorTickSpacing(1);
+        floorSlider.setBorder(BorderFactory.createTitledBorder("Floor Displayed"));
+        floorSlider.addChangeListener(e ->  {
+            JSlider source = (JSlider) e.getSource();
+
+            if (!source.getValueIsAdjusting()) {
+                currentFloorNumber = source.getValue();
+                setCurrentImage();
+                updateGraph(graph);
+            }
+        });
+        setLayout(new BorderLayout());
+        add(floorSlider, BorderLayout.NORTH);
+        add(scrollPane);
     }
 
     /**
-     * Add a list of locations that will be displayed.
+     * Add a list of locations that will be displayed as search results.
      *
      * @param locToAdd the list of locations that will be added
      */
@@ -152,22 +187,42 @@ public class MapView extends JScrollPane{
      */
     public void addRoute(List<Location> routeToAdd) {
         routeLists.add(routeToAdd);
-        positionButtons();
+        updateButtonAttributes();
+    }
+
+    private void setCurrentImage() {
+        if (currentFloorNumber >= 0 && currentFloorNumber < floorsImagePaths.length) {
+            String path = floorsImagePaths[currentFloorNumber];
+            Image oldImage = backgroundImage;
+
+            try {
+                backgroundImage = ImageIO.read(ClassLoader.getSystemResourceAsStream(path));
+                oldImage = null;
+            } catch (Exception e) {
+                //Close the program with an error message if we can't load stuff.
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this,
+                        "The map image failed to load!",
+                        "Asset Load Failed!",
+                        JOptionPane.ERROR_MESSAGE);
+                backgroundImage = oldImage;
+            }
+        }
     }
 
     private void addDefaultListeners() {
-        setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-        setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         MouseAdapter mouseAdapter = new MouseAdapter() {
             int mouseStartX = 0;
             int mouseStartY = 0;
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                Point vpp = getViewport().getViewPosition();
+                Point vpp = scrollPane.getViewport().getViewPosition();
 
                 vpp.translate(mouseStartX - e.getXOnScreen(), mouseStartY - e.getYOnScreen());
-                mapPanel.scrollRectToVisible(new Rectangle(vpp, getViewport().getSize()));
+                mapPanel.scrollRectToVisible(new Rectangle(vpp, scrollPane.getViewport().getSize()));
 
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
@@ -191,10 +246,10 @@ public class MapView extends JScrollPane{
                 if ((zoomFactor > MINIMUM_ZOOM || e.getWheelRotation() < 0) &&
                         (zoomFactor < MAXIMUM_ZOOM || e.getWheelRotation() > 0)) {
 
-                    Point viewPortPos = getViewport().getViewPosition();
+                    Point viewPortPos = scrollPane.getViewport().getViewPosition();
 
-                    double viewportWidth = getViewport().getWidth();
-                    double viewportHeight = getViewport().getHeight();
+                    double viewportWidth = scrollPane.getViewport().getWidth();
+                    double viewportHeight = scrollPane.getViewport().getHeight();
 
                     double imageWidth = getImagePixelSize().getWidth();
                     double imageHeight = getImagePixelSize().getHeight();
@@ -203,44 +258,23 @@ public class MapView extends JScrollPane{
                     double yPosFrac = (viewPortPos.getY() + (viewportHeight / 2.0)) / imageHeight;
 
                     zoomIncrementBy(e.getWheelRotation() * -0.04);
-                    positionButtons();
+                    updateButtonAttributes();
                     validate();
 
                     Point newViewportPos = new Point();
                     newViewportPos.x = (int) ((xPosFrac * getImagePixelSize().getWidth()) - (viewportWidth / 2.0));
                     newViewportPos.y = (int) ((yPosFrac * getImagePixelSize().getHeight()) - (viewportHeight / 2.0));
 
-                    mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, getViewport().getSize()));
+                    mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
 
                     repaint();
                 }
             }
         };
-        mapPanel.addMouseListener(mouseAdapter);
-        mapPanel.addMouseMotionListener(mouseAdapter);
-        mapPanel.addMouseWheelListener(mouseAdapter);
+        scrollPane.addMouseListener(mouseAdapter);
+        scrollPane.addMouseMotionListener(mouseAdapter);
+        scrollPane.addMouseWheelListener(mouseAdapter);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
-    }
-
-    /**
-     * Reset the map to display the edges of the passed graph.
-     * Calling the method will remove and re-add all buttons, so
-     * listeners will also need to be re-added
-     *
-     * @param graph The graph whose edges will be displayed
-     */
-    public final void updateGraph(LocationGraph graph, int floor) {
-        this.graphEdgeList = graph.edgeByFloorNumber(floor);
-        this.locationList = graph.locationByFloorNumber(floor);
-        this.routeLists = new ArrayList<>();
-        this.searchList = new ArrayList<>();
-
-        for (LocationButton locButton: locationButtonList) {
-            mapPanel.remove(locButton);
-        }
-        locationButtonList.clear();
-        addButtons();
-        updateNodeVisibility();
     }
 
     /**
@@ -255,10 +289,19 @@ public class MapView extends JScrollPane{
     /**
      * Return the backing JPanel for this MapView. This is where the buttons are drawn
      *
-     * @return The baking JPanel
+     * @return The backing JPanel
      */
     public JPanel getMapPanel() {
         return mapPanel;
+    }
+
+    /**
+     * Return the backing JScrollPane for this MapView. This is what moves around
+     *
+     * @return The backing JScrollPane
+     */
+    public JScrollPane getScrollPane() {
+        return scrollPane;
     }
 
     /**
@@ -268,7 +311,8 @@ public class MapView extends JScrollPane{
      * @return The dimension of the image, or 0 if the image didn't load
      */
     public Dimension getImagePixelSize() {
-        return new Dimension((int) (backgroundImage.getWidth(null) * zoomFactor),
+        return new Dimension(
+                (int) (backgroundImage.getWidth(null) * zoomFactor),
                 (int) (backgroundImage.getHeight(null) * zoomFactor));
     }
 
@@ -295,6 +339,9 @@ public class MapView extends JScrollPane{
      * Adds one LocationButton to the panel for each Location in the backing Location graph.
      */
     private void addButtons() {
+        mapPanel.removeAll();
+        locationButtonList.clear();
+
         for (Location loc: locationList) {
             LocationButton currentButton = new LocationButton(loc);
             currentButton.setBackground(style.getLocationColor());
@@ -305,49 +352,78 @@ public class MapView extends JScrollPane{
             currentButton.setVisible(true);
         }
 
-        positionButtons();
+        if (buttonListener != null) {
+            for (LocationButton locButton: locationButtonList) {
+                if (buttonListener instanceof ActionListener) {
+                    locButton.addActionListener((ActionListener) buttonListener);
+                }
+                if (buttonListener instanceof MouseListener) {
+                    locButton.addMouseListener((MouseListener) buttonListener);
+                }
+            }
+        }
+
+        updateButtonAttributes();
         repaint();
     }
 
-    private void updateNodeVisibility() {
-        for (LocationButton button: locationButtonList) {
-            Location loc = button.getAssociatedLocation();
+    /**
+     * Reset the map to display the edges of the passed graph.
+     * Calling the method will remove and re-add all buttons, so
+     * listeners will also need to be re-added
+     *
+     * @param graph The graph whose edges will be displayed
+     */
+    public final void updateGraph(LocationGraph graph) {
+        this.graphEdgeList = graph.edgeByFloorNumber(currentFloorNumber);
+        this.locationList = graph.locationByFloorNumber(currentFloorNumber);
+        this.routeLists = new ArrayList<>();
+        this.searchList = new ArrayList<>();
 
-            if (style.isDrawAllPoints()) {
-                button.setVisible(true);
-            } else {
-                button.setVisible(false);
-            }
-
-            if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
-                button.setVisible(true);
-                button.setToolTipText(loc.getNameList()[0]);
-            }
-            button.repaint();
-        }
+        addButtons();
+        updateButtonAttributes();
     }
 
-    /**
-     * Update the positions of each button on the screen.
-     */
-    private void positionButtons() {
+    private void updateButtonAttributes() {
         for (LocationButton locButton: locationButtonList) {
+
             int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
             int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-
             locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos  - (NODE_BUTTON_SIZE / 2),
                     NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
 
             for (List<Location> route: routeLists) {
+                locButton.setBackground(style.getLocationColor());
+
                 if (route.contains(locButton.getAssociatedLocation())) {
                     locButton.setBackground(style.getRouteLocationColor());
                 }
             }
+
+            Location loc = locButton.getAssociatedLocation();
+            if (style.isDrawAllPoints()) {
+                locButton.setVisible(true);
+            } else {
+                locButton.setVisible(false);
+            }
+            if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
+                locButton.setVisible(true);
+                locButton.setToolTipText(loc.getNameList()[0]);
+            }
+            repaint();
         }
+    }
+
+    public void setButtonListener(EventListener buttonListener) {
+        this.buttonListener = buttonListener;
+        addButtons();
     }
 
     public MapViewStyle getStyle() {
         return style;
     }
 
+    public int getFloorNumber() {
+        return currentFloorNumber;
+    }
 }

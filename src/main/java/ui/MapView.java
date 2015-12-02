@@ -20,7 +20,7 @@ import java.util.List;
 public class MapView extends JPanel {
     private static final double START_XFRAC = 0.38;
     private static final double START_YFRAC = 0.3;
-    private static final int NODE_BUTTON_SIZE = 10;
+    private static final int NODE_BUTTON_SIZE = 5;
     private static final double MINIMUM_ZOOM = 0.1;
     private static final double MAXIMUM_ZOOM = 2;
 
@@ -402,7 +402,7 @@ public class MapView extends JPanel {
             int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
             locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos  - (NODE_BUTTON_SIZE / 2),
                     NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
-            locButton.setBorder(BorderFactory.createLineBorder(new Color(250, 118, 0)));
+            locButton.setBorder(BorderFactory.createLineBorder(new Color(148, 250, 0)));
             locButton.setBorderPainted(true);
 
             for (List<Location> route: routeLists) {

@@ -95,6 +95,8 @@ public class MainAppUI extends JFrame{
         devToolsPanel.setVisible(false);
         enterDevloperMode.addActionListener(e -> {
             if (!devToolsPanel.getDevMode()) {
+                devToolsPanel.reset();
+
                 devToolsPanel.setDevMode(true);
                 remove(sidePanel);
                 devToolsPanel.setVisible(true);

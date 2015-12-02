@@ -27,6 +27,10 @@ public class DevTools extends JPanel {
     private LocationButton originalButton;
     private DatabaseList dblist;
 
+    JLabel buttonLabel1;
+    JLabel buttonLabel2;
+    JCheckBox edgeToggle;
+
     //Edge attribute check boxes
     JCheckBox indoors = new JCheckBox("Indoors");
     JCheckBox handicapAccess = new JCheckBox("Handicap Accessible");
@@ -40,12 +44,8 @@ public class DevTools extends JPanel {
         mapView = newView;
         dblist = new DatabaseList();
 
-        //TODO fix for empty location graph
-        if (!mapView.getLocationButtonList().isEmpty()){
-            lastButtonClicked = mapView.getLocationButtonList().get(0);
-        } else {
-            lastButtonClicked = new LocationButton(new Location(null, 0, null, null));
-        }
+        lastButtonClicked = null;
+
         setLayout(new BorderLayout());
         this.add(createSaveButton(), BorderLayout.SOUTH);
         this.add(createEditor());
@@ -98,11 +98,11 @@ public class DevTools extends JPanel {
     //Makes the panels, buttons, fields, and labels for the dev panel
     private JPanel createEditor() {
         //Labels that appear on the left side and describe the open fields
-        JLabel buttonLabel1 = new JLabel("Floor Number:");
-        JLabel buttonLabel2 = new JLabel("Name List:");
+        buttonLabel1 = new JLabel("Floor Number:");
+        buttonLabel2 = new JLabel("Name List:");
 
         //Check box to show whether you are in 'edge mode' (where only edges are changed) or not
-        JCheckBox edgeToggle = new JCheckBox("Edge Mode");
+        edgeToggle = new JCheckBox("Edge Mode");
         //initially edge mode is off
         edgeToggle.setSelected(false);
         edgeToggle.setToolTipText("<html>Click to activate Edge Mode.<br>" +
@@ -116,8 +116,7 @@ public class DevTools extends JPanel {
         JLabel blank4 = new JLabel("");
         JLabel blank5 = new JLabel("");
 
-        field1.setValue(lastButtonClicked.getAssociatedLocation()
-                .getFloorNumber());
+        field1.setValue("");
         field1.setToolTipText("<html>The floor number associated with the currently selected node.<br>" +
                 "Only valid integers will be accepted.</html>");
         field2.setToolTipText("<html>The list of names that this node should be searchable by.<br>" +
@@ -128,7 +127,7 @@ public class DevTools extends JPanel {
         okButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getButton() == 1) {
+                if (e.getButton() == 1 && lastButtonClicked != null) {
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
@@ -222,6 +221,8 @@ public class DevTools extends JPanel {
         textPanel.add(blank2);
         textPanel.add(blank4);
 
+        setElementsEnabled(false);
+
         //Panel created to display both the label panel and the field panel
         JPanel panelLayout = new JPanel(new BorderLayout());
         panelLayout.add(labelPanel, BorderLayout.WEST);
@@ -229,6 +230,26 @@ public class DevTools extends JPanel {
         panelLayout.add(okButton, BorderLayout.SOUTH);
 
         return panelLayout;
+    }
+
+    private void setElementsEnabled(boolean enabled) {
+        buttonLabel1.setEnabled(enabled);
+        buttonLabel2.setEnabled(enabled);
+        edgeToggle.setEnabled(enabled);
+        field1.setEnabled(enabled);
+        field2.setEnabled(enabled);
+        indoors.setEnabled(enabled);
+        handicapAccess.setEnabled(enabled);
+        repaint();
+    }
+
+    /**
+     * Reset the state, un-selecting an previously selected buttons and re-disabling UI elements.
+     */
+    public void reset() {
+        lastButtonClicked = null;
+        originalButton = null;
+        setElementsEnabled(false);
     }
 
     /** Mouse listener that checks for clicks on nodes.
@@ -239,62 +260,66 @@ public class DevTools extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 lastButtonClicked = (LocationButton) e.getSource();
+                if (lastButtonClicked != null && lastButtonClicked.getAssociatedLocation() != null) {
+                    setElementsEnabled(true);
 
-                //Updates the location names and floor number of a node
-                field1.setValue(lastButtonClicked.getAssociatedLocation().getFloorNumber());
-                StringBuilder locationNames = new StringBuilder();
-                int i = 0;
-                if (lastButtonClicked.getAssociatedLocation().getNameList().length > 0) {
-                    for (i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length; i++) {
-                        locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);
-                        locationNames.append(',');
+                    //Updates the location names and floor number of a node
+                    field1.setValue(lastButtonClicked.getAssociatedLocation().getFloorNumber());
+                    StringBuilder locationNames = new StringBuilder();
+                    int i = 0;
+                    if (lastButtonClicked.getAssociatedLocation().getNameList().length > 0) {
+                        for (i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length; i++) {
+                            locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);
+                            locationNames.append(',');
+                        }
                     }
-                }
 
-                field2.setValue(locationNames.toString());
-                if (e.getButton() == 1) { //Left mouse click
-                    if (edgeMode) { //if in Edge Mode
-                        currentEdge = originalButton.getAssociatedLocation()
-                                .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
-                        if (deleteEdge) {
-                            //remove edge
-                            if (currentEdge != null) {
-                                originalButton.getAssociatedLocation().removeEdge(currentEdge);
-                                dblist.removedEdge(currentEdge);
+                    field2.setValue(locationNames.toString());
+                    if (e.getButton() == 1) { //Left mouse click
+                        if (edgeMode) { //if in Edge Mode
+                            currentEdge = originalButton.getAssociatedLocation()
+                                    .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
+                            if (deleteEdge) {
+                                //remove edge
+                                if (currentEdge != null) {
+                                    originalButton.getAssociatedLocation().removeEdge(currentEdge);
+                                    dblist.removedEdge(currentEdge);
+                                }
+                            } else if (currentEdge != null) { //already has edge
+                                //update the check boxes to reflect the edge attributes of the edge selected
+                                handicapAccess.setSelected(
+                                        currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
+                                indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
+                                System.out.println("Not Handicap " +
+                                        currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
+                                System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
+                            } else { //does not have an edge
+                                //add an edge
+                                Edge newEdge = originalButton.getAssociatedLocation()
+                                        .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), new ArrayList<>());
+                                if (newEdge != null) {
+                                    dblist.addedEdge(newEdge);
+                                }
                             }
-                        } else if (currentEdge != null) { //already has edge
-                            //update the check boxes to reflect the edge attributes of the edge selected
-                            handicapAccess.setSelected(currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
-                            indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
-                            System.out.println("Not Handicap " +
-                                    currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
-                            System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
-                        } else { //does not have an edge
-                            //add an edge
-                            Edge newEdge = originalButton.getAssociatedLocation()
-                                    .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), new ArrayList<>());
-                            if (newEdge != null) {
-                                dblist.addedEdge(newEdge);
+                        }
+                    } else if (e.getButton() == 3) {//Right mouse click
+                        if (!edgeMode) {
+                            dblist.removedLocation(lastButtonClicked.getAssociatedLocation());
+                            lg.removeLocation(lastButtonClicked.getAssociatedLocation());
+                            mapView.remove(lastButtonClicked);
+                            originalButton = mapView.getLocationButtonList().get(0);
+                            mapView.repaint();
+                        } else {
+                            Edge edge = originalButton.getAssociatedLocation()
+                                    .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
+                            if (edge != null) {
+                                originalButton.getAssociatedLocation().removeEdge(edge);
+                                dblist.removedEdge(edge);
                             }
                         }
                     }
-                } else if (e.getButton() == 3) {//Right mouse click
-                    if (!edgeMode) {
-                        dblist.removedLocation(lastButtonClicked.getAssociatedLocation());
-                        lg.removeLocation(lastButtonClicked.getAssociatedLocation());
-                        mapView.remove(lastButtonClicked);
-                        originalButton = mapView.getLocationButtonList().get(0);
-                        mapView.repaint();
-                    } else {
-                        Edge edge = originalButton.getAssociatedLocation()
-                                .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
-                        if (edge != null) {
-                            originalButton.getAssociatedLocation().removeEdge(edge);
-                            dblist.removedEdge(edge);
-                        }
-                    }
+                    refreshGraph();
                 }
-                refreshGraph();
             }
         };
     }
@@ -310,7 +335,9 @@ public class DevTools extends JPanel {
             }
         }
         //Now set colors
-        lastButtonClicked.setBackground(Color.CYAN);
+        if (lastButtonClicked != null) {
+            lastButtonClicked.setBackground(Color.CYAN);
+        }
 
         mapView.repaint();
     }

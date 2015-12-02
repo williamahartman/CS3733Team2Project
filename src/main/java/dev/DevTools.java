@@ -44,7 +44,14 @@ public class DevTools extends JPanel {
         dblist = new DatabaseList();
 
         //TODO fix for empty location graph
-        this.lastButtonClicked = mapView.getLocationButtonList().get(0);
+        if(mapView.getLocationButtonList().get(0) == null){
+            lastButtonClicked = mapView.getLocationButtonList().get(0);
+            lastButtonClicked.setBackground(Color.CYAN);
+            lastButtonClicked.repaint();
+        }
+        else {
+            lastButtonClicked = new LocationButton(new Location(null, 0, null, null));
+        }
         setLayout(new BorderLayout());
         //this.add(createSaveButton(), BorderLayout.SOUTH);
         this.add(createEditor());
@@ -66,6 +73,7 @@ public class DevTools extends JPanel {
                     graph.addLocation(locAdd, new HashMap<>());
                     dblist.addedLocation(locAdd);
                     rebuildGraph();
+                    lastButtonClicked.repaint();
                 }
             }
         };
@@ -341,6 +349,10 @@ public class DevTools extends JPanel {
                 if (!edgeMode) {
                     lastButtonClicked.setBackground(Color.CYAN);
                     lastButtonClicked.repaint();
+                }
+                else {
+                    originalButton.setBackground(Color.CYAN);
+                    originalButton.repaint();
                 }
             }
         };

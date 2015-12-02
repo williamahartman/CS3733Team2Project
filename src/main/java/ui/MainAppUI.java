@@ -143,6 +143,8 @@ public class MainAppUI extends JFrame{
         JMenuItem blueStyle = new JMenuItem("Blue Style");
         JMenuItem neonFunkStyle = new JMenuItem("Neon Funk Style");
         JMenuItem vintageStyle = new JMenuItem("Vintage Style");
+        JMenuItem colorBlindStyle = new JMenuItem("Colorblind Accessible Style");
+
 
         //Sets up menu hierarchy
         setJMenuBar(menuBar);
@@ -158,6 +160,7 @@ public class MainAppUI extends JFrame{
         changeStyle.add(blueStyle);
         changeStyle.add(neonFunkStyle);
         changeStyle.add(vintageStyle);
+        changeStyle.add(colorBlindStyle);
 
         //Action listener for toggling edges. Turns all edges on or off
         toggleEdges.addActionListener(e -> {
@@ -242,6 +245,18 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(205, 49, 21), 2);
             style.setRouteLocationColor(new Color(255, 185, 15));
             style.setRouteColor(new Color(0, 134, 139));
+            resetMap(mapView);
+        });
+
+        //Action listener for Vintage Style
+        colorBlindStyle.addActionListener(e -> {
+            MapViewStyle style = mapView.getStyle();
+            style.setLocationColor(new Color(0, 0, 255));
+            style.setEdgeColor(new Color(200, 0, 0), 0);
+            style.setEdgeColor(new Color(225, 32, 32), 1);
+            style.setEdgeColor(new Color(225, 100, 100), 2);
+            style.setRouteLocationColor(new Color(0, 0, 0));
+            style.setRouteColor(new Color(255, 185, 15));
             resetMap(mapView);
         });
 

@@ -34,7 +34,7 @@ public class DevTools extends JPanel {
 
     //Edge attribute check boxes
     JCheckBox indoors = new JCheckBox("Indoors");
-    JCheckBox handicapAccess = new JCheckBox("Handicap Accessible");
+    JCheckBox handicapAccess = new JCheckBox("Not Handicap Accessible");
 
     //Fields with their initial entries (for floor numbers & location names)
     JFormattedTextField field1 = new JFormattedTextField();

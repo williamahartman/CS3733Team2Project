@@ -75,7 +75,7 @@ public class MapView extends JPanel{
                 g2d.setStroke(new BasicStroke(4));
                 if (style.isDrawAllEdges()) {
                     for (Edge e : graphEdgeList) {
-                        g2d.setColor(style.getEdgeColor());
+                        g2d.setColor(style.getEdgeColor(currentFloorNumber));
 
                         int x1 = (int) (e.getNode1().getPosition().x * imageRes.getWidth());
                         int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
@@ -252,6 +252,29 @@ public class MapView extends JPanel{
     }
 
     /**
+<<<<<<< HEAD
+=======
+     * Reset the map to display the edges of the passed graph.
+     * Calling the method will remove and re-add all buttons, so
+     * listeners will also need to be re-added
+     *
+     * @param graph The graph whose edges will be displayed
+     */
+    public final void updateGraph(LocationGraph graph, int floor) {
+        this.graphEdgeList = graph.edgeByFloorNumber(floor);
+        this.locationList = graph.locationByFloorNumber(floor);
+        this.routeLists = new ArrayList<>();
+
+        for (LocationButton locButton: locationButtonList) {
+            mapPanel.remove(locButton);
+        }
+        locationButtonList.clear();
+        addButtons();
+        updateNodeVisibility();
+    }
+
+    /**
+>>>>>>> Refactor
      * Returns the list of LocationButtons contained in the MapView.
      *
      * @return the list of LocationButtons contained in the MapView
@@ -347,15 +370,16 @@ public class MapView extends JPanel{
             Location loc = button.getAssociatedLocation();
 
             if (style.isDrawAllPoints()) {
-                button.setVisible(false);
-            } else {
                 button.setVisible(true);
+            } else {
+                button.setVisible(false);
             }
 
             if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
                 button.setVisible(true);
                 button.setToolTipText(loc.getNameList()[0]);
             }
+            button.repaint();
         }
     }
 
@@ -379,4 +403,7 @@ public class MapView extends JPanel{
         return style;
     }
 
+    public int getFloorNumber() {
+        return currentFloorNumber;
+    }
 }

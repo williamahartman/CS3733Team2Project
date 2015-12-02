@@ -27,6 +27,7 @@ public class DevTools extends JPanel {
     private boolean deleteEdge;
     private boolean edgeMode;
     private LocationButton originalButton;
+    private DatabaseList dblist;
 
     //Edge attribute check boxes
     JCheckBox indoors = new JCheckBox("Indoors");
@@ -39,9 +40,17 @@ public class DevTools extends JPanel {
     public DevTools(LocationGraph newGraph, MapView newView) {
         graph = newGraph;
         mapView = newView;
+        dblist = new DatabaseList();
 
         //TODO fix for empty location graph
-        this.lastButtonClicked = mapView.getLocationButtonList().get(0);
+        if(mapView.getLocationButtonList().get(0) == null){
+            lastButtonClicked = mapView.getLocationButtonList().get(0);
+            lastButtonClicked.setBackground(Color.CYAN);
+            lastButtonClicked.repaint();
+        }
+        else {
+            lastButtonClicked = new LocationButton(new Location(null, 0, null, null));
+        }
         setLayout(new BorderLayout());
         this.add(createSaveButton(), BorderLayout.SOUTH);
         this.add(createEditor());
@@ -59,9 +68,11 @@ public class DevTools extends JPanel {
                             mousePos.getY() / mapPanel.getHeight());
 
                     //Creates a new button object where the panel is clicked
-                    graph.addLocation(new Location(doubleMousePos, 0, new String[0]), new HashMap<>());
-
+                    Location locAdd = new Location(doubleMousePos, MainAppUI.floorNumber, new String[0]);
+                    graph.addLocation(locAdd, new HashMap<>());
+                    dblist.addedLocation(locAdd);
                     rebuildGraph();
+                    lastButtonClicked.repaint();
                 }
             }
         };
@@ -74,7 +85,8 @@ public class DevTools extends JPanel {
         saveToDatabase.addActionListener(listener -> {
             try {
                 Database graphData = new Database();
-                graphData.updateDB(graph);
+                graphData.updateDB(dblist);
+                dblist = new DatabaseList();
                 graphData.closeConnection();
             } catch (Exception exception) {
                 JOptionPane.showMessageDialog(mapView.getParent(),
@@ -106,7 +118,6 @@ public class DevTools extends JPanel {
         JLabel blank3 = new JLabel("");
         JLabel blank4 = new JLabel("");
         JLabel blank5 = new JLabel("");
-        JLabel blank6 = new JLabel("");
 
         field1.setValue(lastButtonClicked.getAssociatedLocation()
                 .getFloorNumber());
@@ -124,13 +135,23 @@ public class DevTools extends JPanel {
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
-                    String[] nameList = tempString.split(",");
-                    if (!field2.getValue().equals("Enter a String")) {
+                    String[] nameList;
+                    if (tempString.contains(",")) {
+                        nameList = tempString.split(",");
+                    }
+                    else if (tempString.length() > 0){
+                        nameList = new String[]{tempString};
+                    } else {
+                        nameList = new String[0];
+                    }
+                    if (!(field2.getValue() == null)) {
                         for (int i = 0; i < nameList.length; i++) {
                             nameList[i] = nameList[i].trim().toLowerCase();
                         }
                         lastButtonClicked.getAssociatedLocation().setNameList(nameList);
+
                     }
+                    dblist.updatedLocation(lastButtonClicked.getAssociatedLocation());
                 }
             }
         });
@@ -159,6 +180,7 @@ public class DevTools extends JPanel {
                     } else {
                         currentEdge.removeAttribute(EdgeAttribute.INDOORS);
                     }
+                    dblist.updatedEdge(currentEdge);
                 }
             }
         });
@@ -169,10 +191,11 @@ public class DevTools extends JPanel {
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == 1) {
                     if (indoors.isSelected()){
-                        currentEdge.addAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE);
+                        currentEdge.addAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
                     } else {
-                        currentEdge.removeAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE);
+                        currentEdge.removeAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
                     }
+                    dblist.updatedEdge(currentEdge);
                 }
             }
         });
@@ -199,7 +222,7 @@ public class DevTools extends JPanel {
         textPanel.add(field2);
         textPanel.add(blank1);
         textPanel.add(blank5);
-        textPanel.add(blank6);
+        textPanel.add(blank2);
         textPanel.add(blank4);
 
         //Panel created to display both the label panel and the field panel
@@ -224,10 +247,14 @@ public class DevTools extends JPanel {
                 //Updates the location names and floor number of a node
                 field1.setValue(lastButtonClicked.getAssociatedLocation().getFloorNumber());
                 StringBuilder locationNames = new StringBuilder();
-                for (int i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length; i++){
-                    locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);
-                    locationNames.append(',');
+                int i = 0;
+                if (lastButtonClicked.getAssociatedLocation().getNameList().length > 0) {
+                    for (i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length; i++) {
+                        locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);
+                        locationNames.append(',');
+                    }
                 }
+
                 field2.setValue(locationNames.toString());
                 if (e.getButton() == 1) { //Left mouse click
                     if (edgeMode) { //if in Edge Mode
@@ -237,22 +264,27 @@ public class DevTools extends JPanel {
                             //remove edge
                             if (currentEdge != null) {
                                 originalButton.getAssociatedLocation().removeEdge(currentEdge);
+                                dblist.removedEdge(currentEdge);
                             }
                         } else if (currentEdge != null) { //already has edge
                             //update the check boxes to reflect the edge attributes of the edge selected
-                            handicapAccess.setSelected(currentEdge.hasAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE));
+                            handicapAccess.setSelected(currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
                             indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
-                            System.out.println("Handicap " +
-                                    currentEdge.hasAttribute(EdgeAttribute.HANDICAP_ACCESSIBLE));
+                            System.out.println("Not Handicap " +
+                                    currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
                             System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
                         } else { //does not have an edge
                             //add an edge
-                            originalButton.getAssociatedLocation()
+                            Edge newEdge = originalButton.getAssociatedLocation()
                                     .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), new ArrayList<>());
+                            if (newEdge != null) {
+                                dblist.addedEdge(newEdge);
+                            }
                         }
                     }
                 } else if (e.getButton() == 3) {//Right mouse click
                     if (!edgeMode) {
+                        dblist.removedLocation(lastButtonClicked.getAssociatedLocation());
                         lg.removeLocation(lastButtonClicked.getAssociatedLocation());
                         DevTools.this.mapView.remove(lastButtonClicked);
                         originalButton = DevTools.this.mapView.getLocationButtonList().get(0);
@@ -262,6 +294,7 @@ public class DevTools extends JPanel {
                                 .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                         if (edge != null) {
                             originalButton.getAssociatedLocation().removeEdge(edge);
+                            dblist.removedEdge(edge);
                         }
                     }
                 }
@@ -269,6 +302,10 @@ public class DevTools extends JPanel {
                 if (!edgeMode) {
                     lastButtonClicked.setBackground(Color.CYAN);
                     lastButtonClicked.repaint();
+                }
+                else {
+                    originalButton.setBackground(Color.CYAN);
+                    originalButton.repaint();
                 }
             }
         };

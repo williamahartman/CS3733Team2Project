@@ -37,6 +37,8 @@ public class MainAppUI extends JFrame{
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
 
+    private EdgeAttributeManager attributeManager;
+
     /**
      * Constructor.
      *
@@ -56,6 +58,9 @@ public class MainAppUI extends JFrame{
                 new Color(255, 240, 0),
                 new Color(79, 189, 255));
 
+        style.setEdgeColor(new Color(255, 60, 0), 1);
+        style.setEdgeColor(new Color(255, 30, 0), 2);
+
         this.mapView = new MapView(graph,
                 new String[]{
                         "campusmap-3.png",
@@ -65,6 +70,9 @@ public class MainAppUI extends JFrame{
                         "campusmap2.png",
                         "campusmap3.png"},
                 3, DEFAULT_ZOOM, style);
+
+        this.attributeManager = new EdgeAttributeManager();
+
         startPoint = null;
         endPoint = null;
     }
@@ -82,33 +90,33 @@ public class MainAppUI extends JFrame{
         refreshMap.addActionListener(e -> resetMap(mapView));
         JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers Only!)");
 
-//        devToolsPanel = new DevTools(graph, mapView);
-//        devToolsPanel.setBackground(new Color(255, 0, 0));
-//        devToolsPanel.setVisible(false);
-//        enterDevloperMode.addActionListener(e -> {
-//            if (!devToolsPanel.getDevMode()) {
-//                devToolsPanel.setDevMode(true);
-//                remove(sidePanel);
-//                devToolsPanel.setVisible(true);
-//                add(devToolsPanel, BorderLayout.WEST);
-//                repaint();
-//                enterDevloperMode.setText("Exit Developer Mode");
-//
-//                clearState(mapView);
-//                devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
-//                mapView.getMapPanel().addMouseListener(devToolClickListener);
-//                devToolsPanel.rebuildGraph();
-//            } else {
-//                devToolsPanel.setDevMode(false);
-//                enterDevloperMode.setText("Edit Map (Developers Only!)");
-//                remove(devToolsPanel);
-//                add(sidePanel, BorderLayout.WEST);
-//                repaint();
-//
-//                resetMap(mapView);
-//                mapView.removeMouseListener(devToolClickListener);
-//            }
-//        });
+        devToolsPanel = new DevTools(graph, mapView);
+        devToolsPanel.setBackground(new Color(255, 0, 0));
+        devToolsPanel.setVisible(false);
+        enterDevloperMode.addActionListener(e -> {
+            if (!devToolsPanel.getDevMode()) {
+                devToolsPanel.setDevMode(true);
+                remove(sidePanel);
+                devToolsPanel.setVisible(true);
+                add(devToolsPanel, BorderLayout.WEST);
+                repaint();
+                enterDevloperMode.setText("Exit Developer Mode");
+
+                clearState(mapView);
+                devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
+                mapView.getMapPanel().addMouseListener(devToolClickListener);
+                devToolsPanel.rebuildGraph();
+            } else {
+                devToolsPanel.setDevMode(false);
+                enterDevloperMode.setText("Edit Map (Developers Only!)");
+                remove(devToolsPanel);
+                add(sidePanel, BorderLayout.WEST);
+                repaint();
+
+                resetMap(mapView);
+                mapView.removeMouseListener(devToolClickListener);
+            }
+        });
 
         //Sets up the 'view' menu bar
         JMenu view = new JMenu("View");
@@ -124,6 +132,8 @@ public class MainAppUI extends JFrame{
         JMenuItem blueStyle = new JMenuItem("Blue Style");
         JMenuItem neonFunkStyle = new JMenuItem("Neon Funk Style");
         JMenuItem vintageStyle = new JMenuItem("Vintage Style");
+        JMenuItem colorBlindStyle = new JMenuItem("Colorblind Accessible Style");
+
 
         //Sets up menu hierarchy
         setJMenuBar(menuBar);
@@ -139,6 +149,7 @@ public class MainAppUI extends JFrame{
         changeStyle.add(blueStyle);
         changeStyle.add(neonFunkStyle);
         changeStyle.add(vintageStyle);
+        changeStyle.add(colorBlindStyle);
 
         //Action listener for toggling edges. Turns all edges on or off
         toggleEdges.addActionListener(e -> {
@@ -159,7 +170,7 @@ public class MainAppUI extends JFrame{
                 showNodes.setText("Show All Locations");
                 style.setDrawAllPoints(true);
             }
-            resetMap(mapView);
+            mapView.updateGraph(graph);
         });
 
         /**
@@ -170,7 +181,9 @@ public class MainAppUI extends JFrame{
         defaultStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(255, 240, 0));
-            style.setEdgeColor(new Color(250, 120, 0));
+            style.setEdgeColor(new Color(250, 120, 0), 0);
+            style.setEdgeColor(new Color(255, 60, 0), 1);
+            style.setEdgeColor(new Color(255, 30, 0), 2);
             style.setRouteLocationColor(new Color(79, 189, 255));
             style.setRouteColor(new Color(15, 78, 152));
             resetMap(mapView);
@@ -180,7 +193,9 @@ public class MainAppUI extends JFrame{
         WPIStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(0, 0, 0));
-            style.setEdgeColor(new Color(100, 100, 100));
+            style.setEdgeColor(new Color(100, 100, 100), 0);
+            style.setEdgeColor(new Color(70, 70, 70), 1);
+            style.setEdgeColor(new Color(40, 40, 40), 2);
             style.setRouteLocationColor(new Color(255, 0, 0));
             style.setRouteColor(new Color(100, 0, 0));
             resetMap(mapView);
@@ -190,7 +205,9 @@ public class MainAppUI extends JFrame{
         blueStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(16, 78, 139));
-            style.setEdgeColor(new Color(125, 158, 192));
+            style.setEdgeColor(new Color(125, 158, 192), 0);
+            style.setEdgeColor(new Color(105, 138, 172), 1);
+            style.setEdgeColor(new Color(85, 118, 152), 2);
             style.setRouteLocationColor(new Color(0, 245, 255));
             style.setRouteColor(new Color(151, 255, 255));
             resetMap(mapView);
@@ -200,7 +217,9 @@ public class MainAppUI extends JFrame{
         neonFunkStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(255, 0, 255));
-            style.setEdgeColor(new Color(0, 255, 0));
+            style.setEdgeColor(new Color(0, 255, 0), 0);
+            style.setEdgeColor(new Color(0, 150, 0), 1);
+            style.setEdgeColor(new Color(0, 100, 0), 2);
             style.setRouteLocationColor(new Color(255, 255, 0));
             style.setRouteColor(new Color(0, 245, 255));
             resetMap(mapView);
@@ -210,9 +229,23 @@ public class MainAppUI extends JFrame{
         vintageStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(139, 71, 93));
-            style.setEdgeColor(new Color(255, 99, 71));
+            style.setEdgeColor(new Color(255, 99, 71), 0);
+            style.setEdgeColor(new Color(225, 70, 40), 1);
+            style.setEdgeColor(new Color(205, 49, 21), 2);
             style.setRouteLocationColor(new Color(255, 185, 15));
             style.setRouteColor(new Color(0, 134, 139));
+            resetMap(mapView);
+        });
+
+        //Action listener for Vintage Style
+        colorBlindStyle.addActionListener(e -> {
+            MapViewStyle style = mapView.getStyle();
+            style.setLocationColor(new Color(0, 0, 255));
+            style.setEdgeColor(new Color(200, 0, 0), 0);
+            style.setEdgeColor(new Color(225, 32, 32), 1);
+            style.setEdgeColor(new Color(225, 100, 100), 2);
+            style.setRouteLocationColor(new Color(0, 0, 0));
+            style.setRouteColor(new Color(255, 185, 15));
             resetMap(mapView);
         });
 
@@ -220,40 +253,6 @@ public class MainAppUI extends JFrame{
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
         sidePanel.setVisible(true);
-        JComboBox<Integer> floorNum = new JComboBox<>();
-        floorNum.addItem(0);
-        floorNum.addItem(1);
-        floorNum.addItem(2);
-        floorNum.setSelectedItem(0);
-        floorNum.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
-        floorNum.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
-        floorNum.setToolTipText("Select Floor Number");
-        floorNum.setFont(new Font("Arial", Font.BOLD, 20));
-        floorNum.addActionListener(e ->{
-            //TODO Change based on the style
-                if (floorNum.getSelectedItem().equals(0))
-                {
-                    //display ground map
-
-                    this.mapView.getStyle().setEdgeColor(new Color(250, 120, 0));
-                    this.mapView.updateGraph(graph);
-                    repaint();
-
-                }
-                else if (floorNum.getSelectedItem().equals(1))
-                {
-                    this.mapView.getStyle().setEdgeColor(new Color(255, 0, 255));
-                    this.mapView.updateGraph(graph);
-                    repaint();
-                }
-                else if (floorNum.getSelectedItem().equals(2))
-                {
-                    this.mapView.getStyle().setEdgeColor(new Color(120, 120, 120));
-                    this.mapView.updateGraph(graph);
-                    repaint();
-                }
-            });
-
 
         startInfo = new JLabel();
         startInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
@@ -271,7 +270,6 @@ public class MainAppUI extends JFrame{
         clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
         clearButton.setToolTipText("Remove the previously selected start and end points");
         clearButton.addActionListener(e -> clearState(mapView));
-
 
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -317,7 +315,6 @@ public class MainAppUI extends JFrame{
         sidePanel.add(startInfo);
         sidePanel.add(endPointInfo);
         sidePanel.add(makeAStarRoute);
-        sidePanel.add(floorNum);
         sidePanel.add(text, BorderLayout.CENTER);
         sidePanel.add(Box.createVerticalGlue());
         sidePanel.add(clearButton);
@@ -327,20 +324,7 @@ public class MainAppUI extends JFrame{
         setLayout(new BorderLayout());
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
-        //todo ASK WILL!! Double west override even if visible is set
-//        add(devToolsPanel, BorderLayout.EAST);
-
-        addWindowFocusListener(new WindowFocusListener() {
-            @Override
-            public void windowGainedFocus(WindowEvent e) {
-                resetMap(mapView);
-            }
-
-            @Override
-            public void windowLostFocus(WindowEvent e) {
-                resetMap(mapView);
-            }
-        });
+        add(devToolsPanel, BorderLayout.EAST);
 
         clearState(mapView);
     }

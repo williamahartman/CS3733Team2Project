@@ -4,6 +4,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * This class represents a Location for a LocationGraph. These are the nodes in the graph
@@ -44,7 +45,7 @@ public class Location {
      * @param nameList The list of searchable names for the Location
      */
     public Location(Point2D.Double position, int floorNumber, String[] nameList) {
-        this(position, floorNumber, nameList, new LinkedList<>());
+        this(position, floorNumber, nameList, new ArrayList<>());
     }
 
     /**
@@ -71,10 +72,10 @@ public class Location {
      * @param edgeAttributes The list of EdgeAttributes that will be applied to the new edge
      */
 
-    public void makeAdjacentTo(Location nextLocation, List<EdgeAttribute> edgeAttributes) {
+    public Edge makeAdjacentTo(Location nextLocation, List<EdgeAttribute> edgeAttributes) {
         //Don't add an edge if the current Location is passed.
         if (nextLocation == this) {
-            return;
+            return null;
         }
 
         Edge connectionToNeighbor = getConnectingEdgeFromNeighbor(nextLocation);
@@ -85,9 +86,11 @@ public class Location {
 
             //Make the connection two way
             nextLocation.makeAdjacentTo(this, edgeAttributes);
+            return e;
         } else {
             //If there is an existing one way connection, take that edge and make it two way
             edgeList.add(connectionToNeighbor);
+            return connectionToNeighbor;
         }
     }
     /**

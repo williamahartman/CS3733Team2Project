@@ -90,13 +90,17 @@ public class MapView extends JPanel {
                     for (List<Location> route: routeLists) {
                         g2d.setColor(style.getRouteColor());
 
+                        Location previousLoc = route.get(0);
                         int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
                         int previousY = (int) (route.get(0).getPosition().y * imageRes.getHeight());
                         for (int i = 1; i < route.size(); i++) {
+                            Location currentLoc = route.get(i);
                             int currentX = (int) (route.get(i).getPosition().x * imageRes.getWidth());
                             int currentY = (int) (route.get(i).getPosition().y * imageRes.getHeight());
 
-                            g2d.drawLine(previousX, previousY, currentX, currentY);
+                            if (previousLoc.getFloorNumber() == currentFloorNumber) {
+                                g2d.drawLine(previousX, previousY, currentX, currentY);
+                            }
 
                             previousX = currentX;
                             previousY = currentY;

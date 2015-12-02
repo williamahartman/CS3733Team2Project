@@ -106,7 +106,7 @@ public class MainAppUI extends JFrame{
             if (!devToolsPanel.getDevMode()) {
                 devToolsPanel.reset();
 
-                if(!userLoggedIn) {
+                if (!userLoggedIn) {
                     int passResult = 0;
                     //Open the password sign-in
                     passResult = passBox.passwordBox();

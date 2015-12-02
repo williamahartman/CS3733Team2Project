@@ -17,7 +17,7 @@ import java.util.List;
  * This is a panel that displays edges from a map. An image background is displayed bellow
  * these edges.
  */
-public class MapView extends JPanel{
+public class MapView extends JPanel {
     private static final double START_XFRAC = 0.38;
     private static final double START_YFRAC = 0.3;
     private static final int NODE_BUTTON_SIZE = 10;
@@ -143,13 +143,12 @@ public class MapView extends JPanel{
         addDefaultListeners();
 
         //Add the slider
-        JSlider floorSlider = new JSlider(JSlider.HORIZONTAL);
+        JSlider floorSlider = new JSlider(JSlider.VERTICAL);
         floorSlider.setMinimum(0);
         floorSlider.setMaximum(floorImagePaths.length - 1);
         floorSlider.setValue(defaultFloor);
         floorSlider.setPaintTicks(true);
         floorSlider.setMajorTickSpacing(1);
-        floorSlider.setBorder(BorderFactory.createTitledBorder("Floor Displayed"));
         floorSlider.addChangeListener(e ->  {
             JSlider source = (JSlider) e.getSource();
 
@@ -159,9 +158,14 @@ public class MapView extends JPanel{
                 updateGraph(graph);
             }
         });
+        floorSlider.setToolTipText("Change the displayed floor.");
+        floorSlider.setPreferredSize(new Dimension(50, 500));
+        JPanel floorSliderPanel = new JPanel();
+        floorSliderPanel.add(floorSlider);
+
         setLayout(new BorderLayout());
-        add(floorSlider, BorderLayout.NORTH);
         add(scrollPane);
+        add(floorSliderPanel, BorderLayout.WEST);
     }
 
     /**

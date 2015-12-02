@@ -174,11 +174,11 @@ public class MainAppUI extends JFrame{
         showNodes.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             if (style.isDrawAllPoints()){
-                showNodes.setText("Show Only Named Locations");
+                showNodes.setText("Show All Locations");
                 style.setDrawAllPoints(false);
                 style.setDrawNamedPoints(true);
             } else {
-                showNodes.setText("Show All Locations");
+                showNodes.setText("Show Only Named Locations");
                 style.setDrawAllPoints(true);
             }
             mapView.updateGraph(graph, floorNumber);
@@ -312,6 +312,7 @@ public class MainAppUI extends JFrame{
 
         gps = new JTextArea();
         gps.setVisible(true);
+        gps.setEditable(false);
 
         clearButton = new JButton("Clear Selections");
         clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -415,7 +416,7 @@ public class MainAppUI extends JFrame{
         endPoint = null;
 
         startInfo.setText("Start Point: Not selected");
-        endPointInfo.setText("Destination Point: Not selected");
+        endPointInfo.setText("End Point: Not selected");
 
         makeAStarRoute.setEnabled(false);
         clearButton.setEnabled(false);
@@ -449,8 +450,8 @@ public class MainAppUI extends JFrame{
                     endPoint = clickedLocation;
                     ((JButton) e.getSource()).setBackground(Color.RED);
                     if (clickedLocation.getNameList().length == 0){
-                        endPointInfo.setText("Destination Point:  Unnamed Location");
-                    } else { endPointInfo.setText("Destination Point:  " + clickedLocation.getNameList()[0]); }
+                        endPointInfo.setText("End Point:  Unnamed Location");
+                    } else { endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]); }
 
                     clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);

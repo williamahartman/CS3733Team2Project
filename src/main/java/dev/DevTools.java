@@ -177,7 +177,7 @@ public class DevTools extends JPanel {
         indoors.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == 1) {
+                if (e.getButton() == 1 && edgeMode) {
                     if (indoors.isSelected()){
                         currentEdge.addAttribute(EdgeAttribute.INDOORS);
                     } else {
@@ -192,7 +192,7 @@ public class DevTools extends JPanel {
         handicapAccess.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == 1) {
+                if (e.getButton() == 1 && edgeMode) {
                     if (indoors.isSelected()){
                         currentEdge.addAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
                     } else {

@@ -178,9 +178,9 @@ public class DevTools extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == 1 && edgeMode) {
-                    if (indoors.isSelected()){
+                    if (indoors.isSelected() && !currentEdge.hasAttribute(EdgeAttribute.INDOORS)){
                         currentEdge.addAttribute(EdgeAttribute.INDOORS);
-                    } else {
+                    } else if (!indoors.isSelected() && currentEdge.hasAttribute(EdgeAttribute.INDOORS)){
                         currentEdge.removeAttribute(EdgeAttribute.INDOORS);
                     }
                     dblist.updatedEdge(currentEdge);
@@ -193,10 +193,10 @@ public class DevTools extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == 1 && edgeMode) {
-                    if (indoors.isSelected()){
-                        currentEdge.addAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
-                    } else {
+                    if (handicapAccess.isSelected() && currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
                         currentEdge.removeAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
+                    } else if (!handicapAccess.isSelected() && !currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
+                        currentEdge.addAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
                     }
                     dblist.updatedEdge(currentEdge);
                 }
@@ -315,7 +315,7 @@ public class DevTools extends JPanel {
                             }
                         } else if (currentEdge != null) { //already has edge
                             //update the check boxes to reflect the edge attributes of the edge selected
-                            handicapAccess.setSelected(currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
+                            handicapAccess.setSelected(!currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
                             indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
                             System.out.println("Not Handicap " +
                                     currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));

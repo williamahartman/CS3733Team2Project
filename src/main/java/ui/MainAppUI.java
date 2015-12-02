@@ -71,14 +71,13 @@ public class MainAppUI extends JFrame{
                 true,
                 true,
                 true,
-                new Color(250, 120, 0),
-                new Color(15, 78, 152),
-                new Color(255, 240, 0),
-                new Color(79, 189, 255));
+                new Color(169, 176, 183),
+                new Color(172, 43, 55),
+                new Color(0, 0, 0),
+                new Color(100, 0, 0));
 
-        style.setEdgeColor(new Color(255, 60, 0), 1);
-        style.setEdgeColor(new Color(255, 30, 0), 2);
-
+        style.setEdgeColor(new Color(100, 100, 100), 1);
+        style.setEdgeColor(new Color(40, 40, 40), 2);
 
         this.mapView = new MapView(graph, mapBackground, DEFAULT_ZOOM, style);
 
@@ -204,11 +203,11 @@ public class MainAppUI extends JFrame{
         WPIStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(0, 0, 0));
-            style.setEdgeColor(new Color(100, 100, 100), 0);
-            style.setEdgeColor(new Color(70, 70, 70), 1);
+            style.setEdgeColor(new Color(169, 176, 183), 0);
+            style.setEdgeColor(new Color(100, 100, 100), 1);
             style.setEdgeColor(new Color(40, 40, 40), 2);
-            style.setRouteLocationColor(new Color(255, 0, 0));
-            style.setRouteColor(new Color(100, 0, 0));
+            style.setRouteLocationColor(new Color(100, 0, 0));
+            style.setRouteColor(new Color(172, 43, 55));
             resetMap(mapView);
         });
 
@@ -248,7 +247,7 @@ public class MainAppUI extends JFrame{
             resetMap(mapView);
         });
 
-        //Action listener for Vintage Style
+        //Action listener for Colorblind Style
         colorBlindStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(0, 0, 255));
@@ -275,7 +274,6 @@ public class MainAppUI extends JFrame{
         floorNum.setToolTipText("Select Floor Number");
         floorNum.setFont(new Font("Arial", Font.BOLD, 20));
         floorNum.addActionListener(e ->{
-            //TODO Change based on the style
                 if (floorNum.getSelectedItem().equals(0))
                 {
                     //display ground map

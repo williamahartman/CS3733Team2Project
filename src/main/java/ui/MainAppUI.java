@@ -371,6 +371,7 @@ public class MainAppUI extends JFrame{
         });
         JPanel callumPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
+        edgeWeightPanel.setBackground(Color.GREEN);
         JScrollPane text = new JScrollPane(gps);
         text.setPreferredSize(new Dimension(300, 300));
         text.setMaximumSize(new Dimension(300, 300));
@@ -381,10 +382,10 @@ public class MainAppUI extends JFrame{
         callumPanel.add(endPointInfo);
         callumPanel.add(makeAStarRoute);
         callumPanel.add(text);
+        callumPanel.add(edgeWeightPanel);
         callumPanel.add(clearButton, BorderLayout.SOUTH);
         //Add elements to the side panel
         sidePanel.add(callumPanel, BorderLayout.CENTER);
-        sidePanel.add(edgeWeightPanel, BorderLayout.CENTER);
 
 
         //Set layout and add

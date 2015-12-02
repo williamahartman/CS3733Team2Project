@@ -21,6 +21,7 @@ public class EdgeWeightMenu extends JPanel{
      */
     public EdgeWeightMenu(EdgeAttributeManager attributeManager) {
         this.attributeManager = attributeManager;
+        setUpEdgeWeightMenu();
     }
 
     /**
@@ -41,13 +42,13 @@ public class EdgeWeightMenu extends JPanel{
             if (!source.getValueIsAdjusting()) {
                 switch (source.getValue()) {
                     case 0:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 1.5);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 10);
                         break;
                     case 1:
                         attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 1);
                         break;
                     case 2:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 0.5);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 0.01);
                         break;
                 }
             }
@@ -63,13 +64,13 @@ public class EdgeWeightMenu extends JPanel{
             if (!source.getValueIsAdjusting()) {
                 switch (source.getValue()) {
                     case 0:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 1.5);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 3);
                         break;
                     case 1:
                         attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 1);
                         break;
                     case 2:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 0.5);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 0.1);
                         break;
                 }
             }

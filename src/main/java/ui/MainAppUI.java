@@ -153,7 +153,7 @@ public class MainAppUI extends JFrame{
 
         //changeStyle contains defaultStyle, WPIStyle, monochromaticStyle
         JMenuItem defaultStyle = new JMenuItem("Default Style");
-        JMenuItem WPIStyle = new JMenuItem("WPI Style");
+        JMenuItem aWPIStyle = new JMenuItem("WPI Style");
         JMenuItem blueStyle = new JMenuItem("Blue Style");
         JMenuItem neonFunkStyle = new JMenuItem("Neon Funk Style");
         JMenuItem vintageStyle = new JMenuItem("Vintage Style");
@@ -170,7 +170,7 @@ public class MainAppUI extends JFrame{
         editMenu.add(refreshMap);
         editMenu.add(enterDevloperMode);
         changeStyle.add(defaultStyle);
-        changeStyle.add(WPIStyle);
+        changeStyle.add(aWPIStyle);
         changeStyle.add(blueStyle);
         changeStyle.add(neonFunkStyle);
         changeStyle.add(vintageStyle);
@@ -215,7 +215,7 @@ public class MainAppUI extends JFrame{
         });
 
         //Action listener for WPI style
-        WPIStyle.addActionListener(e -> {
+        aWPIStyle.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             style.setLocationColor(new Color(0, 0, 0));
             style.setEdgeColor(new Color(169, 176, 183), 0);
@@ -412,22 +412,23 @@ public class MainAppUI extends JFrame{
             }
 
         });
-
-
-        //Add elements to the search panel
-        searchPanel.add(searchText);
-        searchPanel.add(searchButton);
-
-        //Add elements to the side panel
+        JPanel callumPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel callumPanel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel callumPanel3 = new JPanel(new FlowLayout(FlowLayout.CENTER));
         JScrollPane text = new JScrollPane(gps);
-        sidePanel.add(startInfo, BorderLayout.CENTER);
-        sidePanel.add(endPointInfo, BorderLayout.CENTER);
-        sidePanel.add(makeAStarRoute, BorderLayout.CENTER);
-        sidePanel.add(floorNum);
-        sidePanel.add(text, BorderLayout.CENTER);
-        sidePanel.add(searchPanel);
-        sidePanel.add(Box.createVerticalGlue(), BorderLayout.CENTER);
-        sidePanel.add(clearButton);
+        //Add elements to the search panel
+        callumPanel.add(startInfo);
+        callumPanel.add(endPointInfo);
+        callumPanel.add(makeAStarRoute);
+        callumPanel2.add(searchText);
+        callumPanel2.add(searchButton);
+        callumPanel3.add(clearButton);
+        //Add elements to the side panel
+        sidePanel.add(callumPanel, BorderLayout.CENTER);
+        sidePanel.add(text);
+        sidePanel.add(callumPanel2, BorderLayout.CENTER);
+        callumPanel.add(Box.createVerticalGlue());
+        sidePanel.add(callumPanel3, BorderLayout.CENTER);
 
 
         //Set layout and add
@@ -435,19 +436,6 @@ public class MainAppUI extends JFrame{
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
         add(devToolsPanel, BorderLayout.EAST);
-
-
-//        addWindowFocusListener(new WindowFocusListener() {
-//            @Override
-//            public void windowGainedFocus(WindowEvent e) {
-//                resetMap(mapView);
-//            }
-//
-//            @Override
-//            public void windowLostFocus(WindowEvent e) {
-//                resetMap(mapView);
-//            }
-//        });
 
         clearState(mapView);
     }

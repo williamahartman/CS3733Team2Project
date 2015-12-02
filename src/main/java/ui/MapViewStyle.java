@@ -66,7 +66,7 @@ public class MapViewStyle {
             return floor1EdgeColor;
         } else if (MainAppUI.floorNumber == 2){
             return floor2EdgeColor;
-        } else return edgeColor;
+        } else { return edgeColor; }
     }
 
     public Color getRouteColor() { return routeColor; }

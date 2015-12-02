@@ -44,7 +44,7 @@ public class DevTools extends JPanel {
         dblist = new DatabaseList();
 
         //TODO fix for empty location graph
-        if(mapView.getLocationButtonList().get(0) == null){
+        if (mapView.getLocationButtonList().get(0) == null){
             lastButtonClicked = mapView.getLocationButtonList().get(0);
             lastButtonClicked.setBackground(Color.CYAN);
             lastButtonClicked.repaint();

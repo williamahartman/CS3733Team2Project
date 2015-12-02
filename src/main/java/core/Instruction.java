@@ -242,7 +242,7 @@ public class Instruction {
 
     private void addFirstDirection(double deg, String str1, String str2){
         if (deg < 10){
-            instruction.add("Head " + str1 +"\n");
+            instruction.add("Head " + str1 + "\n");
         } else if (deg > 80){
             instruction.add("Head " + str2 + "\n");
         } else {

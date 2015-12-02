@@ -107,7 +107,6 @@ public class MainAppUI extends JFrame{
                 devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
                 mapView.getScrollPane().addMouseListener(devToolClickListener);
                 mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
-                resetMap(mapView);
             } else {
                 devToolsPanel.setDevMode(false);
                 enterDevloperMode.setText("Edit Map (Developers Only!)");
@@ -399,7 +398,6 @@ public class MainAppUI extends JFrame{
      * @param toReset the mapView to reset
      */
     private void resetMap(MapView toReset) {
-        toReset.setButtonListener(buildRouteSelectListener());
         toReset.updateGraph(graph);
 
         //Make sure selected stuff is still respected
@@ -412,6 +410,4 @@ public class MainAppUI extends JFrame{
             }
         }
     }
-
-
 }

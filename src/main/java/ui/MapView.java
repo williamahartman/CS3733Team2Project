@@ -136,10 +136,6 @@ public class MapView extends JPanel{
         floorSlider.setPaintTicks(true);
         floorSlider.setMajorTickSpacing(1);
         floorSlider.setBorder(BorderFactory.createTitledBorder("Floor Displayed"));
-
-        Hashtable<Integer, JLabel> sliderLabelTable = new Hashtable<>();
-        sliderLabelTable.put(defaultFloor, new JLabel("Ground Level"));
-
         floorSlider.addChangeListener(e ->  {
             JSlider source = (JSlider) e.getSource();
 
@@ -339,9 +335,7 @@ public class MapView extends JPanel{
         this.locationList = graph.locationByFloorNumber(currentFloorNumber);
         this.routeLists = new ArrayList<>();
 
-        for (LocationButton locationButton: locationButtonList) {
-            mapPanel.remove(locationButton);
-        }
+        mapPanel.removeAll();
         locationButtonList.clear();
 
         addButtons();
@@ -356,26 +350,7 @@ public class MapView extends JPanel{
             }
         }
 
-        updateNodeVisibility();
         updateButtonAttributes();
-    }
-
-    private void updateNodeVisibility() {
-        for (LocationButton button: locationButtonList) {
-            Location loc = button.getAssociatedLocation();
-
-            if (style.isDrawAllPoints()) {
-                button.setVisible(true);
-            } else {
-                button.setVisible(false);
-            }
-
-            if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
-                button.setVisible(true);
-                button.setToolTipText(loc.getNameList()[0]);
-            }
-            button.repaint();
-        }
     }
 
     private void updateButtonAttributes() {
@@ -383,12 +358,12 @@ public class MapView extends JPanel{
 
             int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
             int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-
             locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos  - (NODE_BUTTON_SIZE / 2),
                     NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
 
             for (List<Location> route: routeLists) {
                 locButton.setBackground(style.getLocationColor());
+
                 if (route.contains(locButton.getAssociatedLocation())) {
                     locButton.setBackground(style.getRouteLocationColor());
                 }
@@ -400,12 +375,11 @@ public class MapView extends JPanel{
             } else {
                 locButton.setVisible(false);
             }
-
             if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
                 locButton.setVisible(true);
                 locButton.setToolTipText(loc.getNameList()[0]);
             }
-            locButton.repaint();
+            repaint();
         }
     }
 

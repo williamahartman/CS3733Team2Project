@@ -11,7 +11,7 @@ import java.util.Hashtable;
 /**
  * This class is an interface the modifies edge attribute weights.
  */
-public class EdgeWeightMenu extends JFrame{
+public class EdgeWeightMenu extends JPanel{
     EdgeAttributeManager attributeManager;
 
     /**
@@ -20,9 +20,7 @@ public class EdgeWeightMenu extends JFrame{
      * @param attributeManager The EdgeAttributeManager that this menu will modify.
      */
     public EdgeWeightMenu(EdgeAttributeManager attributeManager) {
-        super("Change Routing Settings");
         this.attributeManager = attributeManager;
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -78,9 +76,6 @@ public class EdgeWeightMenu extends JFrame{
         });
         setDefaultValue(EdgeAttribute.STAIRS, stairs);
 
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(e -> this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
-
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.add(preferIndoors);
@@ -88,10 +83,8 @@ public class EdgeWeightMenu extends JFrame{
         panel.add(stairs);
         panel.add(Box.createVerticalGlue());
 
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(panel);
-        getContentPane().add(okButton, BorderLayout.SOUTH);
-
+        this.setLayout(new BorderLayout());
+        this.add(panel);
         setMinimumSize(new Dimension(300, 200));
     }
 

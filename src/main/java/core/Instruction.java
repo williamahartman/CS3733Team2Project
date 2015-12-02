@@ -187,7 +187,7 @@ public class Instruction {
         totalDistance = this.make2Decimal(totalDistance, 1);
         instruction.add("The total distance is " + totalDistance + " miles.\n");
         //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
-        int timeNeed = (int) totalDistance / 273;
+        int timeNeed = (int) (totalDistance / 0.052);
         instruction.add("On average it takes " + timeNeed + " minutes to arrive at your destination.\n");
 
         return instruction;

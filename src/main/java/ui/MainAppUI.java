@@ -34,9 +34,13 @@ public class MainAppUI extends JFrame{
     private JLabel endPointInfo;
 
     private JTextArea gps;
+    private JTextField searchText;
+    private String locToSearch;
 
     private JButton clearButton;
     private JButton makeAStarRoute;
+    private JButton searchButton;
+
     public static int floorNumber;
 
     private DevTools devToolsPanel;
@@ -367,6 +371,52 @@ public class MainAppUI extends JFrame{
                 clearState(mapView);
             }
         });
+
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchText = new JTextField(20);
+        searchText.setVisible(true);
+        searchText.setPreferredSize(new Dimension(170, 30));
+        searchText.setMaximumSize(new Dimension(170, 30));
+
+        searchButton = new JButton("Search");
+        searchButton.setPreferredSize(new Dimension(90, 30));
+        searchButton.setMaximumSize(new Dimension(90, 30));
+        searchButton.setToolTipText("Search the location on map.");
+        searchButton.addActionListener(e -> {
+            locToSearch = null; //the location user want to search
+            try {
+                clearState(mapView);
+                locToSearch = searchText.getText(); //gets the name from text field
+                //if there is no entering
+                if (locToSearch.length() == 0) {
+                    //if no location is entered
+                    JOptionPane.showMessageDialog(this, "Please Enter a Location.");
+                } else {
+                    //search the name in nameLList for all locations in the graph
+                    java.util.List<Location> loc = graph.searchLocationByName(locToSearch);
+                    if (loc.size() > 0) {
+                        //if locations are found
+                        JFrame frameSearch = new JFrame("Search");
+                        frameSearch.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                        frameSearch.setMinimumSize(new Dimension(1024, 768));
+                        mapView.addToSearchList(loc);
+                        repaint();
+                        clearButton.setEnabled(true);
+                    } else {
+                        //if no location is found
+                        JOptionPane.showMessageDialog(this, "Location is not found.");
+                    }
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
+            }
+
+        });
+
+
+        //Add elements to the search panel
+        searchPanel.add(searchText);
+        searchPanel.add(searchButton);
 
         //Add elements to the side panel
         JScrollPane text = new JScrollPane(gps);

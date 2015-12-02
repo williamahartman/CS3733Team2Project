@@ -31,6 +31,7 @@ public class MapView extends JScrollPane{
     private List<Location> locationList;
     private List<LocationButton> locationButtonList;
     private List<List<Location>> routeLists;
+    private List<Location> searchList;
 
     private MapViewStyle style;
 
@@ -93,12 +94,22 @@ public class MapView extends JScrollPane{
                         }
                     }
                 }
+                if (searchList != null && searchList.size() > 0){
+                    for (Location loc: searchList) {
+                        g2d.setColor(Color.RED);
+                        int locX = (int) (loc.getPosition().x * imageRes.getWidth());
+                        int locY = (int) (loc.getPosition().y * imageRes.getHeight());
+                        g2d.drawLine(locX, locY - 5, locX, locY - 30);
+                        g2d.drawLine(locX, locY - 5, locX - 10, locY - 10);
+                        g2d.drawLine(locX, locY - 5, locX + 10, locY - 10);
+                    }
+                }
             }
         };
         //this.dt = new DevTools(graph, this);
         //todo added because we never interact with dev tools?????
         this.style = viewStyle;
-
+        this.searchList = new ArrayList<>();
         this.routeLists = new ArrayList<>();
         this.backgroundImage = mapBackground;
         locationButtonList = new ArrayList<>();
@@ -116,6 +127,22 @@ public class MapView extends JScrollPane{
 
         updateGraph(graph, 0);
         addDefaultListeners();
+    }
+
+    /**
+     * Add a list of locations that will be displayed.
+     *
+     * @param locToAdd the list of locations that will be added
+     */
+    public void addToSearchList(List<Location> locToAdd){
+        for (Location loc: locToAdd){
+            searchList.add(loc);
+            for (LocationButton locButton: locationButtonList) {
+                if (loc.equals(locButton.getAssociatedLocation())){
+                    locButton.setBackground(Color.BLACK);
+                }
+            }
+        }
     }
 
     /**
@@ -206,6 +233,7 @@ public class MapView extends JScrollPane{
         this.graphEdgeList = graph.edgeByFloorNumber(floor);
         this.locationList = graph.locationByFloorNumber(floor);
         this.routeLists = new ArrayList<>();
+        this.searchList = new ArrayList<>();
 
         for (LocationButton locButton: locationButtonList) {
             mapPanel.remove(locButton);

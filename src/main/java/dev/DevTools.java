@@ -347,8 +347,15 @@ public class DevTools extends JPanel {
                                 System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
                             } else { //does not have an edge
                                 //add an edge
+                                ArrayList<EdgeAttribute> listOfAttributes = new ArrayList<>();
+                                if (handicapAccess.isSelected() && !listOfAttributes.contains(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
+                                    listOfAttributes.add(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
+                                }
+                                if (indoors.isSelected() && !listOfAttributes.contains(EdgeAttribute.INDOORS)){
+                                    listOfAttributes.add(EdgeAttribute.INDOORS);
+                                }
                                 Edge newEdge = originalButton.getAssociatedLocation()
-                                        .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), new ArrayList<>());
+                                        .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), listOfAttributes);
                                 if (newEdge != null) {
                                     dblist.addedEdge(newEdge);
                                 }

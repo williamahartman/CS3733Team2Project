@@ -239,8 +239,6 @@ public class DevTools extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 lastButtonClicked = (LocationButton) e.getSource();
-                lastButtonClicked.setBackground(Color.CYAN);
-                lastButtonClicked.repaint();
 
                 //Updates the location names and floor number of a node
                 field1.setValue(lastButtonClicked.getAssociatedLocation().getFloorNumber());
@@ -303,8 +301,18 @@ public class DevTools extends JPanel {
 
     public void refreshGraph() {
         mapView.updateGraph(graph);
+
+        //Search for the new button that will be last button clicked
+        for (LocationButton loc: mapView.getLocationButtonList()) {
+            if (loc.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
+                lastButtonClicked = loc;
+                break;
+            }
+        }
+        //Now set colors
         lastButtonClicked.setBackground(Color.CYAN);
-        lastButtonClicked.repaint();
+
+        mapView.repaint();
     }
 
     public boolean getDevMode(){ return inDevMode; }

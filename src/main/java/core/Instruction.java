@@ -146,7 +146,7 @@ public class Instruction {
                     if (i == listSize - 2){
                         l2 = this.make2Decimal(l2, scale);
                         //if reach the end of the location list
-                        instruction.add("Go " + l2 + " feet.\n");
+                        instruction.add("Go " + l2 + " miles.\n");
                         totalDistance += l2;
                     }
                     distance2 = l2; //records the distance between current and next location
@@ -160,7 +160,7 @@ public class Instruction {
                     if (i == listSize - 2){
                         l2 = this.make2Decimal(l2, scale);
                         //if reach the end of the location list
-                        instruction.add("Go " + l2 + " feet.\n");
+                        instruction.add("Go " + l2 + " miles.\n");
                         totalDistance += l2;
                     }
                 } else {
@@ -175,7 +175,7 @@ public class Instruction {
                     if (i == listSize - 2){
                         distance = this.make2Decimal(distance, scale);
                         //if reach the end of the location list
-                        instruction.add("Go straight and go " + distance + " feet.\n");
+                        instruction.add("Go straight and go " + distance + " miles.\n");
                         totalDistance += distance;
                     }
                 }
@@ -185,7 +185,7 @@ public class Instruction {
         instruction.add("You arrive at your destination.\n");
 
         totalDistance = this.make2Decimal(totalDistance, 1);
-        instruction.add("The total distance is " + totalDistance + " feet.\n");
+        instruction.add("The total distance is " + totalDistance + " miles.\n");
         //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
         int timeNeed = (int) totalDistance / 273;
         instruction.add("On average it takes " + timeNeed + " minutes to arrive at your destination.\n");
@@ -219,14 +219,14 @@ public class Instruction {
     private double leftRightDirection(int scale, int i, int flag2, double distance, double distance2){
         if (flag2 == 1){
             distance = this.make2Decimal(distance, scale);
-            instruction.add("Go straight and go " + distance + " feet.\n");
+            instruction.add("Go straight and go " + distance + " miles.\n");
             totalDistance += distance;
             distance = 0;
             return distance;
         }
         if (i != 0 && i != 1) {
             distance2 = this.make2Decimal(distance2, scale);
-            instruction.add("Go " + distance2 + " feet.\n");
+            instruction.add("Go " + distance2 + " miles.\n");
             totalDistance += distance2;
         }
         return distance;

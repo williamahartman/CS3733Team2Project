@@ -154,8 +154,11 @@ public class MapView extends JPanel {
 
             if (!source.getValueIsAdjusting()) {
                 currentFloorNumber = source.getValue();
+
+                List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
                 updateGraph(graph);
+                routeLists = backUpList;
             }
         });
         floorSlider.setToolTipText("Change the displayed floor.");

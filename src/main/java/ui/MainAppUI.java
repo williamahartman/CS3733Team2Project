@@ -306,10 +306,6 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
-                JFrame frame = new JFrame("Route");
-                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                frame.setMinimumSize(new Dimension(1024, 768));
-
                 java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
                     mapView.addRoute(route);

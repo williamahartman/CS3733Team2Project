@@ -425,6 +425,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(makeAStarRoute, BorderLayout.CENTER);
         sidePanel.add(floorNum);
         sidePanel.add(text, BorderLayout.CENTER);
+        sidePanel.add(searchPanel);
         sidePanel.add(Box.createVerticalGlue(), BorderLayout.CENTER);
         sidePanel.add(clearButton);
 

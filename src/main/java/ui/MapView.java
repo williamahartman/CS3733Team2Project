@@ -6,13 +6,10 @@ import core.LocationGraph;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -42,6 +39,8 @@ public class MapView extends JPanel{
     private int currentFloorNumber;
 
     private Image backgroundImage;
+
+    private EventListener buttonListener;
 
     /**
      * Constructor.
@@ -146,6 +145,7 @@ public class MapView extends JPanel{
 
             if (!source.getValueIsAdjusting()) {
                 currentFloorNumber = source.getValue();
+                setCurrentImage();
                 updateGraph(graph);
             }
         });
@@ -161,7 +161,7 @@ public class MapView extends JPanel{
      */
     public void addRoute(List<Location> routeToAdd) {
         routeLists.add(routeToAdd);
-        positionButtons();
+        updateButtonAttributes();
     }
 
     private void setCurrentImage() {
@@ -232,7 +232,7 @@ public class MapView extends JPanel{
                     double yPosFrac = (viewPortPos.getY() + (viewportHeight / 2.0)) / imageHeight;
 
                     zoomIncrementBy(e.getWheelRotation() * -0.04);
-                    positionButtons();
+                    updateButtonAttributes();
                     validate();
 
                     Point newViewportPos = new Point();
@@ -252,29 +252,6 @@ public class MapView extends JPanel{
     }
 
     /**
-<<<<<<< HEAD
-=======
-     * Reset the map to display the edges of the passed graph.
-     * Calling the method will remove and re-add all buttons, so
-     * listeners will also need to be re-added
-     *
-     * @param graph The graph whose edges will be displayed
-     */
-    public final void updateGraph(LocationGraph graph, int floor) {
-        this.graphEdgeList = graph.edgeByFloorNumber(floor);
-        this.locationList = graph.locationByFloorNumber(floor);
-        this.routeLists = new ArrayList<>();
-
-        for (LocationButton locButton: locationButtonList) {
-            mapPanel.remove(locButton);
-        }
-        locationButtonList.clear();
-        addButtons();
-        updateNodeVisibility();
-    }
-
-    /**
->>>>>>> Refactor
      * Returns the list of LocationButtons contained in the MapView.
      *
      * @return the list of LocationButtons contained in the MapView
@@ -286,10 +263,19 @@ public class MapView extends JPanel{
     /**
      * Return the backing JPanel for this MapView. This is where the buttons are drawn
      *
-     * @return The baking JPanel
+     * @return The backing JPanel
      */
     public JPanel getMapPanel() {
         return mapPanel;
+    }
+
+    /**
+     * Return the backing JScrollPane for this MapView. This is what moves around
+     *
+     * @return The backing JScrollPane
+     */
+    public JScrollPane getScrollPane() {
+        return scrollPane;
     }
 
     /**
@@ -337,7 +323,7 @@ public class MapView extends JPanel{
             currentButton.setVisible(true);
         }
 
-        positionButtons();
+        updateButtonAttributes();
         repaint();
     }
 
@@ -353,16 +339,25 @@ public class MapView extends JPanel{
         this.locationList = graph.locationByFloorNumber(currentFloorNumber);
         this.routeLists = new ArrayList<>();
 
-        for (LocationButton locButton: locationButtonList) {
-            mapPanel.remove(locButton);
+        for (LocationButton locationButton: locationButtonList) {
+            mapPanel.remove(locationButton);
         }
         locationButtonList.clear();
 
-        //todo this should be gone, right?
-        updateNodeVisibility();
         addButtons();
+        if (buttonListener != null) {
+            for (LocationButton locButton: locationButtonList) {
+                if (buttonListener instanceof ActionListener) {
+                    locButton.addActionListener((ActionListener) buttonListener);
+                }
+                if (buttonListener instanceof MouseListener) {
+                    locButton.addMouseListener((MouseListener) buttonListener);
+                }
+            }
+        }
 
-        setCurrentImage();
+        updateNodeVisibility();
+        updateButtonAttributes();
     }
 
     private void updateNodeVisibility() {
@@ -383,8 +378,9 @@ public class MapView extends JPanel{
         }
     }
 
-    private void positionButtons() {
+    private void updateButtonAttributes() {
         for (LocationButton locButton: locationButtonList) {
+
             int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
             int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
 
@@ -392,11 +388,29 @@ public class MapView extends JPanel{
                     NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
 
             for (List<Location> route: routeLists) {
+                locButton.setBackground(style.getLocationColor());
                 if (route.contains(locButton.getAssociatedLocation())) {
                     locButton.setBackground(style.getRouteLocationColor());
                 }
             }
+
+            Location loc = locButton.getAssociatedLocation();
+            if (style.isDrawAllPoints()) {
+                locButton.setVisible(true);
+            } else {
+                locButton.setVisible(false);
+            }
+
+            if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
+                locButton.setVisible(true);
+                locButton.setToolTipText(loc.getNameList()[0]);
+            }
+            locButton.repaint();
         }
+    }
+
+    public void setButtonListener(EventListener buttonListener) {
+        this.buttonListener = buttonListener;
     }
 
     public MapViewStyle getStyle() {

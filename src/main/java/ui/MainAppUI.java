@@ -70,7 +70,7 @@ public class MainAppUI extends JFrame{
                         "campusmap2.png",
                         "campusmap3.png"},
                 3, DEFAULT_ZOOM, style);
-
+        this.mapView.setButtonListener(buildRouteSelectListener());
         this.attributeManager = new EdgeAttributeManager();
 
         startPoint = null;
@@ -102,10 +102,12 @@ public class MainAppUI extends JFrame{
                 repaint();
                 enterDevloperMode.setText("Exit Developer Mode");
 
+                //Update mapView for use with devtools
                 clearState(mapView);
                 devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
-                mapView.getMapPanel().addMouseListener(devToolClickListener);
-                devToolsPanel.rebuildGraph();
+                mapView.getScrollPane().addMouseListener(devToolClickListener);
+                mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
+                resetMap(mapView);
             } else {
                 devToolsPanel.setDevMode(false);
                 enterDevloperMode.setText("Edit Map (Developers Only!)");
@@ -113,8 +115,10 @@ public class MainAppUI extends JFrame{
                 add(sidePanel, BorderLayout.WEST);
                 repaint();
 
-                resetMap(mapView);
+                //Get mapView back to the way it was
                 mapView.removeMouseListener(devToolClickListener);
+                mapView.setButtonListener(buildRouteSelectListener());
+                resetMap(mapView);
             }
         });
 
@@ -133,7 +137,6 @@ public class MainAppUI extends JFrame{
         JMenuItem neonFunkStyle = new JMenuItem("Neon Funk Style");
         JMenuItem vintageStyle = new JMenuItem("Vintage Style");
         JMenuItem colorBlindStyle = new JMenuItem("Colorblind Accessible Style");
-
 
         //Sets up menu hierarchy
         setJMenuBar(menuBar);
@@ -159,7 +162,7 @@ public class MainAppUI extends JFrame{
             resetMap(mapView);
         });
 
-        //Action listener for showing only named nodes, or all the nodes. Currently not functioning correctly.
+        //Action listener for showing only named nodes, or all the nodes.
         showNodes.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
             if (style.isDrawAllPoints()){
@@ -281,7 +284,7 @@ public class MainAppUI extends JFrame{
                 frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
                 frame.setMinimumSize(new Dimension(1024, 768));
 
-                java.util.List<Location> route = graph.makeAStarRoute(new EdgeAttributeManager(), startPoint, endPoint);
+                java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
                     mapView.addRoute(route);
                     gps.setText("");
@@ -362,14 +365,8 @@ public class MainAppUI extends JFrame{
         resetMap(toReset);
     }
 
-    /**
-     * Reset the state of just the map. (none of the class data)
-     *
-     * @param toReset the mapView to reset
-     */
-    private void resetMap(MapView toReset) {
-        toReset.updateGraph(graph);
-        addListenersToMapNodes(mapView, new ActionListener() {
+    private ActionListener buildRouteSelectListener() {
+        return new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
@@ -393,7 +390,17 @@ public class MainAppUI extends JFrame{
                     makeAStarRoute.setEnabled(true);
                 }
             }
-        });
+        };
+    }
+
+    /**
+     * Reset the state of just the map. (none of the class data)
+     *
+     * @param toReset the mapView to reset
+     */
+    private void resetMap(MapView toReset) {
+        toReset.setButtonListener(buildRouteSelectListener());
+        toReset.updateGraph(graph);
 
         //Make sure selected stuff is still respected
         for (LocationButton locButton: mapView.getLocationButtonList()) {

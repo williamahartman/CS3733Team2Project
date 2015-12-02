@@ -2,9 +2,7 @@ package dev;
 
 import core.*;
 import ui.LocationButton;
-import ui.MainAppUI;
 import ui.MapView;
-import ui.MapViewStyle;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,12 +41,11 @@ public class DevTools extends JPanel {
         dblist = new DatabaseList();
 
         //TODO fix for empty location graph
-        if(mapView.getLocationButtonList().get(0) == null){
+        if (!mapView.getLocationButtonList().isEmpty()){
             lastButtonClicked = mapView.getLocationButtonList().get(0);
             lastButtonClicked.setBackground(Color.CYAN);
             lastButtonClicked.repaint();
-        }
-        else {
+        } else {
             lastButtonClicked = new LocationButton(new Location(null, 0, null, null));
         }
         setLayout(new BorderLayout());
@@ -68,10 +65,10 @@ public class DevTools extends JPanel {
                             mousePos.getY() / mapPanel.getHeight());
 
                     //Creates a new button object where the panel is clicked
-                    Location locAdd = new Location(doubleMousePos, MainAppUI.floorNumber, new String[0]);
+                    Location locAdd = new Location(doubleMousePos, mapView.getFloorNumber(), new String[0]);
                     graph.addLocation(locAdd, new HashMap<>());
                     dblist.addedLocation(locAdd);
-                    rebuildGraph();
+                    mapView.updateGraph(graph);
                     lastButtonClicked.repaint();
                 }
             }
@@ -237,7 +234,7 @@ public class DevTools extends JPanel {
     /** Mouse listener that checks for clicks on nodes.
      *  -- changes the behavior when edge mode is selected
      */
-    private MouseAdapter buildEditListener(LocationGraph lg) {
+    public MouseAdapter buildEditListener(LocationGraph lg) {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -298,7 +295,7 @@ public class DevTools extends JPanel {
                         }
                     }
                 }
-                rebuildGraph();
+                mapView.updateGraph(graph);
                 if (!edgeMode) {
                     lastButtonClicked.setBackground(Color.CYAN);
                     lastButtonClicked.repaint();
@@ -309,18 +306,6 @@ public class DevTools extends JPanel {
                 }
             }
         };
-    }
-
-    public void rebuildGraph() {
-        mapView.updateGraph(graph);
-
-        MouseAdapter editListener = buildEditListener(graph);
-        for (LocationButton locationButton: mapView.getLocationButtonList()) {
-            locationButton.addMouseListener(editListener);
-            if (locationButton.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
-                lastButtonClicked = locationButton;
-            }
-        }
     }
 
     public boolean getDevMode(){ return inDevMode; }

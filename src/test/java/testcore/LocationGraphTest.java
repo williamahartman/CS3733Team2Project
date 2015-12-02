@@ -33,7 +33,7 @@ public class LocationGraphTest {
          */
         Location loc2 = new Location(new Point2D.Double(0, 0), 0, new String[0]);
         HashMap<Location, List<EdgeAttribute>> connections = new HashMap<>();
-        connections.put(loc1, Arrays.asList(EdgeAttribute.INDOORS, EdgeAttribute.FLOOR2));
+        connections.put(loc1, Arrays.asList(EdgeAttribute.INDOORS, EdgeAttribute.EDGE_REMOVED));
         graph.addLocation(loc2, connections);
 
         assertEquals("loc1 and loc2 are on graph", true,
@@ -42,7 +42,7 @@ public class LocationGraphTest {
         Edge shared = loc1.getEdges().get(0);
         assertEquals("The edge between loc1 and loc2 has the right attributes", true,
                 shared.hasAttribute(EdgeAttribute.INDOORS) &&
-                        shared.hasAttribute(EdgeAttribute.FLOOR2));
+                        shared.hasAttribute(EdgeAttribute.EDGE_REMOVED));
     }
 
     @Test

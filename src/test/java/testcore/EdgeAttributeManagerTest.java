@@ -22,7 +22,7 @@ public class EdgeAttributeManagerTest {
         testManager.addModifierForAttribute(EdgeAttribute.INDOORS, 0.5);
 
         assertEquals("Test default response with values", 1,
-                testManager.getModifierFromAttribute(EdgeAttribute.FLOOR1),
+                testManager.getModifierFromAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE),
                 0);
         assertEquals("Test response with held value", 0.5,
                 testManager.getModifierFromAttribute(EdgeAttribute.INDOORS),
@@ -32,7 +32,7 @@ public class EdgeAttributeManagerTest {
         testManager.addModifierForAttribute(EdgeAttribute.INDOORS, 0.7);
 
         assertEquals("Test default response with values", 1,
-                testManager.getModifierFromAttribute(EdgeAttribute.FLOOR1),
+                testManager.getModifierFromAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE),
                 0);
         assertEquals("Test response with held value", 0.7,
                 testManager.getModifierFromAttribute(EdgeAttribute.INDOORS),

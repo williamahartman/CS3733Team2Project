@@ -192,7 +192,8 @@ public class DevTools extends JPanel {
                     if (handicapAccess.isSelected() &&
                             currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
                         currentEdge.removeAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
-                    } else if (!handicapAccess.isSelected() && !currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
+                    } else if (!handicapAccess.isSelected() &&
+                            !currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
                         currentEdge.addAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
                     }
                     dblist.updatedEdge(currentEdge);
@@ -348,7 +349,8 @@ public class DevTools extends JPanel {
                             } else { //does not have an edge
                                 //add an edge
                                 ArrayList<EdgeAttribute> listOfAttributes = new ArrayList<>();
-                                if (handicapAccess.isSelected() && !listOfAttributes.contains(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
+                                if (handicapAccess.isSelected() &&
+                                        !listOfAttributes.contains(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
                                     listOfAttributes.add(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
                                 }
                                 if (indoors.isSelected() && !listOfAttributes.contains(EdgeAttribute.INDOORS)){

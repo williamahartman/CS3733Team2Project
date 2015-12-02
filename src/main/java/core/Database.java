@@ -416,13 +416,13 @@ public class Database {
             } else {
                 //removes all attributes for both edges
                 String remAttr = "DELETE FROM mydb.EDGE_ATTRIBUTES WHERE EDGE_ID = " +
-                        edgeId1 + ")";
+                        edgeId1;
                 stmt.execute(remAttr);
 
                 List<EdgeAttribute> attributes = edgeToUpdate.getAttributes();
                 for (int i = 0; i < attributes.size(); i++) {
                     String insertAttr = "INSERT INTO mydb.EDGE_ATTRIBUTES VALUES" +
-                            "(" + edgeId1 + "," + attributes.get(i).toString() + ")";
+                            "(" + edgeId1 + "," + '"' + attributes.get(i).toString() + '"' + ")";
                     stmt.execute(insertAttr);
                 }
             }

@@ -189,7 +189,8 @@ public class DevTools extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == 1 && edgeMode) {
-                    if (handicapAccess.isSelected() && currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
+                    if (handicapAccess.isSelected() &&
+                            currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
                         currentEdge.removeAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
                     } else if (!handicapAccess.isSelected() && !currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
                         currentEdge.addAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);

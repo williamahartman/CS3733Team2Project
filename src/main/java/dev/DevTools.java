@@ -69,7 +69,7 @@ public class DevTools extends JPanel {
                     graph.addLocation(locAdd, new HashMap<>());
                     dblist.addedLocation(locAdd);
                     refreshGraph();
-                    lastButtonClicked.repaint();
+                    mapPanel.repaint();
                 }
             }
         };
@@ -261,6 +261,10 @@ public class DevTools extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 lastButtonClicked = (LocationButton) e.getSource();
                 if (lastButtonClicked != null && lastButtonClicked.getAssociatedLocation() != null) {
+                    if (originalButton == null) {
+                        originalButton = lastButtonClicked;
+                    }
+
                     setElementsEnabled(true);
 
                     //Updates the location names and floor number of a node
@@ -307,7 +311,8 @@ public class DevTools extends JPanel {
                             dblist.removedLocation(lastButtonClicked.getAssociatedLocation());
                             lg.removeLocation(lastButtonClicked.getAssociatedLocation());
                             mapView.remove(lastButtonClicked);
-                            originalButton = mapView.getLocationButtonList().get(0);
+
+                            reset();
                             mapView.repaint();
                         } else {
                             Edge edge = originalButton.getAssociatedLocation()
@@ -329,12 +334,19 @@ public class DevTools extends JPanel {
 
         //Search for the new button that will be last button clicked
         for (LocationButton loc: mapView.getLocationButtonList()) {
-            if (loc.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
+            if (lastButtonClicked != null &&
+                    loc.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
                 lastButtonClicked = loc;
-                break;
+            }
+            if (originalButton != null &&
+                    loc.getAssociatedLocation() == originalButton.getAssociatedLocation()) {
+                originalButton = loc;
             }
         }
         //Now set colors
+        if (originalButton != null && edgeMode) {
+            originalButton.setBackground(Color.BLUE);
+        }
         if (lastButtonClicked != null) {
             lastButtonClicked.setBackground(Color.CYAN);
         }

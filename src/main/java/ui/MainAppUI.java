@@ -100,22 +100,33 @@ public class MainAppUI extends JFrame{
         refreshMap.addActionListener(e -> resetMap(mapView));
         JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers Only!)");
 
+        DevPassword passBox = new DevPassword("aztec", "wash");
+
         devToolsPanel = new DevTools(graph, mapView);
         devToolsPanel.setBackground(new Color(255, 0, 0));
         devToolsPanel.setVisible(false);
         enterDevloperMode.addActionListener(e -> {
             if (!devToolsPanel.getDevMode()) {
-                devToolsPanel.setDevMode(true);
-                remove(sidePanel);
-                devToolsPanel.setVisible(true);
-                add(devToolsPanel, BorderLayout.WEST);
-                repaint();
-                enterDevloperMode.setText("Exit Developer Mode");
-
-                clearState(mapView);
-                devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
-                mapView.getMapPanel().addMouseListener(devToolClickListener);
-                devToolsPanel.rebuildGraph();
+                int passResult = 0;
+                //Open the password sign-in
+                passResult = passBox.passwordBox();
+                if (passResult == 1) {
+                    devToolsPanel.setDevMode(true);
+                    remove(sidePanel);
+                    System.out.println(passResult);
+                    devToolsPanel.setVisible(true);
+                    add(devToolsPanel, BorderLayout.WEST);
+                    enterDevloperMode.setText("Exit Developer Mode");
+                    clearState(mapView);
+                    devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
+                    mapView.getMapPanel().addMouseListener(devToolClickListener);
+                    devToolsPanel.rebuildGraph();
+                    repaint();
+                }
+                else if (passResult == 2) {
+                    JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
+                            "Incorrect!", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
                 devToolsPanel.setDevMode(false);
                 enterDevloperMode.setText("Edit Map (Developers Only!)");
@@ -335,8 +346,7 @@ public class MainAppUI extends JFrame{
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
-                    for (String str:instruct.stepByStepInstruction(route, 1))
-                    {
+                    for (String str : instruct.stepByStepInstruction(route, 1)) {
                         count++;
                         gps.append(count + ") " + str);
                     }

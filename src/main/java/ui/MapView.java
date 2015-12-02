@@ -309,6 +309,9 @@ public class MapView extends JPanel{
      * Adds one LocationButton to the panel for each Location in the backing Location graph.
      */
     private void addButtons() {
+        mapPanel.removeAll();
+        locationButtonList.clear();
+
         for (Location loc: locationList) {
             LocationButton currentButton = new LocationButton(loc);
             currentButton.setBackground(style.getLocationColor());
@@ -317,6 +320,17 @@ public class MapView extends JPanel{
             mapPanel.add(currentButton);
             locationButtonList.add(currentButton);
             currentButton.setVisible(true);
+        }
+
+        if (buttonListener != null) {
+            for (LocationButton locButton: locationButtonList) {
+                if (buttonListener instanceof ActionListener) {
+                    locButton.addActionListener((ActionListener) buttonListener);
+                }
+                if (buttonListener instanceof MouseListener) {
+                    locButton.addMouseListener((MouseListener) buttonListener);
+                }
+            }
         }
 
         updateButtonAttributes();
@@ -335,21 +349,7 @@ public class MapView extends JPanel{
         this.locationList = graph.locationByFloorNumber(currentFloorNumber);
         this.routeLists = new ArrayList<>();
 
-        mapPanel.removeAll();
-        locationButtonList.clear();
-
         addButtons();
-        if (buttonListener != null) {
-            for (LocationButton locButton: locationButtonList) {
-                if (buttonListener instanceof ActionListener) {
-                    locButton.addActionListener((ActionListener) buttonListener);
-                }
-                if (buttonListener instanceof MouseListener) {
-                    locButton.addMouseListener((MouseListener) buttonListener);
-                }
-            }
-        }
-
         updateButtonAttributes();
     }
 
@@ -385,6 +385,7 @@ public class MapView extends JPanel{
 
     public void setButtonListener(EventListener buttonListener) {
         this.buttonListener = buttonListener;
+        addButtons();
     }
 
     public MapViewStyle getStyle() {

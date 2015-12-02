@@ -60,7 +60,7 @@ public class MainAppUI extends JFrame{
                 true,
                 new Color(169, 176, 183),
                 new Color(172, 43, 55),
-                new Color(0, 0, 0),
+                new Color(255, 0, 0),
                 new Color(100, 0, 0));
 
         style.setEdgeColor(new Color(100, 100, 100), 1);

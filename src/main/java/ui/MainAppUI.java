@@ -9,6 +9,7 @@ import dev.DevTools;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.EventListener;
@@ -413,22 +414,20 @@ public class MainAppUI extends JFrame{
 
         });
         JPanel callumPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JPanel callumPanel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JPanel callumPanel3 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        callumPanel.setPreferredSize(new Dimension(350, 768));
         JScrollPane text = new JScrollPane(gps);
+        text.setPreferredSize(new Dimension(300, 300));
+        text.setMaximumSize(new Dimension(300, 300));
         //Add elements to the search panel
+        callumPanel.add(searchText);
+        callumPanel.add(searchButton);
         callumPanel.add(startInfo);
         callumPanel.add(endPointInfo);
         callumPanel.add(makeAStarRoute);
-        callumPanel2.add(searchText);
-        callumPanel2.add(searchButton);
-        callumPanel3.add(clearButton);
+        callumPanel.add(text);
+        callumPanel.add(clearButton, BorderLayout.SOUTH);
         //Add elements to the side panel
         sidePanel.add(callumPanel, BorderLayout.CENTER);
-        sidePanel.add(text);
-        sidePanel.add(callumPanel2, BorderLayout.CENTER);
-        callumPanel.add(Box.createVerticalGlue());
-        sidePanel.add(callumPanel3, BorderLayout.CENTER);
 
 
         //Set layout and add

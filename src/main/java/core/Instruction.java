@@ -185,10 +185,10 @@ public class Instruction {
         instruction.add("You arrive at your destination.\n");
 
         totalDistance = this.make2Decimal(totalDistance, 1);
-        instruction.add(0, "The total distance is " + totalDistance + " feet.\n");
+        instruction.add("The total distance is " + totalDistance + " feet.\n");
         //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
         int timeNeed = (int) totalDistance / 273;
-        instruction.add(1, "On average it takes " + timeNeed + " minutes to arrive your destination.\n");
+        instruction.add("On average it takes " + timeNeed + " minutes to arrive at your destination.\n");
 
         return instruction;
     }

@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 /**
  * Created by hollyn on 11/21/15.
  */
+
 public class DatabaseList {
     List<Location> addLocList = new ArrayList<Location>();
     List<Location> removeLocList = new ArrayList<Location>();

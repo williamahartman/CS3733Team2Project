@@ -1,6 +1,7 @@
 package ui;
 
 import java.awt.*;
+import java.util.HashMap;
 
 /**
  * This class holds style values for a MapView.
@@ -12,6 +13,7 @@ public class MapViewStyle {
     private boolean drawRoutes = true;
 
     private Color edgeColor;
+    private HashMap<Integer, Color> floorEdgeColors;
     private Color routeColor;
     private Color locationColor;
     private Color routeLocationColor;
@@ -27,6 +29,8 @@ public class MapViewStyle {
         this.routeColor = routeColor;
         this.locationColor = locationColor;
         this.routeLocationColor = routeLocationColor;
+
+        floorEdgeColors = new HashMap<>();
     }
 
     public boolean isDrawAllEdges() {
@@ -57,13 +61,15 @@ public class MapViewStyle {
         this.drawNamedPoints = drawNamedPoints;
     }
 
-    public Color getEdgeColor() {
+    public Color getEdgeColor(int floorNumber) {
+        if (floorEdgeColors.containsKey(floorNumber)) {
+            return floorEdgeColors.get(floorNumber);
+        }
+
         return edgeColor;
     }
 
-    public Color getRouteColor() {
-        return routeColor;
-    }
+    public Color getRouteColor() { return routeColor; }
 
     public Color getLocationColor() {
         return locationColor;
@@ -73,11 +79,19 @@ public class MapViewStyle {
         return routeLocationColor;
     }
 
+    public void setRouteColor(Color routeColor) { this.routeColor = routeColor; }
+
     public void setLocationColor(Color locationColor) {
         this.locationColor = locationColor;
     }
 
-    public void setEdgeColor(Color edgeColor) {
-        this.edgeColor = edgeColor;
+    public void setEdgeColor(Color edgeColor, int floorNumber) {
+        if (floorEdgeColors.containsKey(floorNumber)) {
+            floorEdgeColors.replace(floorNumber, edgeColor);
+        } else {
+            floorEdgeColors.put(floorNumber, edgeColor);
+        }
     }
+
+    public void setRouteLocationColor(Color routeLocationColor) { this.routeLocationColor = routeLocationColor; }
 }

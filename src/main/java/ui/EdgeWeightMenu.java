@@ -11,7 +11,7 @@ import java.util.Hashtable;
 /**
  * This class is an interface the modifies edge attribute weights.
  */
-public class EdgeWeightMenu extends JFrame{
+public class EdgeWeightMenu extends JPanel{
     EdgeAttributeManager attributeManager;
 
     /**
@@ -20,9 +20,8 @@ public class EdgeWeightMenu extends JFrame{
      * @param attributeManager The EdgeAttributeManager that this menu will modify.
      */
     public EdgeWeightMenu(EdgeAttributeManager attributeManager) {
-        super("Change Routing Settings");
         this.attributeManager = attributeManager;
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setUpEdgeWeightMenu();
     }
 
     /**
@@ -31,7 +30,7 @@ public class EdgeWeightMenu extends JFrame{
     public void setUpEdgeWeightMenu() {
         Hashtable<Integer, JLabel> sliderLabelTable = new Hashtable<>();
         sliderLabelTable.put(0, new JLabel("Avoid"));
-        sliderLabelTable.put(1, new JLabel("Neural"));
+        sliderLabelTable.put(1, new JLabel("Neutral"));
         sliderLabelTable.put(2, new JLabel("Prefer"));
 
         JSlider preferIndoors = new JSlider(JSlider.HORIZONTAL, 0, 2, 1);
@@ -43,13 +42,13 @@ public class EdgeWeightMenu extends JFrame{
             if (!source.getValueIsAdjusting()) {
                 switch (source.getValue()) {
                     case 0:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 1.5);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 10);
                         break;
                     case 1:
                         attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 1);
                         break;
                     case 2:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 0.5);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 0.01);
                         break;
                 }
             }
@@ -65,21 +64,18 @@ public class EdgeWeightMenu extends JFrame{
             if (!source.getValueIsAdjusting()) {
                 switch (source.getValue()) {
                     case 0:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 1.5);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 3);
                         break;
                     case 1:
                         attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 1);
                         break;
                     case 2:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 0.5);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 0.1);
                         break;
                 }
             }
         });
         setDefaultValue(EdgeAttribute.STAIRS, stairs);
-
-        JButton okButton = new JButton("OK");
-        okButton.addActionListener(e -> this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -88,10 +84,8 @@ public class EdgeWeightMenu extends JFrame{
         panel.add(stairs);
         panel.add(Box.createVerticalGlue());
 
-        getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(panel);
-        getContentPane().add(okButton, BorderLayout.SOUTH);
-
+        this.setLayout(new BorderLayout());
+        this.add(panel);
         setMinimumSize(new Dimension(300, 200));
     }
 

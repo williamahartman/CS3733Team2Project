@@ -181,8 +181,8 @@ public class Database {
             Statement stmt = con.createStatement();
 
             //get id based on x and y position
-            String getID = "SELECT NODE_ID FROM NODES WHERE POS_X = "  +
-                    x + "AND POS_Y =" + y;
+            String getID = "SELECT NODE_ID FROM mydb.NODES WHERE POS_X = "  +
+                    x + " AND POS_Y =" + y;
             ResultSet rs = stmt.executeQuery(getID);
             if (!rs.next()){
                 throw new SQLException("No entry with Node's location");
@@ -191,13 +191,13 @@ public class Database {
             int nodeId = rs.getInt("NODE_ID");
 
             //update floor number
-            String updateFloor = "UPDATE mydb.NODES SET"
+            String updateFloor = "UPDATE mydb.NODES SET "
                     + "FLOOR_NUM = " + locToUpdate.getFloorNumber()
-                    + "WHERE NODE_ID =" + nodeId;
+                    + " WHERE NODE_ID =" + nodeId;
             stmt.execute(updateFloor);
 
             // update names
-            String delete = "DELETE FROM mydb.NAMES WHERE" +
+            String delete = "DELETE FROM mydb.NAMES WHERE " +
                     "NODE_ID =" + nodeId;
             stmt.execute(delete); //delete any entries in NAMES where id is found
             //add all names to database
@@ -452,11 +452,10 @@ public class Database {
             locCount = rset.getInt("NUM");
             HashMap<Integer, Location> hm = new HashMap<>(locCount);
             //create a hashmap with enough entries for the locations
-            HashMap<Integer, String[]> nameHm = new HashMap<>(locCount);
+            HashMap<Integer, List> nameHm = new HashMap<>(locCount);
 
 
-            String[] names = new String[30];
-            int numNames = 0;
+            List<String> names = new ArrayList<>();
             int id = -1;
             int prevID = -1;
             String nameToAdd;
@@ -472,17 +471,15 @@ public class Database {
                 //this is the first entry in the list
                 if (id == prevID || prevID == -1) {
                     //add the name to the list of names
-                    names[numNames] = nameToAdd;
-                    numNames++;
+                    names.add(nameToAdd);
                 } else {
                     //if the previous id is different
                     //add the previous id and its names to a hashmap
                     nameHm.put(prevID, names);
                     //reset numNames and names
-                    numNames = 0;
-                    names = new String[30];
+                    names = new ArrayList<>();
                     //add the current name to the new list of names
-                    names[numNames] = nameToAdd;
+                    names.add(nameToAdd);
 
                 }
                 //set the current id to the previous id
@@ -504,10 +501,18 @@ public class Database {
                 int floor = res.getInt("FLOOR_NUM");
                 //create a new location with the row's info and
                 //the corresponding name list from the hashmap
-                Location loc = new Location (
-                        coords,
-                        floor, nameHm.get(nodeId));
-
+                Location loc;
+                if (nameHm.get(nodeId) != null) {
+                    String[] nmList = new String[nameHm.get(nodeId).size()];
+                    nmList = (String[]) nameHm.get(nodeId).toArray(nmList);
+                     loc = new Location(
+                            coords,
+                            floor,  nmList);
+                } else {
+                    loc = new Location(
+                            coords,
+                            floor, new String[0]);
+                }
                 // Add locations and node id to a hash map
                 hm.put(nodeId, loc);
                 graph.addLocation(loc, new HashMap<>());
@@ -582,7 +587,6 @@ public class Database {
     * @param dbList Class that contains all necessary node and edge lists
     */
     public void updateDB(DatabaseList dbList){
-
         // GET LISTS
         // Get add, remove, update lists for nodes and edges
         List<Location> addLocList = dbList.getAddLocList();

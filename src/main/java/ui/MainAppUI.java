@@ -42,6 +42,7 @@ public class MainAppUI extends JFrame{
     private MouseListener devToolClickListener;
 
     private EdgeAttributeManager attributeManager;
+    private boolean userLoggedIn;
 
     /**
      * Constructor.
@@ -99,14 +100,25 @@ public class MainAppUI extends JFrame{
         devToolsPanel = new DevTools(graph, mapView);
         devToolsPanel.setBackground(new Color(255, 0, 0));
         devToolsPanel.setVisible(false);
+
+        userLoggedIn = false;
         enterDevloperMode.addActionListener(e -> {
             if (!devToolsPanel.getDevMode()) {
                 devToolsPanel.reset();
 
-                int passResult = 0;
-                //Open the password sign-in
-                passResult = passBox.passwordBox();
-                if (passResult == 1) {
+                if(!userLoggedIn) {
+                    int passResult = 0;
+                    //Open the password sign-in
+                    passResult = passBox.passwordBox();
+                    if (passResult == 1) {
+                        userLoggedIn = true;
+                    } else if (passResult == 2) {
+                        JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
+                                "Incorrect!", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+                if (userLoggedIn) {
                     devToolsPanel.setDevMode(true);
                     remove(sidePanel);
                     devToolsPanel.setVisible(true);
@@ -119,9 +131,6 @@ public class MainAppUI extends JFrame{
                     devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
                     mapView.getScrollPane().addMouseListener(devToolClickListener);
                     mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
-                } else if (passResult == 2) {
-                    JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
-                            "Incorrect!", JOptionPane.ERROR_MESSAGE);
                 }
             } else {
                 devToolsPanel.setDevMode(false);

@@ -402,6 +402,8 @@ public class MapView extends JPanel {
             int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
             locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos  - (NODE_BUTTON_SIZE / 2),
                     NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
+            locButton.setBorder(BorderFactory.createLineBorder(new Color(250, 118, 0)));
+            locButton.setBorderPainted(true);
 
             for (List<Location> route: routeLists) {
                 locButton.setBackground(style.getLocationColor());

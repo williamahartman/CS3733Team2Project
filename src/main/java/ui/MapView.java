@@ -403,15 +403,13 @@ public class MapView extends JPanel {
 
     private void updateButtonAttributes() {
         for (LocationButton locButton: locationButtonList) {
-            if(locButton.getAssociatedLocation().getNameList().length == 0)
+            if (locButton.getAssociatedLocation().getNameList().length == 0)
             {
                 int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
                 int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
                 locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos - (NODE_BUTTON_SIZE / 2),
                         NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
-            }
-            else
-            {
+            } else {
                 int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
                 int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
                 locButton.setBounds(xPos - (NODE_BUTTON_SIZE_NAME / 2), yPos - (NODE_BUTTON_SIZE_NAME / 2),
@@ -427,12 +425,14 @@ public class MapView extends JPanel {
                     int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
                     locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
                             NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
+                    locButton.setBgColor(style.getDestinationColor());
                 }
                 if (locButton.getAssociatedLocation() == route.get(route.size()-1)) {
                     int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
                     int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
                     locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
                             NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
+                    locButton.setBgColor(style.getDestinationColor());
                 }
 
             }

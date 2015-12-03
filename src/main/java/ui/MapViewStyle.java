@@ -17,6 +17,7 @@ public class MapViewStyle {
     private Color routeColor;
     private Color locationColor;
     private Color routeLocationColor;
+    private Color destinationColor;
 
     public MapViewStyle(boolean drawAllEdges, boolean drawAllPoints, boolean drawNamedPoints,
                         boolean drawRoutes, Color edgeColor, Color routeColor, Color locationColor,
@@ -94,4 +95,8 @@ public class MapViewStyle {
     }
 
     public void setRouteLocationColor(Color routeLocationColor) { this.routeLocationColor = routeLocationColor; }
+
+    public void setDestinationColor(Color destinationColor) { this.destinationColor = destinationColor; }
+
+    public Color getDestinationColor() { return destinationColor; }
 }

@@ -71,6 +71,7 @@ public class MainAppUI extends JFrame{
         style.setEdgeColor(new Color(255, 30, 0), 2);
         style.setRouteLocationColor(new Color(79, 189, 255));
         style.setRouteColor(new Color(15, 78, 152));
+        style.setDestinationColor(new Color(0, 218, 57));
 
         this.mapView = new MapView(graph,
                 new String[]{
@@ -225,6 +226,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(255, 30, 0), 2);
             style.setRouteLocationColor(new Color(79, 189, 255));
             style.setRouteColor(new Color(15, 78, 152));
+            style.setDestinationColor(new Color(0, 218, 57));
             resetMap(mapView);
         });
 
@@ -237,6 +239,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(40, 40, 40), 2);
             style.setRouteLocationColor(new Color(100, 0, 0));
             style.setRouteColor(new Color(172, 43, 55));
+            style.setDestinationColor(new Color(255, 0, 0));
             resetMap(mapView);
         });
 
@@ -249,6 +252,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(85, 118, 152), 2);
             style.setRouteLocationColor(new Color(0, 245, 255));
             style.setRouteColor(new Color(151, 255, 255));
+            style.setDestinationColor(new Color(0, 14, 255));
             resetMap(mapView);
         });
 
@@ -261,6 +265,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(0, 100, 0), 2);
             style.setRouteLocationColor(new Color(255, 255, 0));
             style.setRouteColor(new Color(0, 245, 255));
+            style.setDestinationColor(new Color(255, 179, 0));
             resetMap(mapView);
         });
 
@@ -273,6 +278,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(205, 49, 21), 2);
             style.setRouteLocationColor(new Color(255, 185, 15));
             style.setRouteColor(new Color(0, 134, 139));
+            style.setDestinationColor(new Color(146, 7, 88));
             resetMap(mapView);
         });
 
@@ -285,6 +291,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(225, 100, 100), 2);
             style.setRouteLocationColor(new Color(0, 0, 0));
             style.setRouteColor(new Color(255, 185, 15));
+            style.setDestinationColor(new Color(192, 0, 255));
             resetMap(mapView);
         });
 

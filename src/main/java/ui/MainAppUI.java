@@ -83,6 +83,7 @@ public class MainAppUI extends JFrame{
 
         startPoint = null;
         endPoint = null;
+        route = new ArrayList<>();
     }
 
     /**
@@ -405,6 +406,7 @@ public class MainAppUI extends JFrame{
         callumPanel.add(searchButton);
         callumPanel.add(startInfo);
         callumPanel.add(endPointInfo);
+        callumPanel.add(routeInfo);
         callumPanel.add(makeAStarRoute);
         callumPanel.add(text);
         callumPanel.add(edgeWeightPanel);
@@ -463,6 +465,7 @@ public class MainAppUI extends JFrame{
 
                 if (startPoint == null) {
                     startPoint = clickedLocation;
+                    route.add(clickedLocation);
                     ((LocationButton) e.getSource()).setBgColor(Color.GREEN);
                     if (clickedLocation.getNameList().length == 0){
                         startInfo.setText("Start Point:  Unnamed Location");
@@ -471,6 +474,7 @@ public class MainAppUI extends JFrame{
                     //clearButton.setEnabled(true);
                 } else if (endPoint == null && clickedLocation != startPoint) {
                     endPoint = clickedLocation;
+                    route.add(clickedLocation);
                     ((LocationButton) e.getSource()).setBgColor(Color.RED);
                     if (clickedLocation.getNameList().length == 0){
                         endPointInfo.setText("End Point:  Unnamed Location");
@@ -478,6 +482,15 @@ public class MainAppUI extends JFrame{
 
                     //clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);
+                }
+                if (!route.isEmpty())
+                {
+                    String str;
+                    for (int i = 0; i < route.size(); i++)
+                    {
+                        str = i + ": " + route.get(i).getNameList()[0] + "\n";
+                        routeInfo.setText(str);
+                    }
                 }
             }
         };

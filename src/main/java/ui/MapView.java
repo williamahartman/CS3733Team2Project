@@ -426,6 +426,7 @@ public class MapView extends JPanel {
                     locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
                             NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
                     locButton.setBgColor(style.getDestinationColor());
+                    locButton.setToolTipText("START");
                 }
                 if (locButton.getAssociatedLocation() == route.get(route.size()-1)) {
                     int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
@@ -433,6 +434,7 @@ public class MapView extends JPanel {
                     locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
                             NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
                     locButton.setBgColor(style.getDestinationColor());
+                    locButton.setToolTipText("END");
                 }
 
             }

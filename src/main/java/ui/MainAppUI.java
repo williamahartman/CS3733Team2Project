@@ -54,8 +54,8 @@ public class MainAppUI extends JFrame{
         this.graph = graph;
 
         MapViewStyle style = new MapViewStyle(
-                true,
-                true,
+                false,
+                false,
                 true,
                 true,
                 new Color(169, 176, 183),
@@ -152,7 +152,7 @@ public class MainAppUI extends JFrame{
 
         //'View' contains toggleEdges, showNodes, and changeStyle
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
-        JMenuItem showNodes = new JMenuItem("Show Only Named Locations");
+        JMenuItem showNodes = new JMenuItem("Show All Locations");
         JMenu changeStyle = new JMenu("Change Style");
 
         //changeStyle contains defaultStyle, WPIStyle, monochromaticStyle

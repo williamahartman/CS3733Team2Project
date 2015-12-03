@@ -34,7 +34,7 @@ public class MainAppUI extends JFrame{
     private JTextField searchText;
     private String locToSearch;
 
-    private JButton clearButton;
+    //private JButton clearButton;
     private JButton makeAStarRoute;
     private JButton searchButton;
 
@@ -299,11 +299,11 @@ public class MainAppUI extends JFrame{
         gps.setVisible(true);
         gps.setEditable(false);
 
-        clearButton = new JButton("Clear Selections");
-        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
-        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
-        clearButton.setToolTipText("Remove the previously selected start and end points");
-        clearButton.addActionListener(e -> clearState(mapView));
+//        clearButton = new JButton("Clear Selections");
+//        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
+//        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
+//        clearButton.setToolTipText("Remove the previously selected start and end points");
+//        clearButton.addActionListener(e -> clearState(mapView));
 
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -331,7 +331,7 @@ public class MainAppUI extends JFrame{
                     endPointInfo.setText("End Point: Not selected");
 
                     makeAStarRoute.setEnabled(false);
-                    clearButton.setEnabled(false);
+                    //clearButton.setEnabled(false);
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "There is no path between the selected points!",
@@ -377,7 +377,7 @@ public class MainAppUI extends JFrame{
                         frameSearch.setMinimumSize(new Dimension(1024, 768));
                         mapView.addToSearchList(loc);
                         repaint();
-                        clearButton.setEnabled(true);
+                        //clearButton.setEnabled(true);
                     } else {
                         //if no location is found
                         JOptionPane.showMessageDialog(this, "Location is not found.");
@@ -402,7 +402,7 @@ public class MainAppUI extends JFrame{
         callumPanel.add(makeAStarRoute);
         callumPanel.add(text);
         callumPanel.add(edgeWeightPanel);
-        callumPanel.add(clearButton, BorderLayout.SOUTH);
+        //callumPanel.add(clearButton, BorderLayout.SOUTH);
         //Add elements to the side panel
         sidePanel.add(callumPanel, BorderLayout.CENTER);
 
@@ -442,7 +442,7 @@ public class MainAppUI extends JFrame{
         endPointInfo.setText("End Point: Not selected");
 
         makeAStarRoute.setEnabled(false);
-        clearButton.setEnabled(false);
+       // clearButton.setEnabled(false);
 
         gps.setText("");
 
@@ -462,7 +462,7 @@ public class MainAppUI extends JFrame{
                         startInfo.setText("Start Point:  Unnamed Location");
                     } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
 
-                    clearButton.setEnabled(true);
+                    //clearButton.setEnabled(true);
                 } else if (endPoint == null && clickedLocation != startPoint) {
                     endPoint = clickedLocation;
                     ((LocationButton) e.getSource()).setBgColor(Color.RED);
@@ -470,7 +470,7 @@ public class MainAppUI extends JFrame{
                         endPointInfo.setText("End Point:  Unnamed Location");
                     } else { endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]); }
 
-                    clearButton.setEnabled(true);
+                    //clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);
                 }
             }

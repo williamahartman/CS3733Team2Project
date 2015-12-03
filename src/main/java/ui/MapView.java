@@ -1,16 +1,17 @@
 package ui;
 
+import com.kitfox.svg.SVGUniverse;
+import com.kitfox.svg.app.beans.SVGIcon;
 import core.Edge;
 import core.Location;
 import core.LocationGraph;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.EventListener;
-import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -23,8 +24,8 @@ public class MapView extends JPanel {
     private static final int NODE_BUTTON_SIZE = 7;
     private static final int NODE_BUTTON_SIZE_NAME = 12;
     private static final int NODE_BUTTON_SIZE_END = 15;
-    private static final double MINIMUM_ZOOM = 0.1;
-    private static final double MAXIMUM_ZOOM = 2;
+    private static final double MINIMUM_ZOOM = 1;
+    private static final double MAXIMUM_ZOOM = 5;
 
     private JScrollPane scrollPane;
     private JPanel mapPanel;
@@ -41,7 +42,10 @@ public class MapView extends JPanel {
     private String[] floorsImagePaths;
     private int currentFloorNumber;
 
-    private Image backgroundImage;
+    private SVGUniverse universe;
+    private SVGIcon svg;
+    private int svgWidth;
+    private int svgHeight;
 
     private EventListener buttonListener;
 
@@ -51,11 +55,11 @@ public class MapView extends JPanel {
      * @param graph The LocationGraph whose edges will be displayed
      * @param floorImagePaths The image that will be used as the background
      * @param defaultFloor The floor the be the main floor
-     * @param defaultZoom The zoom level the map will be at when the app starts
      * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, double defaultZoom,
-                   MapViewStyle viewStyle) {
+    public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
+        this.universe = new SVGUniverse();
+
         //Make the panel
         mapPanel = new JPanel(true) {
             public void paintComponent(Graphics g) {
@@ -72,7 +76,16 @@ public class MapView extends JPanel {
 
                 //Draw background if loaded
                 Dimension imageRes = getImagePixelSize();
-                g2d.drawImage(backgroundImage, 0, 0, (int) imageRes.getWidth(), (int) imageRes.getHeight(), null);
+
+                AffineTransform oldTransform = g2d.getTransform();
+
+                AffineTransform vectorTransform = new AffineTransform();
+
+                Point vpp = scrollPane.getViewport().getViewPosition();
+                vectorTransform.setToScale(zoomFactor, zoomFactor);
+                g2d.setTransform(vectorTransform);
+                svg.paintIcon(null, g2d, (int) -(vpp.x / zoomFactor), (int) -(vpp.y / zoomFactor));
+                g2d.setTransform(oldTransform);
 
                 g2d.setStroke(new BasicStroke(4));
                 if (style.isDrawAllEdges()) {
@@ -131,13 +144,17 @@ public class MapView extends JPanel {
 
         this.floorsImagePaths = floorImagePaths;
         this.currentFloorNumber = defaultFloor;
+
+        svg = new SVGIcon();
+        svg.setAntiAlias(true);
+        svg.setClipToViewbox(true);
+        svg.setAutosize(SVGIcon.AUTOSIZE_NONE);
         setCurrentImage();
 
         this.style = viewStyle;
         this.searchList = new ArrayList<>();
         this.routeLists = new ArrayList<>();
         locationButtonList = new ArrayList<>();
-        zoomFactor = defaultZoom;
 
         mapPanel.setPreferredSize(getImagePixelSize());
         mapPanel.setLayout(null);
@@ -145,10 +162,10 @@ public class MapView extends JPanel {
         scrollPane = new JScrollPane();
         scrollPane.setViewportView(mapPanel);
 
-        Point newViewportPos = new Point();
-        newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
-        newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
-        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
+//        Point newViewportPos = new Point();
+//        newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
+//        newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
+//        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
 
         updateGraph(graph);
         addDefaultListeners();
@@ -181,7 +198,9 @@ public class MapView extends JPanel {
 
         setLayout(new BorderLayout());
         add(scrollPane);
-        add(floorSliderPanel, BorderLayout.WEST);
+        //add(floorSliderPanel, BorderLayout.WEST);
+
+        repaint();
     }
 
     /**
@@ -213,19 +232,17 @@ public class MapView extends JPanel {
     private void setCurrentImage() {
         if (currentFloorNumber >= 0 && currentFloorNumber < floorsImagePaths.length) {
             String path = floorsImagePaths[currentFloorNumber];
-            Image oldImage = backgroundImage;
 
             try {
-                backgroundImage = ImageIO.read(ClassLoader.getSystemResourceAsStream(path));
-                oldImage = null;
+                universe.loadSVG(ClassLoader.getSystemResourceAsStream(path), "bg" + currentFloorNumber);
+                svg.setSvgURI(ClassLoader.getSystemResource(path).toURI());
+
+                svgWidth = svg.getIconWidth();
+                svgHeight = svg.getIconHeight();
+
+                System.out.println(svgWidth + ", " + svgHeight);
             } catch (Exception e) {
-                //Close the program with an error message if we can't load stuff.
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this,
-                        "The map image failed to load!",
-                        "Asset Load Failed!",
-                        JOptionPane.ERROR_MESSAGE);
-                backgroundImage = oldImage;
             }
         }
     }
@@ -278,8 +295,8 @@ public class MapView extends JPanel {
                     double yPosFrac = (viewPortPos.getY() + (viewportHeight / 2.0)) / imageHeight;
 
                     zoomIncrementBy(e.getWheelRotation() * -0.04);
-                    updateButtonAttributes();
                     validate();
+                    updateButtonAttributes();
 
                     Point newViewportPos = new Point();
                     newViewportPos.x = (int) ((xPosFrac * getImagePixelSize().getWidth()) - (viewportWidth / 2.0));
@@ -332,8 +349,8 @@ public class MapView extends JPanel {
      */
     public Dimension getImagePixelSize() {
         return new Dimension(
-                (int) (backgroundImage.getWidth(null) * zoomFactor),
-                (int) (backgroundImage.getHeight(null) * zoomFactor));
+                (int) (svgWidth * zoomFactor),
+                (int) (svgHeight * zoomFactor));
     }
 
     /**
@@ -343,16 +360,10 @@ public class MapView extends JPanel {
      */
     public void zoomIncrementBy(double toAdd) {
         zoomFactor += toAdd;
-        mapPanel.setPreferredSize(getImagePixelSize());
-    }
 
-    /**
-     * Returns the current zoom factor.
-     *
-     * @return the current zoom factor
-     */
-    public double getZoomFactor() {
-        return zoomFactor;
+        mapPanel.setPreferredSize(getImagePixelSize());
+        //svg.setPreferredSize(getImagePixelSize());
+        validate();
     }
 
     /**

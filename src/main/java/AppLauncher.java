@@ -30,7 +30,7 @@ public class AppLauncher{
 
             app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             app.setMinimumSize(new Dimension(1024, 768));
-            app.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            //app.setExtendedState(JFrame.MAXIMIZED_BOTH);
 
             app.setUpMainApp();
 

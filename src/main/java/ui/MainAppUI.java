@@ -30,7 +30,7 @@ public class MainAppUI extends JFrame{
 
     private JLabel startInfo;
     private JLabel endPointInfo;
-    private JLabel routeInfo;
+    private JTextArea routeInfo;
 
     private JTextArea gps;
     private JTextField searchText;
@@ -298,9 +298,9 @@ public class MainAppUI extends JFrame{
         endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
-        routeInfo = new JLabel();
-        routeInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
-        routeInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        routeInfo = new JTextArea();
+        routeInfo.setVisible(true);
+        routeInfo.setEditable(false);
 
         gps = new JTextArea();
         gps.setVisible(true);
@@ -399,6 +399,9 @@ public class MainAppUI extends JFrame{
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         edgeWeightPanel.setBackground(Color.GREEN);
         JScrollPane text = new JScrollPane(gps);
+        JScrollPane routePane = new JScrollPane(routeInfo);
+        routePane.setPreferredSize(new Dimension(300, 50));
+        routePane.setMaximumSize(new Dimension(300, 50));
         text.setPreferredSize(new Dimension(300, 300));
         text.setMaximumSize(new Dimension(300, 300));
         //Add elements to the search panel
@@ -406,7 +409,7 @@ public class MainAppUI extends JFrame{
         callumPanel.add(searchButton);
         callumPanel.add(startInfo);
         callumPanel.add(endPointInfo);
-        callumPanel.add(routeInfo);
+        callumPanel.add(routePane);
         callumPanel.add(makeAStarRoute);
         callumPanel.add(text);
         callumPanel.add(edgeWeightPanel);
@@ -483,14 +486,16 @@ public class MainAppUI extends JFrame{
                     //clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);
                 }
+                routeInfo.setText("");
                 if (!route.isEmpty())
                 {
-                    String str;
+                    String str = "";
                     for (int i = 0; i < route.size(); i++)
                     {
                         str = i + ": " + route.get(i).getNameList()[0] + "\n";
-                        routeInfo.setText(str);
+                        routeInfo.append(str);
                     }
+
                 }
             }
         };

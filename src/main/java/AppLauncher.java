@@ -19,6 +19,16 @@ public class AppLauncher{
             MainAppUI app = new MainAppUI(graphData.createGraph());
             graphData.closeConnection();
 
+            //changing the look and feel to hte Nimbus style
+            try {
+                UIManager
+                        .setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+            } catch (ClassNotFoundException | InstantiationException
+                    | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                e.printStackTrace();
+            }
+
+
             app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             app.setMinimumSize(new Dimension(1024, 768));
             app.setExtendedState(JFrame.MAXIMIZED_BOTH);

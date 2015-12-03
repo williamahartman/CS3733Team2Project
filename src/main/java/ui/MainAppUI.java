@@ -444,7 +444,7 @@ public class MainAppUI extends JFrame{
 
                 if (startPoint == null) {
                     startPoint = clickedLocation;
-                    ((JButton) e.getSource()).setBackground(Color.GREEN);
+                    ((LocationButton) e.getSource()).setBgColor(Color.GREEN);
                     if (clickedLocation.getNameList().length == 0){
                         startInfo.setText("Start Point:  Unnamed Location");
                     } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
@@ -452,7 +452,7 @@ public class MainAppUI extends JFrame{
                     clearButton.setEnabled(true);
                 } else if (endPoint == null && clickedLocation != startPoint) {
                     endPoint = clickedLocation;
-                    ((JButton) e.getSource()).setBackground(Color.RED);
+                    ((LocationButton) e.getSource()).setBgColor(Color.RED);
                     if (clickedLocation.getNameList().length == 0){
                         endPointInfo.setText("End Point:  Unnamed Location");
                     } else { endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]); }
@@ -475,10 +475,10 @@ public class MainAppUI extends JFrame{
         //Make sure selected stuff is still respected
         for (LocationButton locButton: mapView.getLocationButtonList()) {
             if (locButton.getAssociatedLocation() == startPoint) {
-                locButton.setBackground(Color.GREEN);
+                locButton.setBgColor(Color.GREEN);
             }
             if (locButton.getAssociatedLocation() == endPoint) {
-                locButton.setBackground(Color.RED);
+                locButton.setBgColor(Color.RED);
             }
         }
     }

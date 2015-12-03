@@ -20,7 +20,7 @@ import java.util.List;
 public class MapView extends JPanel {
     private static final double START_XFRAC = 0.38;
     private static final double START_YFRAC = 0.3;
-    private static final int NODE_BUTTON_SIZE = 6;
+    private static final int NODE_BUTTON_SIZE = 7;
     private static final double MINIMUM_ZOOM = 0.1;
     private static final double MAXIMUM_ZOOM = 2;
 
@@ -185,7 +185,7 @@ public class MapView extends JPanel {
             searchList.add(loc);
             for (LocationButton locButton: locationButtonList) {
                 if (loc.equals(locButton.getAssociatedLocation())){
-                    locButton.setBackground(Color.BLACK);
+                    locButton.setBgColor(Color.BLACK);
                 }
             }
         }
@@ -354,10 +354,7 @@ public class MapView extends JPanel {
         locationButtonList.clear();
 
         for (Location loc: locationList) {
-            LocationButton currentButton = new LocationButton(loc);
-            currentButton.setBackground(style.getLocationColor());
-            currentButton.setBorder(BorderFactory.createEmptyBorder());
-
+            LocationButton currentButton = new LocationButton(loc, getStyle().getLocationColor());
             mapPanel.add(currentButton);
             locationButtonList.add(currentButton);
             currentButton.setVisible(true);
@@ -402,14 +399,12 @@ public class MapView extends JPanel {
             int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
             locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos  - (NODE_BUTTON_SIZE / 2),
                     NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
-            locButton.setBorder(BorderFactory.createLineBorder(new Color(250, 250, 250)));
-            locButton.setBorderPainted(true);
 
             for (List<Location> route: routeLists) {
-                locButton.setBackground(style.getLocationColor());
+                locButton.setBgColor(style.getLocationColor());
 
                 if (route.contains(locButton.getAssociatedLocation())) {
-                    locButton.setBackground(style.getRouteLocationColor());
+                    locButton.setBgColor(style.getRouteLocationColor());
                 }
             }
 

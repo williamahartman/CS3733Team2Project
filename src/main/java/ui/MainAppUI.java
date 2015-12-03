@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.*;
-import java.util.EventListener;
+import java.util.*;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -26,9 +26,11 @@ public class MainAppUI extends JFrame{
 
     private Location startPoint;
     private Location endPoint;
+    private java.util.List<Location> route;
 
     private JLabel startInfo;
     private JLabel endPointInfo;
+    private JLabel routeInfo;
 
     private JTextArea gps;
     private JTextField searchText;
@@ -295,6 +297,10 @@ public class MainAppUI extends JFrame{
         endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
+        routeInfo = new JLabel();
+        routeInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        routeInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+
         gps = new JTextArea();
         gps.setVisible(true);
         gps.setEditable(false);
@@ -483,6 +489,7 @@ public class MainAppUI extends JFrame{
      * @param toReset the mapView to reset
      */
     private void resetMap(MapView toReset) {
+        gps.setText("");
         toReset.updateGraph(graph);
 
         //Make sure selected stuff is still respected

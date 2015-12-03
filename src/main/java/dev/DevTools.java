@@ -402,10 +402,10 @@ public class DevTools extends JPanel {
         }
         //Now set colors
         if (originalButton != null && edgeMode) {
-            originalButton.setBackground(Color.BLUE);
+            originalButton.setBgColor(Color.BLUE);
         }
         if (lastButtonClicked != null) {
-            lastButtonClicked.setBackground(Color.CYAN);
+            lastButtonClicked.setBgColor(Color.CYAN);
         }
 
         mapView.repaint();

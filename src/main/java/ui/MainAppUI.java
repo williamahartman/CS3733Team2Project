@@ -103,49 +103,7 @@ public class MainAppUI extends JFrame{
         devToolsPanel.setVisible(false);
 
         userLoggedIn = false;
-        enterDevloperMode.addActionListener(e -> {
-            if (!devToolsPanel.getDevMode()) {
-                devToolsPanel.reset();
 
-                if (!userLoggedIn) {
-                    int passResult = 0;
-                    //Open the password sign-in
-                    passResult = passBox.passwordBox();
-                    if (passResult == 1) {
-                        userLoggedIn = true;
-                    } else if (passResult == 2) {
-                        JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
-                                "Incorrect!", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-
-                if (userLoggedIn) {
-                    devToolsPanel.setDevMode(true);
-                    remove(sidePanel);
-                    devToolsPanel.setVisible(true);
-                    add(devToolsPanel, BorderLayout.WEST);
-                    repaint();
-                    enterDevloperMode.setText("Exit Developer Mode");
-
-                    //Update mapView for use with devtools
-                    clearState(mapView);
-                    devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
-                    mapView.getScrollPane().addMouseListener(devToolClickListener);
-                    mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
-                }
-            } else {
-                devToolsPanel.setDevMode(false);
-                enterDevloperMode.setText("Edit Map (Developers Only!)");
-                remove(devToolsPanel);
-                add(sidePanel, BorderLayout.WEST);
-                repaint();
-
-                //Get mapView back to the way it was
-                mapView.removeMouseListener(devToolClickListener);
-                mapView.setButtonListener(buildRouteSelectListener());
-                resetMap(mapView);
-            }
-        });
 
         //Sets up the 'view' menu bar
         JMenu view = new JMenu("View");
@@ -179,6 +137,52 @@ public class MainAppUI extends JFrame{
         changeStyle.add(vintageStyle);
         changeStyle.add(colorBlindStyle);
 
+        enterDevloperMode.addActionListener(e -> {
+            if (!devToolsPanel.getDevMode()) {
+                devToolsPanel.reset();
+
+                if (!userLoggedIn) {
+                    int passResult = 0;
+                    //Open the password sign-in
+                    passResult = passBox.passwordBox();
+                    if (passResult == 1) {
+                        userLoggedIn = true;
+                    } else if (passResult == 2) {
+                        JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
+                                "Incorrect!", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+                if (userLoggedIn) {
+                    devToolsPanel.setDevMode(true);
+                    remove(sidePanel);
+                    devToolsPanel.setVisible(true);
+                    add(devToolsPanel, BorderLayout.WEST);
+                    mapView.getStyle().setDrawAllEdges(true);
+                    mapView.getStyle().setDrawAllPoints(true);
+                    showNodes.setText("Show Only Named Locations");
+                    repaint();
+                    enterDevloperMode.setText("Exit Developer Mode");
+
+                    //Update mapView for use with devtools
+                    clearState(mapView);
+                    devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
+                    mapView.getScrollPane().addMouseListener(devToolClickListener);
+                    mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
+                }
+            } else {
+                devToolsPanel.setDevMode(false);
+                enterDevloperMode.setText("Edit Map (Developers Only!)");
+                remove(devToolsPanel);
+                add(sidePanel, BorderLayout.WEST);
+                repaint();
+
+                //Get mapView back to the way it was
+                mapView.removeMouseListener(devToolClickListener);
+                mapView.setButtonListener(buildRouteSelectListener());
+                resetMap(mapView);
+            }
+        });
         //Action listener for toggling edges. Turns all edges on or off
         toggleEdges.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();

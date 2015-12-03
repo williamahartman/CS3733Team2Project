@@ -496,8 +496,11 @@ public class MainAppUI extends JFrame{
                     String str = "";
                     for (int i = 0; i < route.size(); i++)
                     {
-                        str = i + ": " + route.get(i).getNameList()[0] + "\n";
-                        routeInfo.append(str);
+                        if(route.get(i).getNameList().length != 0)
+                        {
+                            str = i + ": " + route.get(i).getNameList()[0] + "\n";
+                            routeInfo.append(str);
+                        }
                     }
 
                 }

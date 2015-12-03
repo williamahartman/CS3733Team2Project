@@ -85,11 +85,13 @@ public class MapView extends JPanel {
 
                         g2d.drawLine(x1, y1, x2, y2);
                     }
+
                 }
 
                 if (style.isDrawRoutes()) {
                     for (List<Location> route: routeLists) {
-                        g2d.setColor(style.getRouteColor());
+
+                        //g2d.setColor(style.getRouteColor());
 
                         Location previousLoc = route.get(0);
                         int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
@@ -99,12 +101,15 @@ public class MapView extends JPanel {
                             int currentX = (int) (route.get(i).getPosition().x * imageRes.getWidth());
                             int currentY = (int) (route.get(i).getPosition().y * imageRes.getHeight());
 
-                            if (previousLoc.getFloorNumber() == currentFloorNumber) {
+                            if (previousLoc.getFloorNumber() == currentFloorNumber
+                                    && previousLoc.getFloorNumber() == currentLoc.getFloorNumber()) {
+                                g2d.setColor(style.getRouteColor());
                                 g2d.drawLine(previousX, previousY, currentX, currentY);
                             }
 
                             previousX = currentX;
                             previousY = currentY;
+                            previousLoc =currentLoc;
                         }
                     }
                 }
@@ -164,6 +169,8 @@ public class MapView extends JPanel {
                 setCurrentImage();
                 updateGraph(graph);
                 routeLists = backUpList;
+                updateButtonAttributes();
+
             }
         });
         floorSlider.setToolTipText("Change the displayed floor.");
@@ -410,7 +417,7 @@ public class MapView extends JPanel {
                         NODE_BUTTON_SIZE_NAME, NODE_BUTTON_SIZE_NAME);
             }
             for (List<Location> route: routeLists) {
-                locButton.setBgColor(style.getLocationColor());
+               // locButton.setBgColor(style.getRouteLocationColor());
 
                 if (route.contains(locButton.getAssociatedLocation())) {
                     locButton.setBgColor(style.getRouteLocationColor());

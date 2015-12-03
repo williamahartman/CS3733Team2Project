@@ -311,6 +311,7 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
+                resetMap(this.mapView);
                 java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
                     mapView.addRoute(route);
@@ -323,6 +324,14 @@ public class MainAppUI extends JFrame{
                     }
 
                     repaint();
+                    startPoint = null;
+                    endPoint = null;
+
+                    startInfo.setText("Start Point: Not selected");
+                    endPointInfo.setText("End Point: Not selected");
+
+                    makeAStarRoute.setEnabled(false);
+                    clearButton.setEnabled(false);
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "There is no path between the selected points!",

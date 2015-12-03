@@ -22,6 +22,7 @@ public class MapView extends JPanel {
     private static final double START_YFRAC = 0.3;
     private static final int NODE_BUTTON_SIZE = 7;
     private static final int NODE_BUTTON_SIZE_NAME = 12;
+    private static final int NODE_BUTTON_SIZE_END = 15;
     private static final double MINIMUM_ZOOM = 0.1;
     private static final double MAXIMUM_ZOOM = 2;
 
@@ -418,10 +419,22 @@ public class MapView extends JPanel {
             }
             for (List<Location> route: routeLists) {
                // locButton.setBgColor(style.getRouteLocationColor());
-
                 if (route.contains(locButton.getAssociatedLocation())) {
                     locButton.setBgColor(style.getRouteLocationColor());
                 }
+                if (locButton.getAssociatedLocation() == route.get(0)) {
+                    int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
+                    int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+                    locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
+                            NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
+                }
+                if (locButton.getAssociatedLocation() == route.get(route.size()-1)) {
+                    int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
+                    int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+                    locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
+                            NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
+                }
+
             }
 
             Location loc = locButton.getAssociatedLocation();

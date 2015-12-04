@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.event.*;
-import java.util.EventListener;
+import java.util.*;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -26,15 +26,17 @@ public class MainAppUI extends JFrame{
 
     private Location startPoint;
     private Location endPoint;
+    private java.util.List<Location> route;
 
     private JLabel startInfo;
     private JLabel endPointInfo;
+    private JTextArea routeInfo;
 
     private JTextArea gps;
     private JTextField searchText;
     private String locToSearch;
 
-    private JButton clearButton;
+    //private JButton clearButton;
     private JButton makeAStarRoute;
     private JButton searchButton;
 
@@ -54,32 +56,39 @@ public class MainAppUI extends JFrame{
         this.graph = graph;
 
         MapViewStyle style = new MapViewStyle(
+                false,
+                false,
                 true,
                 true,
-                true,
-                true,
-                new Color(169, 176, 183),
+                new Color(250, 120, 0),
                 new Color(172, 43, 55),
-                new Color(0, 0, 0),
+                new Color(255, 0, 0),
                 new Color(100, 0, 0));
 
-        style.setEdgeColor(new Color(100, 100, 100), 1);
-        style.setEdgeColor(new Color(40, 40, 40), 2);
+        style.setLocationColor(new Color(255, 240, 0));
+        style.setEdgeColor(new Color(250, 120, 0), 0);
+        style.setEdgeColor(new Color(255, 60, 0), 1);
+        style.setEdgeColor(new Color(255, 30, 0), 2);
+        style.setRouteLocationColor(new Color(79, 189, 255));
+        style.setRouteColor(new Color(15, 78, 152));
+        style.setDestinationColor(new Color(0, 218, 57));
 
         this.mapView = new MapView(graph,
                 new String[]{
-                        "campusmap-3.png",
                         "campusmap-2.png",
                         "campusmap-1.png",
                         "campusmap1.png",
                         "campusmap2.png",
-                        "campusmap3.png"},
-                3, DEFAULT_ZOOM, style);
+                        "placeholder.png",
+                        "placeholder.png",
+                        "placeholder.png"},
+                2, DEFAULT_ZOOM, style);
         this.mapView.setButtonListener(buildRouteSelectListener());
         this.attributeManager = new EdgeAttributeManager();
 
         startPoint = null;
         endPoint = null;
+        route = new ArrayList<>();
     }
 
     /**
@@ -102,56 +111,14 @@ public class MainAppUI extends JFrame{
         devToolsPanel.setVisible(false);
 
         userLoggedIn = false;
-        enterDevloperMode.addActionListener(e -> {
-            if (!devToolsPanel.getDevMode()) {
-                devToolsPanel.reset();
 
-                if (!userLoggedIn) {
-                    int passResult = 0;
-                    //Open the password sign-in
-                    passResult = passBox.passwordBox();
-                    if (passResult == 1) {
-                        userLoggedIn = true;
-                    } else if (passResult == 2) {
-                        JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
-                                "Incorrect!", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-
-                if (userLoggedIn) {
-                    devToolsPanel.setDevMode(true);
-                    remove(sidePanel);
-                    devToolsPanel.setVisible(true);
-                    add(devToolsPanel, BorderLayout.WEST);
-                    repaint();
-                    enterDevloperMode.setText("Exit Developer Mode");
-
-                    //Update mapView for use with devtools
-                    clearState(mapView);
-                    devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
-                    mapView.getScrollPane().addMouseListener(devToolClickListener);
-                    mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
-                }
-            } else {
-                devToolsPanel.setDevMode(false);
-                enterDevloperMode.setText("Edit Map (Developers Only!)");
-                remove(devToolsPanel);
-                add(sidePanel, BorderLayout.WEST);
-                repaint();
-
-                //Get mapView back to the way it was
-                mapView.removeMouseListener(devToolClickListener);
-                mapView.setButtonListener(buildRouteSelectListener());
-                resetMap(mapView);
-            }
-        });
 
         //Sets up the 'view' menu bar
         JMenu view = new JMenu("View");
 
         //'View' contains toggleEdges, showNodes, and changeStyle
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
-        JMenuItem showNodes = new JMenuItem("Show Only Named Locations");
+        JMenuItem showNodes = new JMenuItem("Show All Locations");
         JMenu changeStyle = new JMenu("Change Style");
 
         //changeStyle contains defaultStyle, WPIStyle, monochromaticStyle
@@ -178,6 +145,52 @@ public class MainAppUI extends JFrame{
         changeStyle.add(vintageStyle);
         changeStyle.add(colorBlindStyle);
 
+        enterDevloperMode.addActionListener(e -> {
+            if (!devToolsPanel.getDevMode()) {
+                devToolsPanel.reset();
+
+                if (!userLoggedIn) {
+                    int passResult = 0;
+                    //Open the password sign-in
+                    passResult = passBox.passwordBox();
+                    if (passResult == 1) {
+                        userLoggedIn = true;
+                    } else if (passResult == 2) {
+                        JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
+                                "Incorrect!", JOptionPane.ERROR_MESSAGE);
+                    }
+                }
+
+                if (userLoggedIn) {
+                    devToolsPanel.setDevMode(true);
+                    remove(sidePanel);
+                    devToolsPanel.setVisible(true);
+                    add(devToolsPanel, BorderLayout.WEST);
+                    mapView.getStyle().setDrawAllEdges(true);
+                    mapView.getStyle().setDrawAllPoints(true);
+                    showNodes.setText("Show Only Named Locations");
+                    repaint();
+                    enterDevloperMode.setText("Exit Developer Mode");
+
+                    //Update mapView for use with devtools
+                    clearState(mapView);
+                    devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
+                    mapView.getScrollPane().addMouseListener(devToolClickListener);
+                    mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
+                }
+            } else {
+                devToolsPanel.setDevMode(false);
+                enterDevloperMode.setText("Edit Map (Developers Only!)");
+                remove(devToolsPanel);
+                add(sidePanel, BorderLayout.WEST);
+                repaint();
+
+                //Get mapView back to the way it was
+                mapView.removeMouseListener(devToolClickListener);
+                mapView.setButtonListener(buildRouteSelectListener());
+                resetMap(mapView);
+            }
+        });
         //Action listener for toggling edges. Turns all edges on or off
         toggleEdges.addActionListener(e -> {
             MapViewStyle style = mapView.getStyle();
@@ -213,6 +226,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(255, 30, 0), 2);
             style.setRouteLocationColor(new Color(79, 189, 255));
             style.setRouteColor(new Color(15, 78, 152));
+            style.setDestinationColor(new Color(0, 218, 57));
             resetMap(mapView);
         });
 
@@ -225,6 +239,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(40, 40, 40), 2);
             style.setRouteLocationColor(new Color(100, 0, 0));
             style.setRouteColor(new Color(172, 43, 55));
+            style.setDestinationColor(new Color(255, 0, 0));
             resetMap(mapView);
         });
 
@@ -237,6 +252,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(85, 118, 152), 2);
             style.setRouteLocationColor(new Color(0, 245, 255));
             style.setRouteColor(new Color(151, 255, 255));
+            style.setDestinationColor(new Color(0, 14, 255));
             resetMap(mapView);
         });
 
@@ -249,6 +265,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(0, 100, 0), 2);
             style.setRouteLocationColor(new Color(255, 255, 0));
             style.setRouteColor(new Color(0, 245, 255));
+            style.setDestinationColor(new Color(255, 179, 0));
             resetMap(mapView);
         });
 
@@ -261,6 +278,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(205, 49, 21), 2);
             style.setRouteLocationColor(new Color(255, 185, 15));
             style.setRouteColor(new Color(0, 134, 139));
+            style.setDestinationColor(new Color(146, 7, 88));
             resetMap(mapView);
         });
 
@@ -273,6 +291,7 @@ public class MainAppUI extends JFrame{
             style.setEdgeColor(new Color(225, 100, 100), 2);
             style.setRouteLocationColor(new Color(0, 0, 0));
             style.setRouteColor(new Color(255, 185, 15));
+            style.setDestinationColor(new Color(192, 0, 255));
             resetMap(mapView);
         });
 
@@ -290,15 +309,19 @@ public class MainAppUI extends JFrame{
         endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
 
+        routeInfo = new JTextArea();
+        routeInfo.setVisible(true);
+        routeInfo.setEditable(false);
+
         gps = new JTextArea();
         gps.setVisible(true);
         gps.setEditable(false);
 
-        clearButton = new JButton("Clear Selections");
-        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
-        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
-        clearButton.setToolTipText("Remove the previously selected start and end points");
-        clearButton.addActionListener(e -> clearState(mapView));
+//        clearButton = new JButton("Clear Selections");
+//        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
+//        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
+//        clearButton.setToolTipText("Remove the previously selected start and end points");
+//        clearButton.addActionListener(e -> clearState(mapView));
 
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -306,10 +329,7 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
-                JFrame frame = new JFrame("Route");
-                frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                frame.setMinimumSize(new Dimension(1024, 768));
-
+                resetMap(this.mapView);
                 java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
                     mapView.addRoute(route);
@@ -322,6 +342,14 @@ public class MainAppUI extends JFrame{
                     }
 
                     repaint();
+                    startPoint = null;
+                    endPoint = null;
+
+                    startInfo.setText("Start Point: Not selected");
+                    endPointInfo.setText("End Point: Not selected");
+
+                    makeAStarRoute.setEnabled(false);
+                    //clearButton.setEnabled(false);
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "There is no path between the selected points!",
@@ -367,7 +395,7 @@ public class MainAppUI extends JFrame{
                         frameSearch.setMinimumSize(new Dimension(1024, 768));
                         mapView.addToSearchList(loc);
                         repaint();
-                        clearButton.setEnabled(true);
+                        //clearButton.setEnabled(true);
                     } else {
                         //if no location is found
                         JOptionPane.showMessageDialog(this, "Location is not found.");
@@ -382,6 +410,9 @@ public class MainAppUI extends JFrame{
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         edgeWeightPanel.setBackground(Color.GREEN);
         JScrollPane text = new JScrollPane(gps);
+        JScrollPane routePane = new JScrollPane(routeInfo);
+        routePane.setPreferredSize(new Dimension(300, 50));
+        routePane.setMaximumSize(new Dimension(300, 50));
         text.setPreferredSize(new Dimension(300, 300));
         text.setMaximumSize(new Dimension(300, 300));
         //Add elements to the search panel
@@ -389,10 +420,11 @@ public class MainAppUI extends JFrame{
         callumPanel.add(searchButton);
         callumPanel.add(startInfo);
         callumPanel.add(endPointInfo);
+        callumPanel.add(routePane);
         callumPanel.add(makeAStarRoute);
         callumPanel.add(text);
         callumPanel.add(edgeWeightPanel);
-        callumPanel.add(clearButton, BorderLayout.SOUTH);
+        //callumPanel.add(clearButton, BorderLayout.SOUTH);
         //Add elements to the side panel
         sidePanel.add(callumPanel, BorderLayout.CENTER);
 
@@ -432,7 +464,7 @@ public class MainAppUI extends JFrame{
         endPointInfo.setText("End Point: Not selected");
 
         makeAStarRoute.setEnabled(false);
-        clearButton.setEnabled(false);
+       // clearButton.setEnabled(false);
 
         gps.setText("");
 
@@ -447,21 +479,37 @@ public class MainAppUI extends JFrame{
 
                 if (startPoint == null) {
                     startPoint = clickedLocation;
-                    ((JButton) e.getSource()).setBackground(Color.GREEN);
+                    route.add(clickedLocation);
+                    ((LocationButton) e.getSource()).setBgColor(Color.GREEN);
                     if (clickedLocation.getNameList().length == 0){
                         startInfo.setText("Start Point:  Unnamed Location");
                     } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
 
-                    clearButton.setEnabled(true);
+                    //clearButton.setEnabled(true);
                 } else if (endPoint == null && clickedLocation != startPoint) {
                     endPoint = clickedLocation;
-                    ((JButton) e.getSource()).setBackground(Color.RED);
+                    route.add(clickedLocation);
+                    ((LocationButton) e.getSource()).setBgColor(Color.RED);
                     if (clickedLocation.getNameList().length == 0){
                         endPointInfo.setText("End Point:  Unnamed Location");
                     } else { endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]); }
 
-                    clearButton.setEnabled(true);
+                    //clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);
+                }
+                routeInfo.setText("");
+                if (!route.isEmpty())
+                {
+                    String str = "";
+                    for (int i = 0; i < route.size(); i++)
+                    {
+                        if (route.get(i).getNameList().length != 0)
+                        {
+                            str = i + ": " + route.get(i).getNameList()[0] + "\n";
+                            routeInfo.append(str);
+                        }
+                    }
+
                 }
             }
         };
@@ -473,15 +521,16 @@ public class MainAppUI extends JFrame{
      * @param toReset the mapView to reset
      */
     private void resetMap(MapView toReset) {
+        gps.setText("");
         toReset.updateGraph(graph);
 
         //Make sure selected stuff is still respected
         for (LocationButton locButton: mapView.getLocationButtonList()) {
             if (locButton.getAssociatedLocation() == startPoint) {
-                locButton.setBackground(Color.GREEN);
+                locButton.setBgColor(Color.GREEN);
             }
             if (locButton.getAssociatedLocation() == endPoint) {
-                locButton.setBackground(Color.RED);
+                locButton.setBgColor(Color.RED);
             }
         }
     }

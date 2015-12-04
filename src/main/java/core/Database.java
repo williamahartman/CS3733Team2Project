@@ -93,9 +93,9 @@ public class Database {
         int floorNum = locToAdd.getFloorNumber(); //get the floor number
 
         //query for inserting the node into the database
-        String query = "INSERT INTO mydb.NODES (POS_X, POS_Y, FLOOR_NUM) VALUES " +
+        String query = "INSERT INTO mapData.NODES (POS_X, POS_Y, FLOOR_NUM) VALUES " +
                 "(" + x + "," + y + "," + floorNum + ")";
-        String getID = "SELECT NODE_ID FROM mydb.NODES WHERE" +
+        String getID = "SELECT NODE_ID FROM mapData.NODES WHERE" +
                 "(POS_X = " + x + ") AND (POS_Y = " + y + ")";
         try {
             Statement stmt = con.createStatement();
@@ -131,7 +131,7 @@ public class Database {
             Statement stmt = con.createStatement();
 
             //get the id of the node to remove
-            String getID = "SELECT NODE_ID FROM mydb.NODES WHERE POS_X = "  +
+            String getID = "SELECT NODE_ID FROM mapData.NODES WHERE POS_X = "  +
                     x + " and POS_Y =" + y;
             ResultSet rs = stmt.executeQuery(getID);
             if (!rs.next()){
@@ -141,11 +141,11 @@ public class Database {
 
             try {
                 //remove the edges that link to this node
-                String remEdge = "DELETE FROM mydb.EDGES WHERE NODE1_ID = "
+                String remEdge = "DELETE FROM mapData.EDGES WHERE NODE1_ID = "
                         + nodeId + " or NODE2_ID = " + nodeId;
                 stmt.execute(remEdge); //execute query to remove edges
 
-                String remNames = "DELETE FROM mydb.EDGE_ATTRIBUTES" +
+                String remNames = "DELETE FROM mapData.EDGE_ATTRIBUTES" +
                         "WHERE EDGE_ID = (SELECT EDGE_ID FROM EDGES WHERE NODE1_ID = " + nodeId +
                         "AND NODE2_ID = " + nodeId + ")";
                 stmt.execute(remNames); //execute query to remove edge attributes
@@ -154,11 +154,11 @@ public class Database {
                 //location not apart of any nodes
             }
 
-            String removeNames = "DELETE FROM mydb.NAMES WHERE NODE_ID = "
+            String removeNames = "DELETE FROM mapData.NAMES WHERE NODE_ID = "
                     + nodeId;
             stmt.execute(removeNames); //execute query to remove names
 
-            String remNode = "DELETE FROM mydb.NODES WHERE NODE_ID = "
+            String remNode = "DELETE FROM mapData.NODES WHERE NODE_ID = "
                     + nodeId;
             stmt.execute(remNode); //execute the query to remove nodes
 
@@ -181,7 +181,7 @@ public class Database {
             Statement stmt = con.createStatement();
 
             //get id based on x and y position
-            String getID = "SELECT NODE_ID FROM mydb.NODES WHERE POS_X = "  +
+            String getID = "SELECT NODE_ID FROM mapData.NODES WHERE POS_X = "  +
                     x + " AND POS_Y =" + y;
             ResultSet rs = stmt.executeQuery(getID);
             if (!rs.next()){
@@ -191,13 +191,13 @@ public class Database {
             int nodeId = rs.getInt("NODE_ID");
 
             //update floor number
-            String updateFloor = "UPDATE mydb.NODES SET "
+            String updateFloor = "UPDATE mapData.NODES SET "
                     + "FLOOR_NUM = " + locToUpdate.getFloorNumber()
                     + " WHERE NODE_ID =" + nodeId;
             stmt.execute(updateFloor);
 
             // update names
-            String delete = "DELETE FROM mydb.NAMES WHERE " +
+            String delete = "DELETE FROM mapData.NAMES WHERE " +
                     "NODE_ID =" + nodeId;
             stmt.execute(delete); //delete any entries in NAMES where id is found
             //add all names to database
@@ -226,10 +226,10 @@ public class Database {
             Statement stmt = con.createStatement();
 
             //query to get the id of the first node
-            String getID1 = "SELECT NODE_ID FROM mydb.NODES WHERE POS_X = "  +
+            String getID1 = "SELECT NODE_ID FROM mapData.NODES WHERE POS_X = "  +
                     x1 + " and POS_Y =" + y1;
             //query to get the id of the second node
-            String getID2 = "SELECT NODE_ID FROM mydb.NODES WHERE POS_X = "  +
+            String getID2 = "SELECT NODE_ID FROM mapData.NODES WHERE POS_X = "  +
                     x2 + " and POS_Y = " + y2;
 
             //get the result set of the query for the first nodeID
@@ -251,12 +251,12 @@ public class Database {
             int nodeId2 = rs.getInt("NODE_ID");
 
             //query for inserting the edge into the database
-            String insertEdge = "INSERT INTO mydb.EDGES (NODE1_ID, NODE2_ID) VALUES " +
+            String insertEdge = "INSERT INTO mapData.EDGES (NODE1_ID, NODE2_ID) VALUES " +
                     "(" + nodeId1 + "," + nodeId2 + ")";
             stmt.execute(insertEdge); //add the edge to the database
 
             //query for getting edgeId from database
-            String getEdgeId = "SELECT EDGE_ID FROM mydb.EDGES WHERE " +
+            String getEdgeId = "SELECT EDGE_ID FROM mapData.EDGES WHERE " +
                     "NODE1_ID = " + nodeId1 + " AND NODE2_ID = " + nodeId2;
             //get the result set of the query for the edgeId
             ResultSet rsE = stmt.executeQuery(getEdgeId);
@@ -268,7 +268,7 @@ public class Database {
 
             List<EdgeAttribute> attributes = edgeToAdd.getAttributes();
             for (int i = 0; i < attributes.size(); i++) {
-                String insertAttr = "INSERT INTO mydb.EDGE_ATTRIBUTES VALUES" +
+                String insertAttr = "INSERT INTO mapData.EDGE_ATTRIBUTES VALUES" +
                         "(" + edgeId + "," + '"' + attributes.get(i) + '"' + ")";
                 stmt.execute(insertAttr);
             }
@@ -294,7 +294,7 @@ public class Database {
         try {
             Statement stmt = con.createStatement();
             //query to get the first nodeID
-            String query = "SELECT NODE_ID FROM mydb.NODES WHERE " +
+            String query = "SELECT NODE_ID FROM mapData.NODES WHERE " +
                     "(POS_X = " + x1 + " AND POS_Y =" + y1 + ") OR " +
                     "(POS_X = " + x2 + " and POS_Y =" + y2 + ")";
             //execute the query to get the first nodeID
@@ -310,7 +310,7 @@ public class Database {
             //store the second nodeID
             int nodeId2 = rs.getInt("NODE_ID");
 
-            query = "SELECT EDGE_ID FROM mydb.EDGES WHERE " +
+            query = "SELECT EDGE_ID FROM mapData.EDGES WHERE " +
                     "(NODE1_ID = " + nodeId1 + " AND NODE2_ID = " + nodeId2 + ") OR" +
                     " (NODE1_ID = " + nodeId2 + " AND NODE2_ID = " + nodeId1 + ")";
             //query to get the Edge id
@@ -322,20 +322,20 @@ public class Database {
             int edgeId1 = rs.getInt("EDGE_ID");
             if (!rs.next()){
                 //throw new SQLException("No locations with those coordinates(Node2)");
-                String remAttr = "DELETE FROM mydb.EDGE_ATTRIBUTES WHERE (EDGE_ID = " + edgeId1 + ")";
+                String remAttr = "DELETE FROM mapData.EDGE_ATTRIBUTES WHERE (EDGE_ID = " + edgeId1 + ")";
                 stmt.execute(remAttr); //remove the attributes from the database
 
-                String remEdge = "DELETE FROM mydb.EDGES WHERE (EDGE_ID = " + edgeId1 + ")";
+                String remEdge = "DELETE FROM mapData.EDGES WHERE (EDGE_ID = " + edgeId1 + ")";
                 stmt.execute(remEdge); //remove the edge from the database
             } else {
                 //store second edgeId found
                 int edgeId2 = rs.getInt("EDGE_ID");
 
-                String remAttr = "DELETE FROM mydb.EDGE_ATTRIBUTES WHERE (EDGE_ID = " + edgeId1
+                String remAttr = "DELETE FROM mapData.EDGE_ATTRIBUTES WHERE (EDGE_ID = " + edgeId1
                         + "OR (EDGE_ID = " + edgeId2 + ")";
                 stmt.execute(remAttr); //remove the attributes from the database
 
-                String remEdge = "DELETE FROM mydb.EDGES WHERE (EDGE_ID = " + edgeId1
+                String remEdge = "DELETE FROM mapData.EDGES WHERE (EDGE_ID = " + edgeId1
                         + "OR (EDGE_ID = " + edgeId2 + ")";
                 stmt.execute(remEdge); //remove the edge from the database
             }
@@ -362,7 +362,7 @@ public class Database {
             Statement stmt = con.createStatement();
 
             //query to get the first nodeID
-            String query = "SELECT NODE_ID FROM mydb.NODES WHERE " +
+            String query = "SELECT NODE_ID FROM mapData.NODES WHERE " +
                     "(POS_X = " + node1X + " AND POS_Y =" + node1Y + ") OR " +
                     "(POS_X = " + node2X + " and POS_Y =" + node2Y + ")";
             //execute the query to get the first nodeID
@@ -378,7 +378,7 @@ public class Database {
             //store the second nodeID
             int nodeId2 = rs.getInt("NODE_ID");
 
-            query = "SELECT EDGE_ID FROM mydb.EDGES WHERE " +
+            query = "SELECT EDGE_ID FROM mapData.EDGES WHERE " +
                     "(NODE1_ID = " + nodeId1 + " AND NODE2_ID = " + nodeId2 + ") OR" +
                     " (NODE1_ID = " + nodeId2 + " AND NODE2_ID = " + nodeId1 + ")";
             //query to get the Edge id
@@ -400,28 +400,28 @@ public class Database {
 
             if (edgeId2 != 0) {
                 //removes all attributes for both edges
-                String remAttrBoth = "DELETE FROM mydb.EDGE_ATTRIBUTES WHERE (EDGE_ID = " + edgeId1
+                String remAttrBoth = "DELETE FROM mapData.EDGE_ATTRIBUTES WHERE (EDGE_ID = " + edgeId1
                         + "OR (EDGE_ID = " + edgeId2 + ")";
                 stmt.execute(remAttrBoth);
 
                 List<EdgeAttribute> attributes = edgeToUpdate.getAttributes();
                 for (int i = 0; i < attributes.size(); i++) {
-                    String insertAttr1 = "INSERT INTO mydb.EDGE_ATTRIBUTES VALUES" +
+                    String insertAttr1 = "INSERT INTO mapData.EDGE_ATTRIBUTES VALUES" +
                             "(" + edgeId1 + "," + attributes.get(i).toString() + ")";
                     stmt.execute(insertAttr1);
-                    String insertAttr2 = "INSERT INTO mydb.EDGE_ATTRIBUTES VALUES" +
+                    String insertAttr2 = "INSERT INTO mapData.EDGE_ATTRIBUTES VALUES" +
                             "(" + edgeId2 + "," + attributes.get(i).toString() + ")";
                     stmt.execute(insertAttr2);
                 }
             } else {
                 //removes all attributes for both edges
-                String remAttr = "DELETE FROM mydb.EDGE_ATTRIBUTES WHERE EDGE_ID = " +
+                String remAttr = "DELETE FROM mapData.EDGE_ATTRIBUTES WHERE EDGE_ID = " +
                         edgeId1;
                 stmt.execute(remAttr);
 
                 List<EdgeAttribute> attributes = edgeToUpdate.getAttributes();
                 for (int i = 0; i < attributes.size(); i++) {
-                    String insertAttr = "INSERT INTO mydb.EDGE_ATTRIBUTES VALUES" +
+                    String insertAttr = "INSERT INTO mapData.EDGE_ATTRIBUTES VALUES" +
                             "(" + edgeId1 + "," + '"' + attributes.get(i).toString() + '"' + ")";
                     stmt.execute(insertAttr);
                 }
@@ -444,7 +444,7 @@ public class Database {
             // Hash map to store location and its corresponding database node id
             Statement sta = con.createStatement();
             int locCount;
-            String query = "SELECT COUNT(NODE_ID) AS NUM FROM mydb.NODES";
+            String query = "SELECT COUNT(NODE_ID) AS NUM FROM mapData.NODES";
             ResultSet rset = sta.executeQuery(query);
             if (!rset.next()){
                 throw new SQLException("No Nodes in table \n");
@@ -460,7 +460,7 @@ public class Database {
             int prevID = -1;
             String nameToAdd;
             //get the list of names sorted in ascending order by the node id
-            String getNames = "SELECT * FROM mydb.NAMES ORDER BY NODE_ID ASC";
+            String getNames = "SELECT * FROM mapData.NAMES ORDER BY NODE_ID ASC";
             Statement stmt = con.createStatement();
             ResultSet rsName = stmt.executeQuery(getNames);
             while (rsName.next()) {
@@ -492,7 +492,7 @@ public class Database {
             // Create locations
             // Get all nodes stored in the database
             ResultSet res = sta.executeQuery(
-                    "SELECT * FROM mydb.NODES");
+                    "SELECT * FROM mapData.NODES");
             while (res.next()) {
                 //get the values stored in the row
                 int nodeId = res.getInt("NODE_ID");
@@ -526,7 +526,7 @@ public class Database {
             prevID = -1;
             String attrToAdd;
             //get all the edge attributes
-            String getAttr = "SELECT * FROM mydb.EDGE_ATTRIBUTES ORDER BY EDGE_ID ASC";
+            String getAttr = "SELECT * FROM mapData.EDGE_ATTRIBUTES ORDER BY EDGE_ID ASC";
             rsName = stmt.executeQuery(getAttr);
             while (rsName.next()) {
                 //get the current row's infromation
@@ -551,7 +551,7 @@ public class Database {
             }
             //add the final id and attributes to the hashmap
             attrHm.put(id, attrList);
-            query = "SELECT * FROM mydb.EDGES";
+            query = "SELECT * FROM mapData.EDGES";
             //get all infromation from the edges table
             ResultSet rs = sta.executeQuery(query);
             while (rs.next()) {
@@ -676,7 +676,7 @@ public class Database {
             Statement stmt = con.createStatement();
             String[] nameList = loc.getNameList();
             for (int i = 0; i < nameList.length; i++) {
-                String query = "INSERT INTO mydb.NAMES (NODE_ID, NAME) VALUES " +
+                String query = "INSERT INTO mapData.NAMES (NODE_ID, NAME) VALUES " +
                         "( " + nodeId + " , " + '"' + nameList[i] + '"' + " )";
                 stmt.execute(query);
             }

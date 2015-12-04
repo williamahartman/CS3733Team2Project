@@ -210,7 +210,10 @@ public class LocationGraph {
             {
                 if (!floorEdge.contains(ed))
                 {
-                    floorEdge.add(ed);
+                    if (ed.getNode1().getFloorNumber() == ed.getNode2().getFloorNumber())
+                    {
+                        floorEdge.add(ed);
+                    }
                 }
             }
         }

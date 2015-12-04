@@ -20,7 +20,9 @@ import java.util.List;
 public class MapView extends JPanel {
     private static final double START_XFRAC = 0.38;
     private static final double START_YFRAC = 0.3;
-    private static final int NODE_BUTTON_SIZE = 10;
+    private static final int NODE_BUTTON_SIZE = 7;
+    private static final int NODE_BUTTON_SIZE_NAME = 12;
+    private static final int NODE_BUTTON_SIZE_END = 15;
     private static final double MINIMUM_ZOOM = 0.1;
     private static final double MAXIMUM_ZOOM = 2;
 
@@ -84,22 +86,31 @@ public class MapView extends JPanel {
 
                         g2d.drawLine(x1, y1, x2, y2);
                     }
+
                 }
 
                 if (style.isDrawRoutes()) {
                     for (List<Location> route: routeLists) {
-                        g2d.setColor(style.getRouteColor());
 
+                        //g2d.setColor(style.getRouteColor());
+
+                        Location previousLoc = route.get(0);
                         int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
                         int previousY = (int) (route.get(0).getPosition().y * imageRes.getHeight());
                         for (int i = 1; i < route.size(); i++) {
+                            Location currentLoc = route.get(i);
                             int currentX = (int) (route.get(i).getPosition().x * imageRes.getWidth());
                             int currentY = (int) (route.get(i).getPosition().y * imageRes.getHeight());
 
-                            g2d.drawLine(previousX, previousY, currentX, currentY);
+                            if (previousLoc.getFloorNumber() == currentFloorNumber
+                                    && previousLoc.getFloorNumber() == currentLoc.getFloorNumber()) {
+                                g2d.setColor(style.getRouteColor());
+                                g2d.drawLine(previousX, previousY, currentX, currentY);
+                            }
 
                             previousX = currentX;
                             previousY = currentY;
+                            previousLoc = currentLoc;
                         }
                     }
                 }
@@ -154,8 +165,13 @@ public class MapView extends JPanel {
 
             if (!source.getValueIsAdjusting()) {
                 currentFloorNumber = source.getValue();
+
+                List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
                 updateGraph(graph);
+                routeLists = backUpList;
+                updateButtonAttributes();
+
             }
         });
         floorSlider.setToolTipText("Change the displayed floor.");
@@ -178,7 +194,7 @@ public class MapView extends JPanel {
             searchList.add(loc);
             for (LocationButton locButton: locationButtonList) {
                 if (loc.equals(locButton.getAssociatedLocation())){
-                    locButton.setBackground(Color.BLACK);
+                    locButton.setBgColor(Color.BLACK);
                 }
             }
         }
@@ -347,10 +363,7 @@ public class MapView extends JPanel {
         locationButtonList.clear();
 
         for (Location loc: locationList) {
-            LocationButton currentButton = new LocationButton(loc);
-            currentButton.setBackground(style.getLocationColor());
-            currentButton.setBorder(BorderFactory.createEmptyBorder());
-
+            LocationButton currentButton = new LocationButton(loc, getStyle().getLocationColor());
             mapPanel.add(currentButton);
             locationButtonList.add(currentButton);
             currentButton.setVisible(true);
@@ -390,18 +403,40 @@ public class MapView extends JPanel {
 
     private void updateButtonAttributes() {
         for (LocationButton locButton: locationButtonList) {
-
-            int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-            int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-            locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos  - (NODE_BUTTON_SIZE / 2),
-                    NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
-
+            if (locButton.getAssociatedLocation().getNameList().length == 0)
+            {
+                int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
+                int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+                locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos - (NODE_BUTTON_SIZE / 2),
+                        NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
+            } else {
+                int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
+                int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+                locButton.setBounds(xPos - (NODE_BUTTON_SIZE_NAME / 2), yPos - (NODE_BUTTON_SIZE_NAME / 2),
+                        NODE_BUTTON_SIZE_NAME, NODE_BUTTON_SIZE_NAME);
+            }
             for (List<Location> route: routeLists) {
-                locButton.setBackground(style.getLocationColor());
-
+               // locButton.setBgColor(style.getRouteLocationColor());
                 if (route.contains(locButton.getAssociatedLocation())) {
-                    locButton.setBackground(style.getRouteLocationColor());
+                    locButton.setBgColor(style.getRouteLocationColor());
                 }
+                if (locButton.getAssociatedLocation() == route.get(0)) {
+                    int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
+                    int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+                    locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
+                            NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
+                    locButton.setBgColor(style.getDestinationColor());
+                    locButton.setToolTipText("START");
+                }
+                if (locButton.getAssociatedLocation() == route.get(route.size() - 1)) {
+                    int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
+                    int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+                    locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
+                            NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
+                    locButton.setBgColor(style.getDestinationColor());
+                    locButton.setToolTipText("END");
+                }
+
             }
 
             Location loc = locButton.getAssociatedLocation();

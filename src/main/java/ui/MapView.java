@@ -93,6 +93,7 @@ public class MapView extends JPanel {
                 svg.paintIcon(null, g2d, 0, 0);
                 g2d.scale(1 / zoomFactor, 1 / zoomFactor);
 
+
                 Dimension imageRes = getImagePixelSize();
 
                 //Draw edges

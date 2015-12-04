@@ -16,10 +16,14 @@ public class Database {
      * Connects to the database as a read-only user
      *
      */
-    public Database() throws Exception {
+    public Database() throws SQLException {
         //create a file to find the absolute path of the project
 
-        Class.forName("com.mysql.jdbc.Driver");
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e){
+
+        }
         con = DriverManager.getConnection("jdbc:mysql://" +
                         "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
                 "aztecwash", "aztecwash");
@@ -73,10 +77,13 @@ public class Database {
       * @param password password for the user
       *
      */
-    public Database(String username, String password) throws Exception {
+    public Database(String username, String password) throws SQLException {
         //create a file to find the absolute path of the project
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
 
-        Class.forName("com.mysql.jdbc.Driver");
+        }
         con = DriverManager.getConnection("jdbc:mysql://" +
                         "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
                 username, password);

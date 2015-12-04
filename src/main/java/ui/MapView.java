@@ -22,7 +22,7 @@ public class MapView extends JPanel {
     private static final double START_XFRAC = 0.3;
     private static final double START_YFRAC = 0.3;
     private static final double MINIMUM_ZOOM = 2;
-    private static final double MAXIMUM_ZOOM = 35;
+    private static final double MAXIMUM_ZOOM = 50;
     private static final double ZOOM_SPEED = 0.25;
     private static final int NODE_BUTTON_SIZE = 7;
     private static final int NODE_BUTTON_SIZE_NAME = 12;

@@ -9,7 +9,6 @@ import core.LocationGraph;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
@@ -20,8 +19,8 @@ import java.util.List;
  */
 public class MapView extends JPanel {
     private static final double DEFAULT_ZOOM = 2;
-    private static final double START_XFRAC = 0.38;
-    private static final double START_YFRAC = 0.3;
+    private static final double START_XFRAC = 0;
+    private static final double START_YFRAC = 0;
     private static final int NODE_BUTTON_SIZE = 7;
     private static final int NODE_BUTTON_SIZE_NAME = 12;
     private static final int NODE_BUTTON_SIZE_END = 15;
@@ -89,12 +88,14 @@ public class MapView extends JPanel {
                         RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setRenderingHints(rh);
 
-                //Draw background if loaded
-                Dimension imageRes = getImagePixelSize();
+                //Draw the current svg background image
                 g2d.scale(zoomFactor, zoomFactor);
                 svg.paintIcon(null, g2d, 0, 0);
-                g2d.scale(0, 0);
+                g2d.scale(1 / zoomFactor, 1 / zoomFactor);
 
+                Dimension imageRes = getImagePixelSize();
+
+                //Draw edges
                 g2d.setStroke(new BasicStroke(4));
                 if (style.isDrawAllEdges()) {
                     for (Edge e : graphEdgeList) {
@@ -109,14 +110,13 @@ public class MapView extends JPanel {
                     }
                 }
 
+                //Draw routes
                 if (style.isDrawRoutes()) {
                     for (List<Location> route: routeLists) {
-
-                        //g2d.setColor(style.getRouteColor());
-
                         Location previousLoc = route.get(0);
                         int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
                         int previousY = (int) (route.get(0).getPosition().y * imageRes.getHeight());
+
                         for (int i = 1; i < route.size(); i++) {
                             Location currentLoc = route.get(i);
                             int currentX = (int) (route.get(i).getPosition().x * imageRes.getWidth());
@@ -151,16 +151,10 @@ public class MapView extends JPanel {
         mapPanel.setPreferredSize(getImagePixelSize());
         mapPanel.setLayout(null);
 
+        //Set up the scroll panel
         scrollPane = new JScrollPane();
         scrollPane.setWheelScrollingEnabled(false);
         scrollPane.setViewportView(mapPanel);
-
-//        Point newViewportPos = new Point();
-//        newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
-//        newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
-//        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
-
-        updateGraph(graph);
         addDefaultListeners();
 
         //Add the slider
@@ -191,35 +185,16 @@ public class MapView extends JPanel {
 
         setLayout(new BorderLayout());
         add(scrollPane);
-        //add(floorSliderPanel, BorderLayout.WEST);
+        add(floorSliderPanel, BorderLayout.WEST);
 
+        //Scroll to start point
+        Point newViewportPos = new Point();
+        newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
+        newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
+        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
+
+        updateGraph(graph);
         repaint();
-    }
-
-    /**
-     * Add a list of locations that will be displayed as search results.
-     *
-     * @param locToAdd the list of locations that will be added
-     */
-    public void addToSearchList(List<Location> locToAdd){
-        for (Location loc: locToAdd){
-            searchList.add(loc);
-            for (LocationButton locButton: locationButtonList) {
-                if (loc.equals(locButton.getAssociatedLocation())){
-                    locButton.setBgColor(Color.BLACK);
-                }
-            }
-        }
-    }
-
-    /**
-     * Add a route that will be displayed.
-     *
-     * @param routeToAdd the route that will be added
-     */
-    public void addRoute(List<Location> routeToAdd) {
-        routeLists.add(routeToAdd);
-        updateButtonAttributes();
     }
 
     private void setCurrentImage() {
@@ -287,7 +262,7 @@ public class MapView extends JPanel {
                     double xPosFrac = (viewPortPos.getX() + (viewportWidth / 2.0)) / imageWidth;
                     double yPosFrac = (viewPortPos.getY() + (viewportHeight / 2.0)) / imageHeight;
 
-                    zoomIncrementBy(e.getWheelRotation() * -0.3);
+                    zoomIncrementBy(e.getWheelRotation() * -0.1);
                     validate();
                     updateButtonAttributes();
 
@@ -305,6 +280,56 @@ public class MapView extends JPanel {
         scrollPane.addMouseMotionListener(mouseAdapter);
         scrollPane.addMouseWheelListener(mouseAdapter);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    /**
+     * Adjust the zoom value by adding the passed value.
+     *
+     * @param toAdd the value to add
+     */
+    public void zoomIncrementBy(double toAdd) {
+        zoomFactor += toAdd;
+
+        mapPanel.setPreferredSize(getImagePixelSize());
+        validate();
+    }
+
+    /**
+     * Returns a Dimension that describes the resolution of the background image. Or 0 if the image
+     * failed to load
+     *
+     * @return The dimension of the image, or 0 if the image didn't load
+     */
+    public Dimension getImagePixelSize() {
+        return new Dimension(
+                (int) (svgWidth * zoomFactor),
+                (int) (svgHeight * zoomFactor));
+    }
+
+    /**
+     * Add a list of locations that will be displayed as search results.
+     *
+     * @param locToAdd the list of locations that will be added
+     */
+    public void addToSearchList(List<Location> locToAdd){
+        for (Location loc: locToAdd){
+            searchList.add(loc);
+            locationButtonList.forEach(locationButton -> {
+                if (loc.equals(locationButton.getAssociatedLocation())){
+                    locationButton.setBgColor(Color.BLACK);
+                }
+            });
+        }
+    }
+
+    /**
+     * Add a route that will be displayed.
+     *
+     * @param routeToAdd the route that will be added
+     */
+    public void addRoute(List<Location> routeToAdd) {
+        routeLists.add(routeToAdd);
+        updateButtonAttributes();
     }
 
     /**
@@ -332,31 +357,6 @@ public class MapView extends JPanel {
      */
     public JScrollPane getScrollPane() {
         return scrollPane;
-    }
-
-    /**
-     * Returns a Dimension that describes the resolution of the background image. Or 0 if the image
-     * failed to load
-     *
-     * @return The dimension of the image, or 0 if the image didn't load
-     */
-    public Dimension getImagePixelSize() {
-        return new Dimension(
-                (int) (svgWidth * zoomFactor),
-                (int) (svgHeight * zoomFactor));
-    }
-
-    /**
-     * Adjust the zoom value by adding the passed value.
-     *
-     * @param toAdd the value to add
-     */
-    public void zoomIncrementBy(double toAdd) {
-        zoomFactor += toAdd;
-
-        mapPanel.setPreferredSize(getImagePixelSize());
-        //svg.setPreferredSize(getImagePixelSize());
-        validate();
     }
 
     /**
@@ -420,25 +420,14 @@ public class MapView extends JPanel {
                         NODE_BUTTON_SIZE_NAME, NODE_BUTTON_SIZE_NAME);
             }
             for (List<Location> route: routeLists) {
-               // locButton.setBgColor(style.getRouteLocationColor());
                 if (route.contains(locButton.getAssociatedLocation())) {
                     locButton.setBgColor(style.getRouteLocationColor());
                 }
                 if (locButton.getAssociatedLocation() == route.get(0)) {
-                    int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-                    int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-                    locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
-                            NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
-                    locButton.setBgColor(style.getDestinationColor());
-                    locButton.setToolTipText("START");
+                    setToStartOrEnd(locButton, style.getDestinationColor(), "START");
                 }
                 if (locButton.getAssociatedLocation() == route.get(route.size() - 1)) {
-                    int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-                    int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-                    locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
-                            NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
-                    locButton.setBgColor(style.getDestinationColor());
-                    locButton.setToolTipText("END");
+                    setToStartOrEnd(locButton, style.getDestinationColor(), "END");
                 }
 
             }
@@ -456,16 +445,39 @@ public class MapView extends JPanel {
             repaint();
         }
     }
+    private void setToStartOrEnd(LocationButton locationButton, Color color, String tooltip) {
+        int xPos = (int) (locationButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
+        int yPos = (int) (locationButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+        locationButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
+                NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
+        locationButton.setBgColor(color);
+        locationButton.setToolTipText(tooltip);
+    }
 
+    /**
+     * Sets the listener that will be associated with all buttons in the MapView.
+     *
+     * @param buttonListener The listener that will be associated
+     */
     public void setButtonListener(EventListener buttonListener) {
         this.buttonListener = buttonListener;
         addButtons();
     }
 
+    /**
+     * Return the MapStyle associated with this MapView.
+     *
+     * @return The associated MapStyle
+     */
     public MapViewStyle getStyle() {
         return style;
     }
 
+    /**
+     * Return the floor currently being viewed.
+     *
+     * @return The currently viewed floor
+     */
     public int getFloorNumber() {
         return currentFloorNumber;
     }

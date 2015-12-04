@@ -169,7 +169,6 @@ public class MainAppUI extends JFrame{
                     mapView.getStyle().setDrawAllEdges(true);
                     mapView.getStyle().setDrawAllPoints(true);
                     showNodes.setText("Show Only Named Locations");
-                    repaint();
                     enterDevloperMode.setText("Exit Developer Mode");
 
                     //Update mapView for use with devtools
@@ -177,6 +176,8 @@ public class MainAppUI extends JFrame{
                     devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
                     mapView.getScrollPane().addMouseListener(devToolClickListener);
                     mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
+
+                    repaint();
                 }
             } else {
                 devToolsPanel.setDevMode(false);
@@ -189,6 +190,8 @@ public class MainAppUI extends JFrame{
                 mapView.removeMouseListener(devToolClickListener);
                 mapView.setButtonListener(buildRouteSelectListener());
                 resetMap(mapView);
+
+                repaint();
             }
         });
         //Action listener for toggling edges. Turns all edges on or off

@@ -73,14 +73,15 @@ public class MainAppUI extends JFrame{
 
         this.mapView = new MapView(graph,
                 new String[]{
-                        "campusmap-1.svg",
+                        "campusmap-3.svg",
                         "campusmap-2.svg",
+                        "campusmap-1.svg",
                         "campusmap1.svg",
                         "campusmap2.svg",
                         "campusmap3.svg",
                         "campusmap4.svg",
                         "campusmap5.svg"},
-                2, style);
+                3, style);
         this.mapView.setButtonListener(buildRouteSelectListener());
         this.attributeManager = new EdgeAttributeManager();
 

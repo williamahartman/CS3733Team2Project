@@ -8,7 +8,6 @@ import dev.DevTools;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.awt.event.*;
 import java.util.*;
 
@@ -75,14 +74,14 @@ public class MainAppUI extends JFrame{
 
         this.mapView = new MapView(graph,
                 new String[]{
-                        "campusmap_crop.svg",
-                        "campusmap_crop.svg",
-                        "campusmap_crop.svg",
-                        "campusmap_crop.svg",
-                        "campusmap_crop.svg",
-                        "campusmap_crop.svg",
-                        "campusmap_crop.svg"},
-                3, style);
+                        "campusmap-1.svg",
+                        "campusmap-2.svg",
+                        "campusmap1.svg",
+                        "campusmap2.svg",
+                        "campusmap3.svg",
+                        "campusmap4.svg",
+                        "campusmap5.svg"},
+                2, style);
         this.mapView.setButtonListener(buildRouteSelectListener());
         this.attributeManager = new EdgeAttributeManager();
 

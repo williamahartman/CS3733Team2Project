@@ -18,14 +18,15 @@ import java.util.List;
  * these edges.
  */
 public class MapView extends JPanel {
-    private static final double DEFAULT_ZOOM = 2;
-    private static final double START_XFRAC = 0;
-    private static final double START_YFRAC = 0;
+    private static final double DEFAULT_ZOOM = 4;
+    private static final double START_XFRAC = 0.3;
+    private static final double START_YFRAC = 0.3;
+    private static final double MINIMUM_ZOOM = 2;
+    private static final double MAXIMUM_ZOOM = 35;
+    private static final double ZOOM_SPEED = 0.25;
     private static final int NODE_BUTTON_SIZE = 7;
     private static final int NODE_BUTTON_SIZE_NAME = 12;
     private static final int NODE_BUTTON_SIZE_END = 15;
-    private static final double MINIMUM_ZOOM = 1;
-    private static final double MAXIMUM_ZOOM = 25;
 
     private JScrollPane scrollPane;
     private JPanel mapPanel;
@@ -69,12 +70,14 @@ public class MapView extends JPanel {
 
         svg = new SVGIcon();
         setCurrentImage();
-        svg.setAntiAlias(true);
-        svg.setClipToViewbox(true);
-        svg.setAutosize(SVGIcon.AUTOSIZE_STRETCH);
 
         //Make the panel
         mapPanel = new JPanel(true) {
+            @Override
+            public Dimension getPreferredSize() {
+                return getImagePixelSize();
+            }
+
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -92,7 +95,6 @@ public class MapView extends JPanel {
                 g2d.scale(zoomFactor, zoomFactor);
                 svg.paintIcon(null, g2d, 0, 0);
                 g2d.scale(1 / zoomFactor, 1 / zoomFactor);
-
 
                 Dimension imageRes = getImagePixelSize();
 
@@ -149,7 +151,6 @@ public class MapView extends JPanel {
                 }
             }
         };
-        mapPanel.setPreferredSize(getImagePixelSize());
         mapPanel.setLayout(null);
 
         //Set up the scroll panel
@@ -193,6 +194,7 @@ public class MapView extends JPanel {
         newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
         newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
         mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
+        zoomIncrementBy(0);
 
         updateGraph(graph);
         repaint();
@@ -205,11 +207,14 @@ public class MapView extends JPanel {
             try {
                 universe.loadSVG(ClassLoader.getSystemResourceAsStream(path), "bg" + currentFloorNumber);
                 svg.setSvgURI(ClassLoader.getSystemResource(path).toURI());
+                svg.setAntiAlias(true);
+                svg.setClipToViewbox(false);
+                svg.setAutosize(SVGIcon.AUTOSIZE_STRETCH);
 
                 svgWidth = svg.getIconWidth();
                 svgHeight = svg.getIconHeight();
 
-                System.out.println(svgWidth + ", " + svgHeight);
+                svg.setPreferredSize(new Dimension(svgWidth, svgHeight));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -263,7 +268,7 @@ public class MapView extends JPanel {
                     double xPosFrac = (viewPortPos.getX() + (viewportWidth / 2.0)) / imageWidth;
                     double yPosFrac = (viewPortPos.getY() + (viewportHeight / 2.0)) / imageHeight;
 
-                    zoomIncrementBy(e.getWheelRotation() * -0.1);
+                    zoomIncrementBy(e.getWheelRotation() * -ZOOM_SPEED);
                     validate();
                     updateButtonAttributes();
 
@@ -290,8 +295,6 @@ public class MapView extends JPanel {
      */
     public void zoomIncrementBy(double toAdd) {
         zoomFactor += toAdd;
-
-        mapPanel.setPreferredSize(getImagePixelSize());
         validate();
     }
 

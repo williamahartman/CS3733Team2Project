@@ -8,7 +8,6 @@ import dev.DevTools;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.color.ColorSpace;
 import java.awt.event.*;
 import java.util.*;
 
@@ -75,14 +74,14 @@ public class MainAppUI extends JFrame{
 
         this.mapView = new MapView(graph,
                 new String[]{
-                        "campusmap-2.png",
-                        "campusmap-1.png",
-                        "campusmap1.png",
-                        "campusmap2.png",
-                        "placeholder.png",
-                        "placeholder.png",
-                        "placeholder.png"},
-                2, DEFAULT_ZOOM, style);
+                        "campusmap-1.svg",
+                        "campusmap-2.svg",
+                        "campusmap1.svg",
+                        "campusmap2.svg",
+                        "campusmap3.svg",
+                        "campusmap4.svg",
+                        "campusmap5.svg"},
+                2, style);
         this.mapView.setButtonListener(buildRouteSelectListener());
         this.attributeManager = new EdgeAttributeManager();
 
@@ -169,7 +168,6 @@ public class MainAppUI extends JFrame{
                     mapView.getStyle().setDrawAllEdges(true);
                     mapView.getStyle().setDrawAllPoints(true);
                     showNodes.setText("Show Only Named Locations");
-                    repaint();
                     enterDevloperMode.setText("Exit Developer Mode");
 
                     //Update mapView for use with devtools
@@ -177,6 +175,8 @@ public class MainAppUI extends JFrame{
                     devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
                     mapView.getScrollPane().addMouseListener(devToolClickListener);
                     mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
+
+                    repaint();
                 }
             } else {
                 devToolsPanel.setDevMode(false);
@@ -189,6 +189,8 @@ public class MainAppUI extends JFrame{
                 mapView.removeMouseListener(devToolClickListener);
                 mapView.setButtonListener(buildRouteSelectListener());
                 resetMap(mapView);
+
+                repaint();
             }
         });
         //Action listener for toggling edges. Turns all edges on or off

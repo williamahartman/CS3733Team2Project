@@ -1,16 +1,16 @@
 package ui;
 
+import com.kitfox.svg.SVGUniverse;
+import com.kitfox.svg.app.beans.SVGIcon;
 import core.Edge;
 import core.Location;
 import core.LocationGraph;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.EventListener;
-import java.util.Hashtable;
 import java.util.List;
 
 /**
@@ -18,13 +18,15 @@ import java.util.List;
  * these edges.
  */
 public class MapView extends JPanel {
-    private static final double START_XFRAC = 0.38;
+    private static final double DEFAULT_ZOOM = 4;
+    private static final double START_XFRAC = 0.3;
     private static final double START_YFRAC = 0.3;
+    private static final double MINIMUM_ZOOM = 2;
+    private static final double MAXIMUM_ZOOM = 35;
+    private static final double ZOOM_SPEED = 0.25;
     private static final int NODE_BUTTON_SIZE = 7;
     private static final int NODE_BUTTON_SIZE_NAME = 12;
     private static final int NODE_BUTTON_SIZE_END = 15;
-    private static final double MINIMUM_ZOOM = 0.1;
-    private static final double MAXIMUM_ZOOM = 2;
 
     private JScrollPane scrollPane;
     private JPanel mapPanel;
@@ -41,7 +43,10 @@ public class MapView extends JPanel {
     private String[] floorsImagePaths;
     private int currentFloorNumber;
 
-    private Image backgroundImage;
+    private SVGUniverse universe;
+    private SVGIcon svg;
+    private int svgWidth;
+    private int svgHeight;
 
     private EventListener buttonListener;
 
@@ -51,14 +56,30 @@ public class MapView extends JPanel {
      * @param graph The LocationGraph whose edges will be displayed
      * @param floorImagePaths The image that will be used as the background
      * @param defaultFloor The floor the be the main floor
-     * @param defaultZoom The zoom level the map will be at when the app starts
      * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, double defaultZoom,
-                   MapViewStyle viewStyle) {
+    public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
+        this.floorsImagePaths = floorImagePaths;
+        this.currentFloorNumber = defaultFloor;
+        this.style = viewStyle;
+        this.searchList = new ArrayList<>();
+        this.routeLists = new ArrayList<>();
+        this.locationButtonList = new ArrayList<>();
+        this.universe = new SVGUniverse();
+        this.zoomFactor = DEFAULT_ZOOM;
+
+        svg = new SVGIcon();
+        setCurrentImage();
+
         //Make the panel
         mapPanel = new JPanel(true) {
-            public void paintComponent(Graphics g) {
+            @Override
+            public Dimension getPreferredSize() {
+                return getImagePixelSize();
+            }
+
+            @Override
+            protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 if (!(g instanceof Graphics2D)) {
                     throw new RuntimeException("The supplied graphics object is not a Graphics2D!");
@@ -70,10 +91,14 @@ public class MapView extends JPanel {
                         RenderingHints.VALUE_ANTIALIAS_ON);
                 g2d.setRenderingHints(rh);
 
-                //Draw background if loaded
-                Dimension imageRes = getImagePixelSize();
-                g2d.drawImage(backgroundImage, 0, 0, (int) imageRes.getWidth(), (int) imageRes.getHeight(), null);
+                //Draw the current svg background image
+                g2d.scale(zoomFactor, zoomFactor);
+                svg.paintIcon(null, g2d, 0, 0);
+                g2d.scale(1 / zoomFactor, 1 / zoomFactor);
 
+                Dimension imageRes = getImagePixelSize();
+
+                //Draw edges
                 g2d.setStroke(new BasicStroke(4));
                 if (style.isDrawAllEdges()) {
                     for (Edge e : graphEdgeList) {
@@ -86,17 +111,15 @@ public class MapView extends JPanel {
 
                         g2d.drawLine(x1, y1, x2, y2);
                     }
-
                 }
 
+                //Draw routes
                 if (style.isDrawRoutes()) {
                     for (List<Location> route: routeLists) {
-
-                        //g2d.setColor(style.getRouteColor());
-
                         Location previousLoc = route.get(0);
                         int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
                         int previousY = (int) (route.get(0).getPosition().y * imageRes.getHeight());
+
                         for (int i = 1; i < route.size(); i++) {
                             Location currentLoc = route.get(i);
                             int currentX = (int) (route.get(i).getPosition().x * imageRes.getWidth());
@@ -128,29 +151,12 @@ public class MapView extends JPanel {
                 }
             }
         };
-
-        this.floorsImagePaths = floorImagePaths;
-        this.currentFloorNumber = defaultFloor;
-        setCurrentImage();
-
-        this.style = viewStyle;
-        this.searchList = new ArrayList<>();
-        this.routeLists = new ArrayList<>();
-        locationButtonList = new ArrayList<>();
-        zoomFactor = defaultZoom;
-
-        mapPanel.setPreferredSize(getImagePixelSize());
         mapPanel.setLayout(null);
 
+        //Set up the scroll panel
         scrollPane = new JScrollPane();
+        scrollPane.setWheelScrollingEnabled(false);
         scrollPane.setViewportView(mapPanel);
-
-        Point newViewportPos = new Point();
-        newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
-        newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
-        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
-
-        updateGraph(graph);
         addDefaultListeners();
 
         //Add the slider
@@ -182,50 +188,35 @@ public class MapView extends JPanel {
         setLayout(new BorderLayout());
         add(scrollPane);
         add(floorSliderPanel, BorderLayout.WEST);
-    }
 
-    /**
-     * Add a list of locations that will be displayed as search results.
-     *
-     * @param locToAdd the list of locations that will be added
-     */
-    public void addToSearchList(List<Location> locToAdd){
-        for (Location loc: locToAdd){
-            searchList.add(loc);
-            for (LocationButton locButton: locationButtonList) {
-                if (loc.equals(locButton.getAssociatedLocation())){
-                    locButton.setBgColor(Color.BLACK);
-                }
-            }
-        }
-    }
+        //Scroll to start point
+        Point newViewportPos = new Point();
+        newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
+        newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
+        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
+        zoomIncrementBy(0);
 
-    /**
-     * Add a route that will be displayed.
-     *
-     * @param routeToAdd the route that will be added
-     */
-    public void addRoute(List<Location> routeToAdd) {
-        routeLists.add(routeToAdd);
-        updateButtonAttributes();
+        updateGraph(graph);
+        repaint();
     }
 
     private void setCurrentImage() {
         if (currentFloorNumber >= 0 && currentFloorNumber < floorsImagePaths.length) {
             String path = floorsImagePaths[currentFloorNumber];
-            Image oldImage = backgroundImage;
 
             try {
-                backgroundImage = ImageIO.read(ClassLoader.getSystemResourceAsStream(path));
-                oldImage = null;
+                universe.loadSVG(ClassLoader.getSystemResourceAsStream(path), "bg" + currentFloorNumber);
+                svg.setSvgURI(ClassLoader.getSystemResource(path).toURI());
+                svg.setAntiAlias(true);
+                svg.setClipToViewbox(false);
+                svg.setAutosize(SVGIcon.AUTOSIZE_STRETCH);
+
+                svgWidth = svg.getIconWidth();
+                svgHeight = svg.getIconHeight();
+
+                svg.setPreferredSize(new Dimension(svgWidth, svgHeight));
             } catch (Exception e) {
-                //Close the program with an error message if we can't load stuff.
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this,
-                        "The map image failed to load!",
-                        "Asset Load Failed!",
-                        JOptionPane.ERROR_MESSAGE);
-                backgroundImage = oldImage;
             }
         }
     }
@@ -277,9 +268,9 @@ public class MapView extends JPanel {
                     double xPosFrac = (viewPortPos.getX() + (viewportWidth / 2.0)) / imageWidth;
                     double yPosFrac = (viewPortPos.getY() + (viewportHeight / 2.0)) / imageHeight;
 
-                    zoomIncrementBy(e.getWheelRotation() * -0.04);
-                    updateButtonAttributes();
+                    zoomIncrementBy(e.getWheelRotation() * -ZOOM_SPEED);
                     validate();
+                    updateButtonAttributes();
 
                     Point newViewportPos = new Point();
                     newViewportPos.x = (int) ((xPosFrac * getImagePixelSize().getWidth()) - (viewportWidth / 2.0));
@@ -295,6 +286,54 @@ public class MapView extends JPanel {
         scrollPane.addMouseMotionListener(mouseAdapter);
         scrollPane.addMouseWheelListener(mouseAdapter);
         setCursor(new Cursor(Cursor.HAND_CURSOR));
+    }
+
+    /**
+     * Adjust the zoom value by adding the passed value.
+     *
+     * @param toAdd the value to add
+     */
+    public void zoomIncrementBy(double toAdd) {
+        zoomFactor += toAdd;
+        validate();
+    }
+
+    /**
+     * Returns a Dimension that describes the resolution of the background image. Or 0 if the image
+     * failed to load
+     *
+     * @return The dimension of the image, or 0 if the image didn't load
+     */
+    public Dimension getImagePixelSize() {
+        return new Dimension(
+                (int) (svgWidth * zoomFactor),
+                (int) (svgHeight * zoomFactor));
+    }
+
+    /**
+     * Add a list of locations that will be displayed as search results.
+     *
+     * @param locToAdd the list of locations that will be added
+     */
+    public void addToSearchList(List<Location> locToAdd){
+        for (Location loc: locToAdd){
+            searchList.add(loc);
+            locationButtonList.forEach(locationButton -> {
+                if (loc.equals(locationButton.getAssociatedLocation())){
+                    locationButton.setBgColor(Color.BLACK);
+                }
+            });
+        }
+    }
+
+    /**
+     * Add a route that will be displayed.
+     *
+     * @param routeToAdd the route that will be added
+     */
+    public void addRoute(List<Location> routeToAdd) {
+        routeLists.add(routeToAdd);
+        updateButtonAttributes();
     }
 
     /**
@@ -322,37 +361,6 @@ public class MapView extends JPanel {
      */
     public JScrollPane getScrollPane() {
         return scrollPane;
-    }
-
-    /**
-     * Returns a Dimension that describes the resolution of the background image. Or 0 if the image
-     * failed to load
-     *
-     * @return The dimension of the image, or 0 if the image didn't load
-     */
-    public Dimension getImagePixelSize() {
-        return new Dimension(
-                (int) (backgroundImage.getWidth(null) * zoomFactor),
-                (int) (backgroundImage.getHeight(null) * zoomFactor));
-    }
-
-    /**
-     * Adjust the zoom value by adding the passed value.
-     *
-     * @param toAdd the value to add
-     */
-    public void zoomIncrementBy(double toAdd) {
-        zoomFactor += toAdd;
-        mapPanel.setPreferredSize(getImagePixelSize());
-    }
-
-    /**
-     * Returns the current zoom factor.
-     *
-     * @return the current zoom factor
-     */
-    public double getZoomFactor() {
-        return zoomFactor;
     }
 
     /**
@@ -416,25 +424,14 @@ public class MapView extends JPanel {
                         NODE_BUTTON_SIZE_NAME, NODE_BUTTON_SIZE_NAME);
             }
             for (List<Location> route: routeLists) {
-               // locButton.setBgColor(style.getRouteLocationColor());
                 if (route.contains(locButton.getAssociatedLocation())) {
                     locButton.setBgColor(style.getRouteLocationColor());
                 }
                 if (locButton.getAssociatedLocation() == route.get(0)) {
-                    int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-                    int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-                    locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
-                            NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
-                    locButton.setBgColor(style.getDestinationColor());
-                    locButton.setToolTipText("START");
+                    setToStartOrEnd(locButton, style.getDestinationColor(), "START");
                 }
                 if (locButton.getAssociatedLocation() == route.get(route.size() - 1)) {
-                    int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-                    int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-                    locButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
-                            NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
-                    locButton.setBgColor(style.getDestinationColor());
-                    locButton.setToolTipText("END");
+                    setToStartOrEnd(locButton, style.getDestinationColor(), "END");
                 }
 
             }
@@ -452,16 +449,39 @@ public class MapView extends JPanel {
             repaint();
         }
     }
+    private void setToStartOrEnd(LocationButton locationButton, Color color, String tooltip) {
+        int xPos = (int) (locationButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
+        int yPos = (int) (locationButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+        locationButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
+                NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
+        locationButton.setBgColor(color);
+        locationButton.setToolTipText(tooltip);
+    }
 
+    /**
+     * Sets the listener that will be associated with all buttons in the MapView.
+     *
+     * @param buttonListener The listener that will be associated
+     */
     public void setButtonListener(EventListener buttonListener) {
         this.buttonListener = buttonListener;
         addButtons();
     }
 
+    /**
+     * Return the MapStyle associated with this MapView.
+     *
+     * @return The associated MapStyle
+     */
     public MapViewStyle getStyle() {
         return style;
     }
 
+    /**
+     * Return the floor currently being viewed.
+     *
+     * @return The currently viewed floor
+     */
     public int getFloorNumber() {
         return currentFloorNumber;
     }

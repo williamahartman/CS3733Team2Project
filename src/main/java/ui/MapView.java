@@ -19,13 +19,14 @@ import java.util.List;
  * these edges.
  */
 public class MapView extends JPanel {
+    private static final double DEFAULT_ZOOM = 2;
     private static final double START_XFRAC = 0.38;
     private static final double START_YFRAC = 0.3;
     private static final int NODE_BUTTON_SIZE = 7;
     private static final int NODE_BUTTON_SIZE_NAME = 12;
     private static final int NODE_BUTTON_SIZE_END = 15;
     private static final double MINIMUM_ZOOM = 1;
-    private static final double MAXIMUM_ZOOM = 5;
+    private static final double MAXIMUM_ZOOM = 25;
 
     private JScrollPane scrollPane;
     private JPanel mapPanel;
@@ -58,11 +59,25 @@ public class MapView extends JPanel {
      * @param viewStyle The viewStyle used by the mapView
      */
     public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
+        this.floorsImagePaths = floorImagePaths;
+        this.currentFloorNumber = defaultFloor;
+        this.style = viewStyle;
+        this.searchList = new ArrayList<>();
+        this.routeLists = new ArrayList<>();
+        this.locationButtonList = new ArrayList<>();
         this.universe = new SVGUniverse();
+        this.zoomFactor = DEFAULT_ZOOM;
+
+        svg = new SVGIcon();
+        setCurrentImage();
+        svg.setAntiAlias(true);
+        svg.setClipToViewbox(true);
+        svg.setAutosize(SVGIcon.AUTOSIZE_STRETCH);
 
         //Make the panel
         mapPanel = new JPanel(true) {
-            public void paintComponent(Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 if (!(g instanceof Graphics2D)) {
                     throw new RuntimeException("The supplied graphics object is not a Graphics2D!");
@@ -76,16 +91,9 @@ public class MapView extends JPanel {
 
                 //Draw background if loaded
                 Dimension imageRes = getImagePixelSize();
-
-                AffineTransform oldTransform = g2d.getTransform();
-
-                AffineTransform vectorTransform = new AffineTransform();
-
-                Point vpp = scrollPane.getViewport().getViewPosition();
-                vectorTransform.setToScale(zoomFactor, zoomFactor);
-                g2d.setTransform(vectorTransform);
-                svg.paintIcon(null, g2d, (int) -(vpp.x / zoomFactor), (int) -(vpp.y / zoomFactor));
-                g2d.setTransform(oldTransform);
+                g2d.scale(zoomFactor, zoomFactor);
+                svg.paintIcon(null, g2d, 0, 0);
+                g2d.scale(0, 0);
 
                 g2d.setStroke(new BasicStroke(4));
                 if (style.isDrawAllEdges()) {
@@ -99,7 +107,6 @@ public class MapView extends JPanel {
 
                         g2d.drawLine(x1, y1, x2, y2);
                     }
-
                 }
 
                 if (style.isDrawRoutes()) {
@@ -141,25 +148,11 @@ public class MapView extends JPanel {
                 }
             }
         };
-
-        this.floorsImagePaths = floorImagePaths;
-        this.currentFloorNumber = defaultFloor;
-
-        svg = new SVGIcon();
-        svg.setAntiAlias(true);
-        svg.setClipToViewbox(true);
-        svg.setAutosize(SVGIcon.AUTOSIZE_NONE);
-        setCurrentImage();
-
-        this.style = viewStyle;
-        this.searchList = new ArrayList<>();
-        this.routeLists = new ArrayList<>();
-        locationButtonList = new ArrayList<>();
-
         mapPanel.setPreferredSize(getImagePixelSize());
         mapPanel.setLayout(null);
 
         scrollPane = new JScrollPane();
+        scrollPane.setWheelScrollingEnabled(false);
         scrollPane.setViewportView(mapPanel);
 
 //        Point newViewportPos = new Point();
@@ -294,7 +287,7 @@ public class MapView extends JPanel {
                     double xPosFrac = (viewPortPos.getX() + (viewportWidth / 2.0)) / imageWidth;
                     double yPosFrac = (viewPortPos.getY() + (viewportHeight / 2.0)) / imageHeight;
 
-                    zoomIncrementBy(e.getWheelRotation() * -0.04);
+                    zoomIncrementBy(e.getWheelRotation() * -0.3);
                     validate();
                     updateButtonAttributes();
 

@@ -18,7 +18,6 @@ import java.util.*;
 public class MainAppUI extends JFrame{
     private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
-    private static final double DEFAULT_ZOOM = 0.4;
 
     private MapView mapView;
     private LocationGraph graph;
@@ -382,7 +381,7 @@ public class MainAppUI extends JFrame{
             locToSearch = null; //the location user want to search
             try {
                 clearState(mapView);
-                locToSearch = searchText.getText().toLowerCase(); //gets the name from text field
+                locToSearch = searchText.getText(); //gets the name from text field
                 //if there is no entering
                 if (locToSearch.length() == 0) {
                     //if no location is entered

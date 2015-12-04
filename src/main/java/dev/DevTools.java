@@ -145,7 +145,7 @@ public class DevTools extends JPanel {
                     }
                     if (!(field2.getValue() == null)) {
                         for (int i = 0; i < nameList.length; i++) {
-                            nameList[i] = nameList[i].trim().toLowerCase();
+                            nameList[i] = nameList[i].trim();
                         }
                         lastButtonClicked.getAssociatedLocation().setNameList(nameList);
 

@@ -156,21 +156,6 @@ public class LocationGraph {
     }
 
     /**
-     * Calculates the length of the route.
-     * @param path a list of locations on the route
-     * @return The length of the route
-     */
-    public double calculateDistance(List<Location> path){
-        double distance = 0.0;
-        int listSize = path.size();
-        for (int i = 0; i < (listSize - 1); i++){
-            distance += path.get(i).getPosition().distance(path.get(i + 1).getPosition());
-        }
-        String temp = String.format(("%.2f"), distance);
-        distance = Double.parseDouble(temp);
-        return distance;
-    }
-    /**
      * Return a list of locations whose names contain or are equal to the passed String.
      *
      * @param searchString The String that will be searched for.
@@ -200,6 +185,12 @@ public class LocationGraph {
         }
         return floor;
     }
+    /**
+     * Return a list of Edges whose are on a certain floor.
+     *
+     * @param floorNum The int of the floor number
+     * @return The list of Edges that are on the correct floor
+     */
     public List<Edge> edgeByFloorNumber (int floorNum)
     {
         List<Edge> floorEdge = new ArrayList<>();
@@ -218,20 +209,6 @@ public class LocationGraph {
             }
         }
         return floorEdge;
-    }
-
-
-    /**
-     * Apply the EDGE_REMOVED EdgeAttribute to all edges that are associated with the passed
-     * EdgeAttribute.
-     *
-     * @param searchAttribute The EdgeAttribute whose associated will have EDGE_REMOVED applied.
-     */
-    public void filterOutAttribute(final EdgeAttribute searchAttribute) {
-        //TODO Lets discuss how this should work
-        List<Edge> edgeList = getAllEdges();
-        edgeList.stream().filter(e -> e.hasAttribute(searchAttribute))
-                         .forEach(e -> e.addAttribute(EdgeAttribute.EDGE_REMOVED));
     }
 
     /**
@@ -275,21 +252,6 @@ public class LocationGraph {
             loc.removeEdge(edgeList.get(0));
         }
     }
-    /**
-     * Magically save everything somehow.
-     */
-    public void saveToDisk() {
-        System.out.println("(LocationGraph.Java line 99) LocationGraph: " + this +
-                " would be saved to disk if this were implemented!");
-        //todo implement this!
-
-        /*
-        Also, as a note to whoever sees this first we need to think about whether the EDGE_REMOVED
-        EdgeAttribute should get saved. My gut reaction is no, but I'm not sure what the best
-        way to implement this is.
-         */
-    }
-
     /**
      * Return the list of Locations in the LocationGraph. The order of the Locations in this
      * list may change at anytime!

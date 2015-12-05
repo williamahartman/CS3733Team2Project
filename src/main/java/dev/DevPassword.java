@@ -1,4 +1,4 @@
-package ui;
+package dev;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,6 +31,7 @@ public class DevPassword extends JFrame{
      */
     public int passwordBox() {
         //Set up titles for the fields.
+        //todo database username and password implementation
         JPanel label = new JPanel(new GridLayout(2, 2, 1, 10));
         label.add(new JLabel("Username:", SwingConstants.LEFT));
         JTextField uname = new JTextField();

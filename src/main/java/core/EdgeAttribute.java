@@ -10,4 +10,5 @@ public enum EdgeAttribute {
     NOT_HANDICAP_ACCESSIBLE,
     EDGE_REMOVED,
     STAIRS,
+    ELEVATOR,
 }

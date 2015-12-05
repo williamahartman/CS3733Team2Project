@@ -1,4 +1,9 @@
-package core;
+package database;
+
+import core.Edge;
+import core.EdgeAttribute;
+import core.Location;
+import core.LocationGraph;
 
 import java.sql.*;
 import java.util.*;
@@ -22,7 +27,8 @@ public class Database {
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e){
-
+            e.printStackTrace();
+            System.exit(-1);
         }
         con = DriverManager.getConnection("jdbc:mysql://" +
                         "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
@@ -82,7 +88,8 @@ public class Database {
         try {
             Class.forName("com.mysql.jdbc.Driver");
         } catch (ClassNotFoundException e) {
-
+            e.printStackTrace();
+            System.exit(-1);
         }
         con = DriverManager.getConnection("jdbc:mysql://" +
                         "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",

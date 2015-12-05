@@ -1,7 +1,7 @@
 package testcore;
 
 import core.EdgeAttributeManager;
-import core.Instruction;
+import ui.Instruction;
 import core.Location;
 import core.LocationGraph;
 import org.junit.Test;
@@ -9,7 +9,6 @@ import org.junit.Test;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 /**
  * Created by ziyanding on 11/19/15.

@@ -15,6 +15,7 @@ public class LocationButton extends JButton {
      * Constructor.
      *
      * @param associatedLocation The Location that will be associated.
+     * @param bgColor The background color to be set
      */
     public LocationButton(Location associatedLocation, Color bgColor) {
         super();
@@ -29,9 +30,9 @@ public class LocationButton extends JButton {
     @Override
     public void paintComponent(Graphics g)
     {
+        super.paintComponent(g);
         g.setColor(bgColor);
         g.fillOval(0, 0, getSize().width - 1, getSize().height - 1);
-        super.paintComponent(g);
     }
 
     public void setBgColor(Color bgColor) {

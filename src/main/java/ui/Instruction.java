@@ -1,4 +1,6 @@
-package core;
+package ui;
+import core.Location;
+
 import java.awt.geom.Point2D;
 import java.util.*;
 

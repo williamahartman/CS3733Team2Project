@@ -1,9 +1,9 @@
 package ui;
 
 import core.EdgeAttributeManager;
-import core.Instruction;
 import core.Location;
 import core.LocationGraph;
+import dev.DevPassword;
 import dev.DevTools;
 
 import javax.swing.*;
@@ -62,7 +62,7 @@ public class MainAppUI extends JFrame{
                 new Color(172, 43, 55),
                 new Color(255, 0, 0),
                 new Color(100, 0, 0));
-
+//todo just combine them
         style.setLocationColor(new Color(255, 240, 0));
         style.setEdgeColor(new Color(250, 120, 0), 0);
         style.setEdgeColor(new Color(255, 60, 0), 1);
@@ -91,7 +91,7 @@ public class MainAppUI extends JFrame{
     }
 
     /**
-     * Populate the JFrame with panels used for the applcation.
+     * Populate the JFrame with panels used for the application.
      */
     public void setUpMainApp() {
         //Set up menubar
@@ -101,12 +101,11 @@ public class MainAppUI extends JFrame{
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
         refreshMap.addActionListener(e -> resetMap(mapView));
-        JMenuItem enterDevloperMode = new JMenuItem("Edit Map (Developers Only!)");
+        JMenuItem enterDeveloperMode = new JMenuItem("Edit Map (Developers Only!)");
 
         DevPassword passBox = new DevPassword("aztec", "wash");
 
         devToolsPanel = new DevTools(graph, mapView);
-        devToolsPanel.setBackground(new Color(255, 0, 0));
         devToolsPanel.setVisible(false);
 
         userLoggedIn = false;
@@ -136,7 +135,7 @@ public class MainAppUI extends JFrame{
         view.add(showNodes);
         view.add(changeStyle);
         editMenu.add(refreshMap);
-        editMenu.add(enterDevloperMode);
+        editMenu.add(enterDeveloperMode);
         changeStyle.add(defaultStyle);
         changeStyle.add(aWPIStyle);
         changeStyle.add(blueStyle);
@@ -144,7 +143,7 @@ public class MainAppUI extends JFrame{
         changeStyle.add(vintageStyle);
         changeStyle.add(colorBlindStyle);
 
-        enterDevloperMode.addActionListener(e -> {
+        enterDeveloperMode.addActionListener(e -> {
             if (!devToolsPanel.getDevMode()) {
                 devToolsPanel.reset();
 
@@ -168,7 +167,7 @@ public class MainAppUI extends JFrame{
                     mapView.getStyle().setDrawAllEdges(true);
                     mapView.getStyle().setDrawAllPoints(true);
                     showNodes.setText("Show Only Named Locations");
-                    enterDevloperMode.setText("Exit Developer Mode");
+                    enterDeveloperMode.setText("Exit Developer Mode");
 
                     //Update mapView for use with devtools
                     clearState(mapView);
@@ -179,8 +178,9 @@ public class MainAppUI extends JFrame{
                     repaint();
                 }
             } else {
+                //todo restore the default options
                 devToolsPanel.setDevMode(false);
-                enterDevloperMode.setText("Edit Map (Developers Only!)");
+                enterDeveloperMode.setText("Edit Map (Developers Only!)");
                 remove(devToolsPanel);
                 add(sidePanel, BorderLayout.WEST);
                 repaint();
@@ -195,6 +195,7 @@ public class MainAppUI extends JFrame{
         });
         //Action listener for toggling edges. Turns all edges on or off
         toggleEdges.addActionListener(e -> {
+            //todo make it not erase routes
             MapViewStyle style = mapView.getStyle();
             style.setDrawAllEdges(!style.isDrawAllEdges());
 
@@ -203,6 +204,7 @@ public class MainAppUI extends JFrame{
 
         //Action listener for showing only named nodes, or all the nodes.
         showNodes.addActionListener(e -> {
+            //todo make it not erase routes
             MapViewStyle style = mapView.getStyle();
             if (style.isDrawAllPoints()){
                 showNodes.setText("Show All Locations");
@@ -299,7 +301,7 @@ public class MainAppUI extends JFrame{
 
         //Initialize Panels and buttons
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        sidePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         sidePanel.setPreferredSize(new Dimension(350, 768));
         sidePanel.setVisible(true);
 
@@ -368,7 +370,6 @@ public class MainAppUI extends JFrame{
             }
         });
 
-        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchText = new JTextField(20);
         searchText.setVisible(true);
         searchText.setPreferredSize(new Dimension(170, 30));
@@ -408,7 +409,6 @@ public class MainAppUI extends JFrame{
             }
 
         });
-        JPanel callumPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         edgeWeightPanel.setBackground(Color.GREEN);
         JScrollPane text = new JScrollPane(gps);
@@ -418,17 +418,15 @@ public class MainAppUI extends JFrame{
         text.setPreferredSize(new Dimension(300, 300));
         text.setMaximumSize(new Dimension(300, 300));
         //Add elements to the search panel
-        callumPanel.add(searchText);
-        callumPanel.add(searchButton);
-        callumPanel.add(startInfo);
-        callumPanel.add(endPointInfo);
-        callumPanel.add(routePane);
-        callumPanel.add(makeAStarRoute);
-        callumPanel.add(text);
-        callumPanel.add(edgeWeightPanel);
-        //callumPanel.add(clearButton, BorderLayout.SOUTH);
-        //Add elements to the side panel
-        sidePanel.add(callumPanel, BorderLayout.CENTER);
+        sidePanel.add(searchText);
+        sidePanel.add(searchButton);
+        sidePanel.add(startInfo);
+        sidePanel.add(endPointInfo);
+        sidePanel.add(routePane);
+        sidePanel.add(makeAStarRoute);
+        sidePanel.add(text);
+        sidePanel.add(edgeWeightPanel);
+        //sidePanel.add(clearButton, BorderLayout.SOUTH);
 
 
         //Set layout and add
@@ -439,22 +437,6 @@ public class MainAppUI extends JFrame{
 
         clearState(mapView);
     }
-
-    /**
-     * Add the listeners to all the nodes in the map.
-     */
-    private void addListenersToMapNodes(MapView view, EventListener listener) {
-        for (LocationButton button: view.getLocationButtonList()) {
-            if (listener instanceof ActionListener) {
-                button.addActionListener((ActionListener) listener);
-            } else if (listener instanceof MouseAdapter) {
-                button.addMouseListener((MouseAdapter) listener);
-            } else {
-                System.err.println("Could not add listener " + listener + ". No implementation for type!");
-            }
-        }
-    }
-
     /**
      * Clear the state of the App, returning it to the default state.
      */
@@ -523,6 +505,7 @@ public class MainAppUI extends JFrame{
      * @param toReset the mapView to reset
      */
     private void resetMap(MapView toReset) {
+        //todo fix this?
         gps.setText("");
         toReset.updateGraph(graph);
 

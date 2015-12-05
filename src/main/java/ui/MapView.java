@@ -14,7 +14,7 @@ import java.util.EventListener;
 import java.util.List;
 
 /**
- * This is a panel that displays edges from a map. An image background is displayed bellow
+ * This is a panel that displays edges from a map. An image background is displayed below
  * these edges.
  */
 public class MapView extends JPanel {
@@ -27,13 +27,15 @@ public class MapView extends JPanel {
     private static final int NODE_BUTTON_SIZE = 7;
     private static final int NODE_BUTTON_SIZE_NAME = 12;
     private static final int NODE_BUTTON_SIZE_END = 15;
+    //TODO make un-named points bigger in edit mode
 
     private JScrollPane scrollPane;
     private JPanel mapPanel;
     private double zoomFactor;
 
-    private List<Edge> graphEdgeList;
-    private List<Location> locationList;
+    //TODO locationList is redundant with locationButtonList
+    private List<Edge> graphEdgeList; //The list of edges from the represented graph
+    private List<Location> locationList; //The list of locations from the represented graph
     private List<LocationButton> locationButtonList;
     private List<List<Location>> routeLists;
     private List<Location> searchList;
@@ -116,6 +118,7 @@ public class MapView extends JPanel {
                 //Draw routes
                 if (style.isDrawRoutes()) {
                     for (List<Location> route: routeLists) {
+                        //TODO previousX and Y are redundant
                         Location previousLoc = route.get(0);
                         int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
                         int previousY = (int) (route.get(0).getPosition().y * imageRes.getHeight());
@@ -320,6 +323,7 @@ public class MapView extends JPanel {
             searchList.add(loc);
             locationButtonList.forEach(locationButton -> {
                 if (loc.equals(locationButton.getAssociatedLocation())){
+                    //TODO make a style attribute for this
                     locationButton.setBgColor(Color.BLACK);
                 }
             });
@@ -381,9 +385,10 @@ public class MapView extends JPanel {
             for (LocationButton locButton: locationButtonList) {
                 if (buttonListener instanceof ActionListener) {
                     locButton.addActionListener((ActionListener) buttonListener);
-                }
-                if (buttonListener instanceof MouseListener) {
+                } else if (buttonListener instanceof MouseListener) {
                     locButton.addMouseListener((MouseListener) buttonListener);
+                } else {
+                    System.err.println("Unsupported listener type " + buttonListener.getClass());
                 }
             }
         }
@@ -449,6 +454,7 @@ public class MapView extends JPanel {
             repaint();
         }
     }
+    //Make the passed button even bigger
     private void setToStartOrEnd(LocationButton locationButton, Color color, String tooltip) {
         int xPos = (int) (locationButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
         int yPos = (int) (locationButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);

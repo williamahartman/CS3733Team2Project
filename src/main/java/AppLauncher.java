@@ -1,12 +1,12 @@
-import core.Database;
+import database.Database;
 import ui.MainAppUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 
 /**
- * This is a baby easy example of a swing app. This can turn into the real
- * launcher for our app probably.
+ * This runs the application
  */
 
 public class AppLauncher{
@@ -38,7 +38,7 @@ public class AppLauncher{
 
             //Show the frame
             app.setVisible(true);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(null,
                     "Failed to connect to the online database (be on the internet!)",
                     "Database error!",

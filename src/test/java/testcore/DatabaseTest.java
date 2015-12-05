@@ -1,9 +1,10 @@
 package testcore;
 
 import core.*;
+import database.Database;
+import database.DatabaseList;
 
 import java.awt.geom.Point2D;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

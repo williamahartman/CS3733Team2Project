@@ -5,14 +5,17 @@ import core.EdgeAttributeManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
 import java.util.Hashtable;
 
 /**
  * This class is an interface the modifies edge attribute weights.
  */
 public class EdgeWeightMenu extends JPanel{
-    EdgeAttributeManager attributeManager;
+    private static final double AVOID_WEIGHT = 10;
+    private static final double NEUTRAL_WEIGHT = 1;
+    private static final double PREFER_WEIGHT = 0.01;
+
+    private EdgeAttributeManager attributeManager;
 
     /**
      * Constructor.
@@ -29,7 +32,7 @@ public class EdgeWeightMenu extends JPanel{
      */
     public void setUpEdgeWeightMenu() {
         Hashtable<Integer, JLabel> sliderLabelTable = new Hashtable<>();
-        sliderLabelTable.put(0, new JLabel("Avoid"));
+        sliderLabelTable.put(0, new JLabel("Try to Avoid"));
         sliderLabelTable.put(1, new JLabel("Neutral"));
         sliderLabelTable.put(2, new JLabel("Prefer"));
 
@@ -42,17 +45,18 @@ public class EdgeWeightMenu extends JPanel{
             if (!source.getValueIsAdjusting()) {
                 switch (source.getValue()) {
                     case 0:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 10);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, AVOID_WEIGHT);
                         break;
                     case 1:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 1);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, NEUTRAL_WEIGHT);
                         break;
                     case 2:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, 0.01);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.INDOORS, PREFER_WEIGHT);
                         break;
                 }
             }
         });
+
         setDefaultValue(EdgeAttribute.INDOORS, preferIndoors);
 
         JSlider stairs = new JSlider(JSlider.HORIZONTAL, 0, 2, 1);
@@ -64,13 +68,13 @@ public class EdgeWeightMenu extends JPanel{
             if (!source.getValueIsAdjusting()) {
                 switch (source.getValue()) {
                     case 0:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 3);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, AVOID_WEIGHT);
                         break;
                     case 1:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 1);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, NEUTRAL_WEIGHT);
                         break;
                     case 2:
-                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, 0.1);
+                        attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS, PREFER_WEIGHT);
                         break;
                 }
             }
@@ -91,11 +95,11 @@ public class EdgeWeightMenu extends JPanel{
 
     private void setDefaultValue(EdgeAttribute attribute, JSlider slider) {
         double currentStairsVal = attributeManager.getModifierFromAttribute(attribute);
-        if (currentStairsVal == 1.5) {
+        if (currentStairsVal == AVOID_WEIGHT) {
             slider.setValue(0);
-        } else if (currentStairsVal == 1) {
+        } else if (currentStairsVal == NEUTRAL_WEIGHT) {
             slider.setValue(1);
-        } else if (currentStairsVal == 0.5) {
+        } else if (currentStairsVal == PREFER_WEIGHT) {
             slider.setValue(2);
         }
     }

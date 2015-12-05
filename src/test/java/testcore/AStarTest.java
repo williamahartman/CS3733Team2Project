@@ -1,7 +1,6 @@
 package testcore;
 
 import core.EdgeAttributeManager;
-import core.Instruction;
 import core.Location;
 import core.LocationGraph;
 import org.junit.Test;
@@ -18,6 +17,22 @@ import static org.junit.Assert.assertEquals;
  * This class tests the makeAStarRoute() and calculateDistance() in LocationGraph.java.
  */
 public class AStarTest {
+
+    /**
+     * Calculates the length of the route.
+     * @param path a list of locations on the route
+     * @return The length of the route
+     */
+    public double calculateDistance(List<Location> path){
+        double distance = 0.0;
+        int listSize = path.size();
+        for (int i = 0; i < (listSize - 1); i++){
+            distance += path.get(i).getPosition().distance(path.get(i + 1).getPosition());
+        }
+        String temp = String.format(("%.2f"), distance);
+        distance = Double.parseDouble(temp);
+        return distance;
+    }
 
     @Test
     public void testAstar1() {
@@ -44,7 +59,7 @@ public class AStarTest {
         test.add(loc1);
         assertEquals(test, path);
         //Test calculateDistance
-        double d1 = graph.calculateDistance(path);
+        double d1 = calculateDistance(path);
         assertEquals(0.1, d1, 0.0);
         //Test A* algorithm
         List<Location> test2 = new LinkedList<>();
@@ -54,7 +69,7 @@ public class AStarTest {
         test2.add(loc2);
         assertEquals(test2, path2);
         //Test calculateDistance
-        double d2 = graph.calculateDistance(path2);
+        double d2 = calculateDistance(path2);
         assertEquals(0.2, d2, 0.0);
         //Test A* algorithm
         List<Location> test3 = new LinkedList<>();
@@ -65,7 +80,7 @@ public class AStarTest {
         test3.add(loc3);
         assertEquals(test3, path3);
         //Test calculateDistance
-        double d3 = graph.calculateDistance(path3);
+        double d3 = calculateDistance(path3);
         assertEquals(0.3, d3, 0.0);
 
         //Test A* algorithm
@@ -78,7 +93,7 @@ public class AStarTest {
         test4.add(loc4);
         assertEquals(test4, path4);
         //Test calculateDistance
-        double d4 = graph.calculateDistance(path4);
+        double d4 = calculateDistance(path4);
         assertEquals(0.4, d4, 0.0);
     }
 
@@ -118,7 +133,7 @@ public class AStarTest {
         test1.add(loc5);
         assertEquals(test1, path1);
         //Test calculateDistance
-        double d = graph.calculateDistance(path1);
+        double d = calculateDistance(path1);
         assertEquals(10.74, d, 0.0);
 
     }
@@ -155,7 +170,7 @@ public class AStarTest {
         test1.add(loc5);
         assertEquals(test1, path1);
         //Test calculateDistance
-        double d1 = graph.calculateDistance(path1);
+        double d1 = calculateDistance(path1);
         assertEquals(5.84, d1, 0.0);
 
         //Test A* algorithm
@@ -165,7 +180,7 @@ public class AStarTest {
         test2.add(loc5);
         assertEquals(test2, path2);
         //Test calculateDistance
-        double d2 = graph.calculateDistance(path2);
+        double d2 = calculateDistance(path2);
         assertEquals(3.61, d2, 0.0);
     }
     @Test
@@ -266,7 +281,7 @@ public class AStarTest {
         test1.add(loc18);
         assertEquals(test1, path1);
         //Test calculateDistance
-        double d1 = graph.calculateDistance(path1);
+        double d1 = calculateDistance(path1);
         assertEquals(22.85, d1, 0.0);
         //Instruction i = new Instruction();
        // i.stepByStepInstruction(path1, 1);

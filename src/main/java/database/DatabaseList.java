@@ -1,4 +1,7 @@
-package core;
+package database;
+
+import core.Edge;
+import core.Location;
 
 import java.sql.*;
 import java.util.*;

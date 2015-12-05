@@ -1,6 +1,8 @@
 package dev;
 
 import core.*;
+import database.Database;
+import database.DatabaseList;
 import ui.LocationButton;
 import ui.MapView;
 
@@ -15,6 +17,9 @@ import java.util.HashMap;
 
 /**
  * Created by Alora on 11/21/2015.
+ *
+ * DevTools is the class that adds all the tools to the map for developers
+ * makes devPanel and listeners for editing
  */
 public class DevTools extends JPanel {
 
@@ -22,24 +27,30 @@ public class DevTools extends JPanel {
     private MapView mapView;
     private boolean inDevMode = false;
     private Edge currentEdge;
-    private LocationButton lastButtonClicked;
+    private LocationButton lastButtonClicked; //The last button you clicked
     private boolean deleteEdge;
     private boolean edgeMode;
-    private LocationButton originalButton;
+    private LocationButton originalButton; //The button that works with edge mode
     private DatabaseList dblist;
 
-    JLabel buttonLabel1;
-    JLabel buttonLabel2;
-    JCheckBox edgeToggle;
+    private JLabel buttonLabel1;
+    private JLabel buttonLabel2;
+    private JCheckBox edgeToggle;
 
     //Edge attribute check boxes
-    JCheckBox indoors = new JCheckBox("Indoors");
-    JCheckBox handicapAccess = new JCheckBox("Not Handicap Accessible");
+    private JCheckBox indoors = new JCheckBox("Indoors");
+    private JCheckBox handicapAccess = new JCheckBox("Not Handicap Accessible");
 
     //Fields with their initial entries (for floor numbers & location names)
-    JFormattedTextField field1 = new JFormattedTextField();
-    JFormattedTextField field2 = new JFormattedTextField();
+    private JFormattedTextField field1 = new JFormattedTextField();
+    private JFormattedTextField field2 = new JFormattedTextField();
 
+    /**
+     * Creates a DevTools.
+     *
+     * @param newGraph is the LocationGraph that DevTools works on
+     * @param newView is the Mapview that DevTools works on
+     */
     public DevTools(LocationGraph newGraph, MapView newView) {
         graph = newGraph;
         mapView = newView;
@@ -48,12 +59,17 @@ public class DevTools extends JPanel {
         lastButtonClicked = null;
 
         setLayout(new BorderLayout());
-        //this.add(createSaveButton(), BorderLayout.SOUTH);
         this.add(createEditor());
 
         refreshGraph();
     }
 
+    /**
+     * builds a listener for DevTools to use.
+     *
+     * @param mapPanel Clicked on mapPanel.
+     * @return
+     */
     //Mouse adapter for creating LocationButtons
     public MouseAdapter buildAddLocationListener(JPanel mapPanel) {
         return new MouseAdapter() {
@@ -76,26 +92,11 @@ public class DevTools extends JPanel {
         };
     }
 
-//    //Creates button to save information to the database
-//    private JButton createSaveButton() {
-//        JButton saveToDatabase = new JButton("Save to database");
-//        saveToDatabase.setToolTipText("Commit the changes made to the online database.");
-//        saveToDatabase.addActionListener(listener -> {
-//            try {
-//                Database graphData = new Database();
-//                graphData.updateDB(dblist);
-//                graphData.closeConnection();
-//            } catch (Exception exception) {
-//                JOptionPane.showMessageDialog(mapView.getParent(),
-//                        "Failed to connect to the online database (be on the internet!)",
-//                        "Database error!",
-//                        JOptionPane.ERROR_MESSAGE);
-//            }
-//        });
-//        return saveToDatabase;
-//    }
-
-    //Makes the panels, buttons, fields, and labels for the dev panel
+    /**
+     * Makes the panels, buttons, fields, and labels for the dev panel.
+     *
+     * @return JPanel, the sidepanel that is edit mode
+     */
     private JPanel createEditor() {
         //Labels that appear on the left side and describe the open fields
         buttonLabel1 = new JLabel("Floor Number:");
@@ -132,8 +133,6 @@ public class DevTools extends JPanel {
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
                     String tempString = (String) field2.getValue();
-                    System.out.println(tempString.length());
-                    System.out.println(tempString);
                     String[] nameList;
                     if (tempString.contains(",")) {
                         nameList = tempString.split(",");
@@ -386,6 +385,9 @@ public class DevTools extends JPanel {
         };
     }
 
+    /**
+     * Redraws the graph with colors and stuff.
+     */
     public void refreshGraph() {
         mapView.updateGraph(graph);
 

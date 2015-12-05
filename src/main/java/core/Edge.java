@@ -71,22 +71,28 @@ public class Edge {
     public void removeAttribute(EdgeAttribute attribute) { associatedAttributes.remove(attribute); }
 
     /**
-     * Magically save everything somehow.
+     * Return the first location associated with this edge.
+     *
+     * @return The first location associated with this edge
      */
-    public void saveToDisk() {
-        System.out.println("(Edge.Java line 60) Edge: " + this +
-                " would be saved to disk if this were implemented!");
-        //todo implement this!
-    }
-
     public Location getNode1() {
         return node1;
     }
 
+    /**
+     * Return the second location associated with this edge.
+     *
+     * @return The second location associated with this edge
+     */
     public Location getNode2() {
         return node2;
     }
 
+    /**
+     * Returns the full list of attributes associated with the edge.
+     *
+     * @return The list of attributes
+     */
     public List<EdgeAttribute> getAttributes() { return associatedAttributes; }
 
 }

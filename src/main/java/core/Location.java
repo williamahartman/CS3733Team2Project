@@ -140,31 +140,7 @@ public class Location {
         }
         return null;
     }
-
-    /**
-     * Magically save everything somehow.
-     */
-    public void saveToDisk() {
-        System.out.println("(Location.Java line 89) Location: " + this +
-                " would be saved to disk if this were" +
-                " implemented!");
-        //todo implement this!
-    }
-
-    /**
-     * Calculates distance between two locations and keeps two decimal.
-     * @param loc the location used to calculate the distance
-     * @return The two decimal number representing the distance
-     */
-    public double getTwoDecimalDistance(Location loc, int scale){
-        double distance = position.distance(loc.getPosition());
-        distance = distance * scale;
-        String temp = String.format(("%.2f"), distance);
-        distance = Double.parseDouble(temp);
-        return distance;
-    }
-
-    public List<Edge> getEdges() {
+   public List<Edge> getEdges() {
         return edgeList;
     }
 
@@ -184,10 +160,10 @@ public class Location {
     public void setNameList(String[] s){
         nameList = s;
     }
-    public Location createStairUp()
+    public Location createStairUp(int floor, List<EdgeAttribute> ea)
     {
-        Location above = new Location(this.getPosition(), this.getFloorNumber() + 1, new String[0]);
-        this.makeAdjacentTo(above, new ArrayList<>());
+        Location above = new Location(this.getPosition(), floor, new String[0]);
+        this.makeAdjacentTo(above, ea);
         return above;
     }
 

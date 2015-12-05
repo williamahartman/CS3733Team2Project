@@ -19,8 +19,8 @@ import java.util.List;
  */
 public class MapView extends JPanel {
     private static final double DEFAULT_ZOOM = 4;
-    private static final double START_XFRAC = 0.3;
-    private static final double START_YFRAC = 0.3;
+    private static final double START_XFRAC = 0.2;
+    private static final double START_YFRAC = 0.2;
     private static final double MINIMUM_ZOOM = 2;
     private static final double MAXIMUM_ZOOM = 50;
     private static final double ZOOM_SPEED = 0.25;

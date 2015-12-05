@@ -23,12 +23,13 @@ public class Instruction {
 
     public List<String> stepByStepInstruction(List<Location> locList, int scale) {
         totalDistance = 0.0;
-        int i = 0;
         int flag; //records the relation between previous edge and next edge
         int flag2 = 0; //records the relation between previous edge and the edge before previous edge
-        double distance = 0;
-        double distance2 = 0;
+        double distance = 0; //records the sum of distance after previous turning
+        //double distance2 = 0; //stores the distance between previous location and current location
         int listSize = locList.size();
+        double temp; //used to add appropriate distance to the instruction
+
         //if there is no location in location list
         if (listSize == 0) {
             instruction.add("Can't find route between these two locations.");
@@ -41,7 +42,7 @@ public class Instruction {
         }
         //if there are more than one location in location list
         else {
-            while (i < (listSize - 1)) {
+            for (int i = 0; i < (listSize - 1); i++) {
                 Location locPrev = locList.get(i);
                 //if i is not 0, set locPrev to the previous location
                 if (i != 0){
@@ -56,77 +57,66 @@ public class Instruction {
                 double locNextX = locNext.getPosition().getX(); //x value of next location
                 double locNextY = -locNext.getPosition().getY(); //y value of next location
 
-                //vector1 is the vector pointing from current location to previous location
+                //vector1 is parallel to vector pointing from current location to previous location
+                //the tail of vector1 is (0, 0)
                 Point2D.Double vector1 = new Point2D.Double((locPrevX - locCurrentX), (locPrevY - locCurrentY));
-                //vector2 is the vector pointing from current location to next location
+                //vector2 is parallel to the vector pointing from current location to next location
+                //the tail of vector2 is (0, 0)
                 Point2D.Double vector2 = new Point2D.Double((locNextX - locCurrentX), (locNextY - locCurrentY));
 
-                //calculates the length of vector2
-                //double vector2Length = vector2.distance(0, 0);
-                //calculate the degree between vector2 and the positive side of x axis
-                //double deg = Math.toDegrees(Math.acos(vector2.getX() / vector2Length));
-                //determines what direction user should head first
 
-                Point2D.Double point1 = new Point2D.Double(locCurrentX, locCurrentY);
-                Point2D.Double point2 = new Point2D.Double(locNextX, locNextY);
-                Point2D.Double point3 = new Point2D.Double(locNextX, locCurrentY);
-                double le1 = point1.distance(point2);
-                //^distance between previous node and current node
-                double le2 = point1.distance(point3);
-                //^distance between next node and current node
-                double le3 = point2.distance(point3);
-                //^distance between previous node and next node
-
-                double deg = Math.toDegrees(Math.acos(le2 / le1));
                 if (i == 0){
-                    if (locNextY == locCurrentY){
-                        if (locNextX > locCurrentX){
+                    //vector3 is a vector point from (0, 0) to (1, 0)
+                    Point2D.Double vector3 = new Point2D.Double(1, 0);
+                    //length of vector2
+                    double vector2Length = vector2.distance(0, 0);
+                    //distance between vector2 and vector3
+                    double l = vector2.distance(vector3);
+                    //deg is the degree between vector2 and positive x-axis (vector3)
+                    double deg = Math.toDegrees(
+                            Math.acos((1 + vector2Length * vector2Length - l * l) / (2 * vector2Length)));
+                    if (vector2.getY() == 0){
+                        if (vector2.getX() > 0){
                             instruction.add("Head East\n");
-                        } else if (locNextX < locCurrentY){
+                        } else if (vector2.getY() < 0){
                             instruction.add("Head West\n");
                         }
-                    } else if (locNextX == locCurrentX){
-                        if (locNextY > locCurrentY){
-                            instruction.add("Head South\n");
-                        } else if (locNextY < locCurrentY){
-                            instruction.add("Head North\n");
-                        }
-                    } else if (locNextX > locCurrentX){
-                        if (locNextY < locCurrentY){
-                            addFirstDirection(deg, "East", "South");
-                        } else {
-                            addFirstDirection(deg, "East", "North");
-                        }
-                    } else if (locNextX < locCurrentX) {
-                        if (locNextY < locCurrentY) {
-                            addFirstDirection(deg, "West", "South");
-                        } else {
-                            addFirstDirection(deg, "West", "North");
-                        }
+                    }
+
+                    else if (vector2.getY() > 0){
+                        addFirstDirection(deg, "North");
+                    }
+
+                    else if (vector2.getY() < 0) {
+                       addFirstDirection(deg, "South");
                     }
                 }
-
+                String turn = "";
                 //determines if the vector2 rotates counterclockwise or clockwise from vector1
                 //math function v1 * v2 = |v1||v2|sin(x)
                 double cross = vector1.getX() * vector2.getY() - vector1.getY() * vector2.getX();
-                //sin(x) is negative if it rotates counterclockwise, sin(x) is positive if it rotates clockwise
+                //sin(x) is negative if it rotates clockwise, sin(x) is positive if it rotates counterclockwise
                 //sin(x) is 0 if it rotates 180 degree
-                if (cross < 0) { //counterclockwise
+                if (cross < 0) { //clockwise
                     flag = 1; //left
-                } else if (cross  > 0) { //clockwise
+                    turn = "left";
+                } else if (cross  > 0) { //counterclockwise
                     flag = 2; //right
+                    turn = "right";
                 } else {
                     flag = 3; //straight
                 }
+
                 String str = " ";
 
+                //distance between previous node and current node
                 double l1 = locCurrent.getPosition().distance(locPrev.getPosition());
-                //^distance between previous node and current node
+                //distance between next node and current node
                 double l2 = locCurrent.getPosition().distance(locNext.getPosition());
-                //^distance between next node and current node
+                //distance between previous node and next node
                 double l3 = locPrev.getPosition().distance(locNext.getPosition());
-                //^distance between previous node and next node
 
+                //if it is not going straight, check what degree need to turn
                 if (flag != 3){
                     //calculates degree between previous edge and next edge(vector1 and vector2)
                     //Using inverse trigonometric functions and Law of cosines
@@ -139,57 +129,48 @@ public class Instruction {
                         str = " hard ";
                     }
                 }
-                if (flag == 1){
-                    //user should turn left and then add all distance after last turn together
-                    distance = leftRightDirection(scale, i, flag2, distance, distance2);
-                    instruction.add("Turn" + str + "left.\n");
-                    if (i == listSize - 2){
-                        l2 = this.make2Decimal(l2, scale);
-                        //if reach the end of the location list
-                        instruction.add("Go " + l2 + " miles.\n");
-                        totalDistance += l2;
+                //if it is time to turn
+                if (flag == 1 || flag == 2) {
+                    if (flag2 == 1) {
+                        //if previous step is going straight, then add up all distance after last turing
+                        distance += l1;
+                    } else {
+                        //if previous step is turning
+                        distance = l1;
                     }
-                    distance2 = l2; //records the distance between current and next location
-                    flag2 = 2; //records current action turning
-                } else if (flag == 2){
-                    //user should turn left and then add all distance after last turn together
-                    distance = leftRightDirection(scale, i, flag2, distance, distance2);
-                    instruction.add("Turn" + str + "right.\n");
-                    distance2 = l2; //records the distance after last turn
-                    flag2 = 2;
+                    temp = this.make2Decimal(distance, scale);
+                    totalDistance += temp;
+                    instruction.add("Go " + temp + " miles.\n");
+                    instruction.add("Turn" + str + turn + "\n");
+                    //if next location is at the end of the location list
                     if (i == listSize - 2){
-                        l2 = this.make2Decimal(l2, scale);
-                        //if reach the end of the location list
-                        instruction.add("Go " + l2 + " miles.\n");
-                        totalDistance += l2;
+                        temp = this.make2Decimal(l2, scale);
+                        instruction.add("Go " + temp + " miles.\n");
+                        totalDistance += temp;
                     }
+                    flag2 = 0;
+                    distance = 0;
                 } else {
-                    if (flag == 3){
-                        //this is for the situation that after turing, user go straight passing several nodes
-                        if (flag2 == 2){ //if previous action is either turing right or turing left
-                            distance += distance2;
-                        }
+                    //this step is going straight, add the distance between previous location and current location
+                    distance += l1;
+                    //if next location is at the end of the location list
+                    if (i == listSize - 2) {
                         distance += l2;
-                        flag2 = 1; //records current action is going straight
+                        temp = this.make2Decimal(distance, scale);
+                        totalDistance += temp;
+                        instruction.add("Go " + temp + " miles.\n");
                     }
-                    if (i == listSize - 2){
-                        distance = this.make2Decimal(distance, scale);
-                        //if reach the end of the location list
-                        instruction.add("Go straight and go " + distance + " miles.\n");
-                        totalDistance += distance;
-                    }
+                    flag2 = 1;
                 }
-                i++;
             }
         }
-        instruction.add("You arrive at your destination.\n");
 
+        instruction.add("You arrive at your destination.\n");
         totalDistance = this.make2Decimal(totalDistance, 1);
         instruction.add("The total distance is " + totalDistance + " miles.\n");
         //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
         int timeNeed = (int) (totalDistance / 0.052);
         instruction.add("On average it takes " + timeNeed + " minutes to arrive at your destination.\n");
-
         return instruction;
     }
 
@@ -208,45 +189,23 @@ public class Instruction {
     }
 
     /**
-     * A helper function to add instruction.
-     * @param i int
-     * @param flag2 indicates previous action
-     * @param distance distance
-     * @param distance2 records the distance after last turn
-     * @return the distance
+     * adds the first instruction
+     * @param deg degree between the vector2(parallel to the vector pointing from current location to next location)
+     *            and x-axis
+     * @param direction a possible direction
      */
 
-    private double leftRightDirection(int scale, int i, int flag2, double distance, double distance2){
-        if (flag2 == 1){
-            distance = this.make2Decimal(distance, scale);
-            instruction.add("Go straight and go " + distance + " miles.\n");
-            totalDistance += distance;
-            distance = 0;
-            return distance;
-        }
-        if (i != 0 && i != 1) {
-            distance2 = this.make2Decimal(distance2, scale);
-            instruction.add("Go " + distance2 + " miles.\n");
-            totalDistance += distance2;
-        }
-        return distance;
-    }
-
-    /**
-     *
-     * A helper function to add first direction to instruction.
-     * @param deg measures the direction
-     * @param str1 direction possible
-     * @param str2 direction possible
-     */
-
-    private void addFirstDirection(double deg, String str1, String str2){
-        if (deg < 10){
-            instruction.add("Head " + str1 + "\n");
-        } else if (deg > 80){
-            instruction.add("Head " + str2 + "\n");
-        } else {
-            instruction.add("Head " + str2 + " " + str1 + "\n");
+    private void addFirstDirection(double deg, String direction) {
+        if (deg < 10) {
+            instruction.add("Head East\n");
+        } else if (deg >= 10 && deg <= 80) {
+            instruction.add("Head " + direction + " East\n");
+        } else if (deg > 80 && deg < 100) {
+            instruction.add("Head " + direction + "\n");
+        } else if (deg >= 100 && deg <= 170) {
+            instruction.add("Head " + direction + " West\n");
+        } else if (deg > 170) {
+            instruction.add("Head West\n");
         }
     }
 

@@ -189,7 +189,7 @@ public class Instruction {
     }
 
     /**
-     * adds the first instruction
+     * adds the first instruction.
      * @param deg degree between the vector2(parallel to the vector pointing from current location to next location)
      *            and x-axis
      * @param direction a possible direction

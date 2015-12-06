@@ -44,6 +44,7 @@ public class MainAppUI extends JFrame{
     private EdgeAttributeManager attributeManager;
     private boolean userLoggedIn;
 
+    private int stepCount = 0;
     /**
      * Constructor.
      *
@@ -409,6 +410,16 @@ public class MainAppUI extends JFrame{
             }
 
         });
+        JButton test = new JButton();
+        test.setPreferredSize(new Dimension(90, 30));
+        test.setMaximumSize(new Dimension(90, 30));
+        test.setToolTipText("TEST");
+        test.addActionListener(e ->
+        {
+            mapView.stepByStep(stepCount);
+            stepCount++;
+        });
+
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         edgeWeightPanel.setBackground(Color.GREEN);
         JScrollPane text = new JScrollPane(gps);
@@ -426,6 +437,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(makeAStarRoute);
         sidePanel.add(text);
         sidePanel.add(edgeWeightPanel);
+        sidePanel.add(test);
         //sidePanel.add(clearButton, BorderLayout.SOUTH);
 
 

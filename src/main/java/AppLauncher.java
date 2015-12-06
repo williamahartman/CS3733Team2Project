@@ -6,7 +6,7 @@ import java.awt.*;
 import java.sql.SQLException;
 
 /**
- * This runs the application
+ * This runs the application.
  */
 
 public class AppLauncher{

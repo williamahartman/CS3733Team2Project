@@ -464,6 +464,35 @@ public class MapView extends JPanel {
         locationButton.setToolTipText(tooltip);
     }
 
+    public void stepByStep(int step)
+    {
+       for (List<Location> ll:routeLists) {
+           if (step < ll.size()) {
+               Location current = ll.get(step);
+               if (step > 0) {
+                   Location previous = ll.get(step - 1);
+                   for (LocationButton locButton : locationButtonList) {
+                       if (locButton.getAssociatedLocation().equals(current)) {
+                           locButton.setBgColor(new Color(250, 118, 0));
+                           repaint();
+                       }
+                       if (locButton.getAssociatedLocation().equals(previous)) {
+                           locButton.setBgColor(style.getRouteLocationColor());
+                           repaint();
+                       }
+                   }
+               } else {
+                   for (LocationButton locButton : locationButtonList) {
+                       if (locButton.getAssociatedLocation().equals(current)) {
+                           locButton.setBgColor(new Color(250, 118, 0));
+                           repaint();
+                       }
+                   }
+               }
+           }
+       }
+    }
+
     /**
      * Sets the listener that will be associated with all buttons in the MapView.
      *

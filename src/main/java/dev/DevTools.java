@@ -28,8 +28,7 @@ public class DevTools extends JPanel {
     private boolean inDevMode = false;
     private Edge currentEdge;
     private LocationButton lastButtonClicked; //The last button you clicked
-    private boolean deleteEdge;
-    private LocationButton originalButton; //The button that works with edge mode
+    private LocationButton originalButton; //The button you clicked before the last one
     private DatabaseList dblist;
 
     private JLabel buttonLabel1;
@@ -38,6 +37,8 @@ public class DevTools extends JPanel {
     //Edge attribute check boxes
     private JCheckBox indoors = new JCheckBox("Indoors");
     private JCheckBox handicapAccess = new JCheckBox("Not Handicap Accessible");
+    private JCheckBox stairs = new JCheckBox("Stairs");
+    private JCheckBox elevator = new JCheckBox("Elevator");
 
     //Fields with their initial entries (for floor numbers & location names)
     private JFormattedTextField field1 = new JFormattedTextField();
@@ -144,6 +145,36 @@ public class DevTools extends JPanel {
             }
         });
 
+        //Mouse listener for stairs edge attribute
+        stairs.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == 1 && e.isShiftDown()) {
+                    if (stairs.isSelected() && !currentEdge.hasAttribute(EdgeAttribute.STAIRS)){
+                        currentEdge.addAttribute(EdgeAttribute.STAIRS);
+                    } else if (!stairs.isSelected() && currentEdge.hasAttribute(EdgeAttribute.STAIRS)){
+                        currentEdge.removeAttribute(EdgeAttribute.STAIRS);
+                    }
+                    dblist.updatedEdge(currentEdge);
+                }
+            }
+        });
+
+        //Mouse listener for elevator edge attribute
+        elevator.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == 1 && e.isShiftDown()) {
+                    if (elevator.isSelected() && !currentEdge.hasAttribute(EdgeAttribute.ELEVATOR)){
+                        currentEdge.addAttribute(EdgeAttribute.ELEVATOR);
+                    } else if (!elevator.isSelected() && currentEdge.hasAttribute(EdgeAttribute.ELEVATOR)){
+                        currentEdge.removeAttribute(EdgeAttribute.ELEVATOR);
+                    }
+                    dblist.updatedEdge(currentEdge);
+                }
+            }
+        });
+
         //Mouse listener for indoors edge attribute
         indoors.addMouseListener(new MouseAdapter() {
             @Override
@@ -203,7 +234,8 @@ public class DevTools extends JPanel {
 
         textPanel2.add(handicapAccess);
         textPanel2.add(indoors);
-        textPanel2.add(blank4);
+        textPanel2.add(stairs);
+        textPanel2.add(elevator);
 
         //create save to database button
         JButton saveToDatabase = new JButton("Save to database");
@@ -257,10 +289,11 @@ public class DevTools extends JPanel {
     private void setElementsEnabled(boolean enabled) {
         buttonLabel1.setEnabled(enabled);
         buttonLabel2.setEnabled(enabled);
-    //    edgeToggle.setEnabled(enabled);
         field1.setEnabled(enabled);
         field2.setEnabled(enabled);
         indoors.setEnabled(enabled);
+        stairs.setEnabled(enabled);
+        elevator.setEnabled(enabled);
         handicapAccess.setEnabled(enabled);
         repaint();
     }
@@ -300,9 +333,8 @@ public class DevTools extends JPanel {
                                 handicapAccess.setSelected(
                                         currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
                                 indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
-                                System.out.println("Not Handicap " +
-                                        currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
-                                System.out.println("Indoors " + currentEdge.hasAttribute(EdgeAttribute.INDOORS));
+                                stairs.setSelected(currentEdge.hasAttribute(EdgeAttribute.STAIRS));
+                                elevator.setSelected(currentEdge.hasAttribute(EdgeAttribute.ELEVATOR));
                             } else { //does not have an edge
                                 //add an edge
                                 ArrayList<EdgeAttribute> listOfAttributes = new ArrayList<>();

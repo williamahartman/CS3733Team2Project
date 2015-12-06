@@ -1,5 +1,7 @@
 import database.Database;
 import ui.MainAppUI;
+import ui.TextToVoice;
+import ui.VoiceThread;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +16,12 @@ public class AppLauncher{
     public static void main(String[] args) {
         try {
             Database graphData = new Database();
+            VoiceThread speak = new VoiceThread("Starting W.P.I Mapper");
+            try {
+                speak.start();
+                Thread.sleep(2000);
+                speak.interrupt();
+            } catch (InterruptedException e) {}
 
             //Make a frame
             MainAppUI app = new MainAppUI(graphData.createGraph());

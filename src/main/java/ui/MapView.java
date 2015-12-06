@@ -474,10 +474,12 @@ public class MapView extends JPanel {
                    for (LocationButton locButton : locationButtonList) {
                        if (locButton.getAssociatedLocation().equals(current)) {
                            locButton.setBgColor(new Color(250, 118, 0));
+                           searchList.add(locButton.getAssociatedLocation());
                            repaint();
                        }
                        if (locButton.getAssociatedLocation().equals(previous)) {
                            locButton.setBgColor(style.getRouteLocationColor());
+                           searchList.remove(locButton.getAssociatedLocation());
                            repaint();
                        }
                    }
@@ -485,6 +487,7 @@ public class MapView extends JPanel {
                    for (LocationButton locButton : locationButtonList) {
                        if (locButton.getAssociatedLocation().equals(current)) {
                            locButton.setBgColor(new Color(250, 118, 0));
+                           searchList.add(locButton.getAssociatedLocation());
                            repaint();
                        }
                    }

@@ -473,6 +473,16 @@ public class MapView extends JPanel {
        for (List<Location> ll:routeLists) {
            if (step < ll.size()) {
                Location current = ll.get(step);
+               if (current.getFloorNumber() != currentFloorNumber)
+               {
+                   currentFloorNumber = current.getFloorNumber();
+                   List<List<Location>> backUpList = routeLists;
+                   setCurrentImage();
+                   updateGraph(graph);
+                   routeLists = backUpList;
+                   updateButtonAttributes();
+                   repaint();
+               }
                if (step > 0) {
                    Location previous = ll.get(step - 1);
                    if(current.getFloorNumber() != previous.getFloorNumber())

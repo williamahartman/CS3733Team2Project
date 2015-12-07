@@ -1,6 +1,9 @@
 package dev;
 
-import core.*;
+import core.Edge;
+import core.EdgeAttribute;
+import core.Location;
+import core.LocationGraph;
 import database.Database;
 import database.DatabaseList;
 import ui.LocationButton;
@@ -12,8 +15,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 /**
  * Created by Alora on 11/21/2015.
@@ -305,6 +307,50 @@ public class DevTools extends JPanel {
      */
     public MouseAdapter buildEditListener(LocationGraph lg) {
         return new MouseAdapter() {
+            private boolean pointIsBeingDragged;
+
+            /**
+             * Indicate that a drag has started
+             */
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                pointIsBeingDragged = true;
+            }
+
+            /**
+             * A drag has finished. Place the new point in the new location.
+             */
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (pointIsBeingDragged) {
+                    Point2D mousePos = mapView.getMapPanel().getMousePosition();
+                    Point2D.Double doubleMousePos = new Point2D.Double(
+                            mousePos.getX() / mapView.getMapPanel().getWidth(),
+                            mousePos.getY() / mapView.getMapPanel().getHeight());
+
+                    Location clicked = ((LocationButton) e.getSource()).getAssociatedLocation();
+                    Location newLoc = new Location(doubleMousePos, clicked.getFloorNumber(), clicked.getNameList());
+
+                    java.util.List<Edge> edgeList = clicked.getEdges();
+                    for (int i = 0; i < edgeList.size(); i++) {
+                        Edge edge = edgeList.get(i);
+                        Location destLoc = edge.getNode1() == clicked ? edge.getNode2() : edge.getNode1();
+                        Edge newEdge = newLoc.makeAdjacentTo(destLoc, edge.getAttributes());
+
+                        dblist.addedEdge(newEdge);
+                    }
+
+                    dblist.removedLocation(clicked);
+                    dblist.addedLocation(newLoc);
+                    graph.removeLocation(clicked);
+                    graph.addLocation(newLoc, new HashMap<>());
+
+                    refreshGraph();
+                    mapView.repaint();
+                    pointIsBeingDragged = false;
+                }
+            }
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 lastButtonClicked = (LocationButton) e.getSource();

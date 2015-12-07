@@ -385,8 +385,10 @@ public class MapView extends JPanel {
             for (LocationButton locButton: locationButtonList) {
                 if (buttonListener instanceof ActionListener) {
                     locButton.addActionListener((ActionListener) buttonListener);
-                } else if (buttonListener instanceof MouseListener) {
-                    locButton.addMouseListener((MouseListener) buttonListener);
+                } else if (buttonListener instanceof MouseAdapter) {
+                    locButton.addMouseListener((MouseAdapter) buttonListener);
+                    locButton.addMouseMotionListener((MouseAdapter) buttonListener);
+                    locButton.addMouseWheelListener((MouseAdapter) buttonListener);
                 } else {
                     System.err.println("Unsupported listener type " + buttonListener.getClass());
                 }

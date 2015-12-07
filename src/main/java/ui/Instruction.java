@@ -142,8 +142,7 @@ public class Instruction {
                     }
                     temp = this.make2Decimal(distance, scale);
                     totalDistance += temp;
-                    instruction.add("Go " + temp + " miles.\n");
-                    instruction.add("Turn" + str + turn + "\n");
+                    instruction.add("Go " + temp + " miles.\n" + "Turn" + str + turn + "\n");
                     //if next location is at the end of the location list
                     if (i == listSize - 2){
                         temp = this.make2Decimal(l2, scale);

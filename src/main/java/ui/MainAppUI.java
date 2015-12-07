@@ -7,6 +7,7 @@ import dev.DevPassword;
 import dev.DevTools;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -350,8 +351,14 @@ public class MainAppUI extends JFrame{
                         directions += "<p>" + count + ") " + str + "</p>";
 
                     }
-                    EmailThread emailThread = new EmailThread(directions);
-                    emailThread.start();
+                    String emailToSend ="swiwanicki@wpi.edu";
+                    try {
+                        Email emailThread = new Email(emailToSend, directions);
+                        emailThread.start();
+                    } catch (AddressException ex){
+                        ex.printStackTrace();
+                    }
+
                     repaint();
                     startPoint = null;
                     endPoint = null;

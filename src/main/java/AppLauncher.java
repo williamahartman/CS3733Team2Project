@@ -1,8 +1,5 @@
 import database.Database;
-import ui.Email;
 import ui.MainAppUI;
-
-import javax.mail.MessagingException;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;

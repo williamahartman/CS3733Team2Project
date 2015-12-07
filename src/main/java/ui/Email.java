@@ -12,12 +12,29 @@ import java.util.Properties;
 /**
  * Created by Scott on 12/6/2015.
  */
-public class Email {
+public class Email extends Thread{
     private String recvEmail;
+    private String directions;
+
     public Email(String addr) throws AddressException{
         InternetAddress emailAddr = new InternetAddress(addr);
         emailAddr.validate();
         recvEmail = addr;
+    }
+
+    public Email(String addr, String instructions) throws AddressException{
+        InternetAddress emailAddr = new InternetAddress(addr);
+        emailAddr.validate();
+        recvEmail = addr;
+        directions = instructions;
+    }
+
+    public void setDirections(String instructions){
+        directions = instructions;
+    }
+
+    public void run(){
+        this.sendEmail(directions, null);
     }
 
     public void sendEmail(String instructions, List<String> images) {

@@ -7,8 +7,11 @@ import core.Location;
 import core.LocationGraph;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
@@ -51,7 +54,7 @@ public class MapView extends JPanel {
     private int svgHeight;
 
     private EventListener buttonListener;
-
+    private LocationGraph graph;
     /**
      * Constructor.
      *
@@ -61,6 +64,7 @@ public class MapView extends JPanel {
      * @param viewStyle The viewStyle used by the mapView
      */
     public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
+        this.graph = graph;
         this.floorsImagePaths = floorImagePaths;
         this.currentFloorNumber = defaultFloor;
         this.style = viewStyle;
@@ -166,12 +170,11 @@ public class MapView extends JPanel {
         JSlider floorSlider = new JSlider(JSlider.VERTICAL);
         floorSlider.setMinimum(0);
         floorSlider.setMaximum(floorImagePaths.length - 1);
-        floorSlider.setValue(defaultFloor);
+        floorSlider.setValue(currentFloorNumber);
         floorSlider.setPaintTicks(true);
         floorSlider.setMajorTickSpacing(1);
         floorSlider.addChangeListener(e ->  {
             JSlider source = (JSlider) e.getSource();
-
             if (!source.getValueIsAdjusting()) {
                 currentFloorNumber = source.getValue();
 
@@ -187,6 +190,7 @@ public class MapView extends JPanel {
         floorSlider.setPreferredSize(new Dimension(50, 500));
         JPanel floorSliderPanel = new JPanel();
         floorSliderPanel.add(floorSlider);
+        floorSlider.update(getGraphics());
 
         setLayout(new BorderLayout());
         add(scrollPane);
@@ -471,6 +475,16 @@ public class MapView extends JPanel {
                Location current = ll.get(step);
                if (step > 0) {
                    Location previous = ll.get(step - 1);
+                   if(current.getFloorNumber() != previous.getFloorNumber())
+                   {
+                       currentFloorNumber = current.getFloorNumber();
+                       List<List<Location>> backUpList = routeLists;
+                       setCurrentImage();
+                       updateGraph(graph);
+                       routeLists = backUpList;
+                       updateButtonAttributes();
+                       repaint();
+                   }
                    for (LocationButton locButton : locationButtonList) {
                        if (locButton.getAssociatedLocation().equals(current)) {
                            locButton.setBgColor(new Color(250, 118, 0));

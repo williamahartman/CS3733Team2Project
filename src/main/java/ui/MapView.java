@@ -11,10 +11,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.EventListener;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * This is a panel that displays edges from a map. An image background is displayed below
+ * This is a panel that displays edges from a map. An image background is displayed below.
  * these edges.
  */
 public class MapView extends JPanel {
@@ -77,7 +78,7 @@ public class MapView extends JPanel {
         mapPanel = new JPanel(true) {
             @Override
             public Dimension getPreferredSize() {
-                return getImagePixelSize();
+                return getCurrentPixelSize();
             }
 
             @Override
@@ -98,7 +99,7 @@ public class MapView extends JPanel {
                 svg.paintIcon(null, g2d, 0, 0);
                 g2d.scale(1 / zoomFactor, 1 / zoomFactor);
 
-                Dimension imageRes = getImagePixelSize();
+                Dimension imageRes = getCurrentPixelSize();
 
                 //Draw edges
                 g2d.setStroke(new BasicStroke(4));
@@ -194,8 +195,8 @@ public class MapView extends JPanel {
 
         //Scroll to start point
         Point newViewportPos = new Point();
-        newViewportPos.x = (int) ((START_XFRAC * getImagePixelSize().getWidth()));
-        newViewportPos.y = (int) ((START_YFRAC * getImagePixelSize().getHeight()));
+        newViewportPos.x = (int) ((START_XFRAC * getCurrentPixelSize().getWidth()));
+        newViewportPos.y = (int) ((START_YFRAC * getCurrentPixelSize().getHeight()));
         mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
         zoomIncrementBy(0);
 
@@ -203,11 +204,78 @@ public class MapView extends JPanel {
         repaint();
     }
 
+    /**
+     * Sets the postion and zoom of the scroll panel
+     */
+    public void setPosAndZoom(){
+        Iterator<List<Location>> routes = routeLists.iterator();
+        double zoomw = 0;
+        double zoomh = 0;
+        double widthMax = 1.1;
+        double heightMax = 1.1;
+        double widthMin = 1.1;
+        double heightMin = 1.1;
+        //iterate through the enter 2D list
+        //and find the max and min of the
+        while (routes.hasNext()){
+            List<Location> locList = routes.next();
+            Iterator<Location> locs = locList.iterator();
+
+            while (locs.hasNext()){
+                Location curLoc = locs.next();
+                double h = curLoc.getPosition().getY();
+                double w = curLoc.getPosition().getX();
+
+                if (currentFloorNumber == curLoc.getFloorNumber()) {
+                    if (w > widthMax) {
+                        widthMax = w;
+                    }
+                    if (w < widthMin) {
+                        widthMin = w;
+                    }
+                    if (h > heightMax) {
+                        heightMax = h;
+                    }
+                    if (h < heightMin) {
+                        heightMin = h;
+                    }
+                }
+            }
+        }
+        zoomFactor = DEFAULT_ZOOM;
+        validate();
+        double pixelWMin = widthMin * getCurrentPixelSize().getWidth();
+        double pixelHMin = heightMin * getCurrentPixelSize().getHeight();
+        double pixelWMax = widthMax * getCurrentPixelSize().getWidth();
+        double pixelHMax = heightMax * getCurrentPixelSize().getHeight();
+        Rectangle rect = mapPanel.getVisibleRect();
+        double paneHeight = rect.getHeight();
+        double paneWidth = rect.getWidth();
+
+        zoomw = 2.5 * (paneWidth + getCurrentPixelSize().getWidth()) / (pixelWMax - pixelWMin);
+        zoomh = 2.5 * (paneHeight + getCurrentPixelSize().getHeight()) / (pixelHMax - pixelHMin);
+        double zoom = 0;
+        if (zoomh > zoomw){
+            zoom = zoomw;
+        } else {
+            zoom = zoomh;
+        }
+
+        System.out.println("Zoom factor: " + zoom + "\npixelWidth: " + paneWidth);
+        Point newViewportPos = new Point();
+        zoomFactor = zoom;
+        validate();
+        newViewportPos.x = (int) ((pixelWMin - 250));
+        newViewportPos.y = (int) ((pixelHMin - 150));
+        mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
+        updateButtonAttributes();
+    }
+
     private void setCurrentImage() {
         if (currentFloorNumber >= 0 && currentFloorNumber < floorsImagePaths.length) {
             String path = floorsImagePaths[currentFloorNumber];
 
-            try {
+                try {
                 universe.loadSVG(ClassLoader.getSystemResourceAsStream(path), "bg" + currentFloorNumber);
                 svg.setSvgURI(ClassLoader.getSystemResource(path).toURI());
                 svg.setAntiAlias(true);
@@ -265,8 +333,8 @@ public class MapView extends JPanel {
                     double viewportWidth = scrollPane.getViewport().getWidth();
                     double viewportHeight = scrollPane.getViewport().getHeight();
 
-                    double imageWidth = getImagePixelSize().getWidth();
-                    double imageHeight = getImagePixelSize().getHeight();
+                    double imageWidth = getCurrentPixelSize().getWidth();
+                    double imageHeight = getCurrentPixelSize().getHeight();
 
                     double xPosFrac = (viewPortPos.getX() + (viewportWidth / 2.0)) / imageWidth;
                     double yPosFrac = (viewPortPos.getY() + (viewportHeight / 2.0)) / imageHeight;
@@ -276,8 +344,8 @@ public class MapView extends JPanel {
                     updateButtonAttributes();
 
                     Point newViewportPos = new Point();
-                    newViewportPos.x = (int) ((xPosFrac * getImagePixelSize().getWidth()) - (viewportWidth / 2.0));
-                    newViewportPos.y = (int) ((yPosFrac * getImagePixelSize().getHeight()) - (viewportHeight / 2.0));
+                    newViewportPos.x = (int) ((xPosFrac * getCurrentPixelSize().getWidth()) - (viewportWidth / 2.0));
+                    newViewportPos.y = (int) ((yPosFrac * getCurrentPixelSize().getHeight()) - (viewportHeight / 2.0));
 
                     mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
 
@@ -307,7 +375,7 @@ public class MapView extends JPanel {
      *
      * @return The dimension of the image, or 0 if the image didn't load
      */
-    public Dimension getImagePixelSize() {
+    public Dimension getCurrentPixelSize() {
         return new Dimension(
                 (int) (svgWidth * zoomFactor),
                 (int) (svgHeight * zoomFactor));
@@ -418,13 +486,13 @@ public class MapView extends JPanel {
         for (LocationButton locButton: locationButtonList) {
             if (locButton.getAssociatedLocation().getNameList().length == 0)
             {
-                int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-                int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+                int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getCurrentPixelSize().width);
+                int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getCurrentPixelSize().height);
                 locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos - (NODE_BUTTON_SIZE / 2),
                         NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
             } else {
-                int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-                int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+                int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getCurrentPixelSize().width);
+                int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getCurrentPixelSize().height);
                 locButton.setBounds(xPos - (NODE_BUTTON_SIZE_NAME / 2), yPos - (NODE_BUTTON_SIZE_NAME / 2),
                         NODE_BUTTON_SIZE_NAME, NODE_BUTTON_SIZE_NAME);
             }
@@ -456,8 +524,8 @@ public class MapView extends JPanel {
     }
     //Make the passed button even bigger
     private void setToStartOrEnd(LocationButton locationButton, Color color, String tooltip) {
-        int xPos = (int) (locationButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-        int yPos = (int) (locationButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+        int xPos = (int) (locationButton.getAssociatedLocation().getPosition().x * getCurrentPixelSize().width);
+        int yPos = (int) (locationButton.getAssociatedLocation().getPosition().y * getCurrentPixelSize().height);
         locationButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
                 NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
         locationButton.setBgColor(color);

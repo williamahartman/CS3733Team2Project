@@ -342,6 +342,7 @@ public class MainAppUI extends JFrame{
                     ImageFromMap img = new ImageFromMap();
                     img.saveComponentAsJPEG(mapView, "picture.jpeg");
                     gps.setText("");
+                    mapView.setPosAndZoom();
                     Instruction instruct = new Instruction();
                     int count = 0;
                     String directions = "";
@@ -354,7 +355,7 @@ public class MainAppUI extends JFrame{
                     String emailToSend = "swiwanicki@wpi.edu";
                     try {
                         Email emailThread = new Email(emailToSend, directions);
-                        emailThread.start();
+                        //emailThread.start();
                     } catch (AddressException ex){
                         ex.printStackTrace();
                     }

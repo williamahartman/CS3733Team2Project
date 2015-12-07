@@ -10,7 +10,7 @@ import java.util.Properties;
 /**
  * Created by Scott on 12/6/2015.
  */
-public class TextToVoice {
+public class TextToVoice  extends Thread{
     private static final String VOICENAME_kevin = "kevin";
     private String text; // string to speech
 
@@ -29,5 +29,8 @@ public class TextToVoice {
         voice.allocate();
         voice.speak(text);
         voice.deallocate();
+    }
+    public void run(){
+        this.speak();
     }
 }

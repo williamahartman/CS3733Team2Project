@@ -1,6 +1,6 @@
 import database.Database;
 import ui.MainAppUI;
-import ui.VoiceThread;
+import ui.TextToVoice;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +15,7 @@ public class AppLauncher{
     public static void main(String[] args) {
         try {
             Database graphData = new Database();
-            VoiceThread speak = new VoiceThread("Starting W.P.I Mapper");
+            TextToVoice speak = new TextToVoice("Starting W.P.I Mapper");
             try {
                 speak.start();
                 Thread.sleep(1000);
@@ -25,7 +25,7 @@ public class AppLauncher{
                 if (speak.getState() == Thread.State.WAITING){
                     speak.interrupt();
                 }
-                speak = new VoiceThread("This is a test");
+                speak = new TextToVoice("This is a test");
                 speak.start();
                 Thread.sleep(2000);
 

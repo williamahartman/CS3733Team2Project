@@ -18,7 +18,7 @@ public class TextToVoice {
         this.text = text;
         Properties props = System.getProperties();
         String path = System.getProperty("user.dir");
-        path = path + "\\freetts.voicesfile";
+        path = path + "/freetts.voicesfile";
         props.setProperty("freetts.voicesfile", path);
     }
 

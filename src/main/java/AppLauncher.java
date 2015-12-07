@@ -22,7 +22,7 @@ public class AppLauncher{
             } catch (InterruptedException e) {}
             try {
                 System.out.println(speak.getState());
-                if(speak.getState() == Thread.State.WAITING){
+                if (speak.getState() == Thread.State.WAITING){
                     speak.interrupt();
                 }
                 speak = new VoiceThread("This is a test");

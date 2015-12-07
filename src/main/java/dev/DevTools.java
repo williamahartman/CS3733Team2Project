@@ -44,6 +44,10 @@ public class DevTools extends JPanel {
     private JFormattedTextField field1 = new JFormattedTextField();
     private JFormattedTextField field2 = new JFormattedTextField();
 
+    //Fields for button locations (X & Y coordinates)
+    private JFormattedTextField xPosition = new JFormattedTextField();
+    private JFormattedTextField yPosition = new JFormattedTextField();
+
     /**
      * Creates a DevTools.
      *
@@ -101,6 +105,10 @@ public class DevTools extends JPanel {
         buttonLabel1 = new JLabel("Floor Number:");
         buttonLabel2 = new JLabel("Name List:");
 
+        //Labels that describe the X and Y position of a button
+        JLabel xPositionLabel = new JLabel("X Position:");
+        JLabel yPositionLabel = new JLabel("Y Position:");
+
         //Blank labels created to make the formatting of the panel better
         JLabel blank1 = new JLabel("");
         JLabel blank2 = new JLabel("");
@@ -114,6 +122,11 @@ public class DevTools extends JPanel {
                 "Only valid integers will be accepted.</html>");
         field2.setToolTipText("<html>The list of names that this node should be searchable by.<br>" +
                 "Separate multiple names with a comma.</html>");
+        xPosition.setToolTipText("<html>The X position of the currently selected node.<br>" +
+                "Edit to change the node's X position.");
+        yPosition.setToolTipText("<html>The Y position of the currently selected node.<br>" +
+                "Edit to change the node's Y position.");
+
         //Creates an OK button that updates the nodes with their inputted floor numbers & location names when clicked
         JButton okButton = new JButton("OK");
         okButton.setToolTipText("Apply changes to the local version of this map object.");
@@ -123,6 +136,7 @@ public class DevTools extends JPanel {
                 if (e.getButton() == 1 && lastButtonClicked != null) {
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
+                    lastButtonClicked.setLocation((int) xPosition.getValue(), (int) yPosition.getValue());
                     String tempString = (String) field2.getValue();
                     String[] nameList;
                     if (tempString.contains(",")) {
@@ -212,6 +226,8 @@ public class DevTools extends JPanel {
         //Attach labels to fields
         buttonLabel1.setLabelFor(field1);
         buttonLabel2.setLabelFor(field2);
+        xPositionLabel.setLabelFor(xPosition);
+        yPositionLabel.setLabelFor(yPosition);
 
         //Panel displaying all the labels
         JPanel labelPanel1 = new JPanel(new GridLayout(0, 1, 5, 20));
@@ -220,8 +236,10 @@ public class DevTools extends JPanel {
         labelPanel1.add(buttonLabel2);
         labelPanel1.add(blank3);
         labelPanel1.add(blank5);
-        labelPanel2.add(blank2);
-        labelPanel2.add(blank6);
+        labelPanel2.add(xPositionLabel);
+        labelPanel2.add(xPosition);
+        labelPanel2.add(yPositionLabel);
+        labelPanel2.add(yPosition);
 
 
         //Panel displaying all the fields
@@ -316,6 +334,8 @@ public class DevTools extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 originalButton = lastButtonClicked;
                 lastButtonClicked = (LocationButton) e.getSource();
+                xPosition.setValue(lastButtonClicked.getAlignmentX());
+                yPosition.setValue(lastButtonClicked.getAlignmentY());
                 if (lastButtonClicked != null && originalButton != null){
                     //Set the current edge being edited
                     currentEdge = originalButton.getAssociatedLocation()

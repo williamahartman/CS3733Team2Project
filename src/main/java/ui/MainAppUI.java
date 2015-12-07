@@ -417,8 +417,21 @@ public class MainAppUI extends JFrame{
         test.setToolTipText("TEST");
         test.addActionListener(e ->
         {
-            mapView.stepByStep(stepCount);
+            mapView.stepByStep(stepCount, true);
             stepCount++;
+        });
+        JButton backtest = new JButton();
+        backtest.setPreferredSize(new Dimension(90, 30));
+        backtest.setMaximumSize(new Dimension(90, 30));
+        backtest.setToolTipText("TEST");
+        backtest.addActionListener(e ->
+        {
+            if (stepCount > 0)
+            {
+                stepCount--;
+                mapView.stepByStep(stepCount, false);
+            }
+
         });
 
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
@@ -439,6 +452,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(text);
         sidePanel.add(edgeWeightPanel);
         sidePanel.add(test);
+        sidePanel.add(backtest);
         //sidePanel.add(clearButton, BorderLayout.SOUTH);
 
 

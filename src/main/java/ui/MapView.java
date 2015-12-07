@@ -468,8 +468,9 @@ public class MapView extends JPanel {
         locationButton.setToolTipText(tooltip);
     }
 
-    public void stepByStep(int step)
+    public void stepByStep(int step, boolean way)
     {
+
        for (List<Location> ll:routeLists) {
            if (step < ll.size()) {
                Location current = ll.get(step);
@@ -484,8 +485,16 @@ public class MapView extends JPanel {
                    repaint();
                }
                if (step > 0) {
-                   Location previous = ll.get(step - 1);
-                   if(current.getFloorNumber() != previous.getFloorNumber())
+                   Location previous;
+                   if (way == true) {
+                       previous = ll.get(step - 1);
+                   }
+                   else
+                   {
+                       previous = ll.get(step);
+                       current = ll.get(step - 1);
+                   }
+                   if (current.getFloorNumber() != previous.getFloorNumber())
                    {
                        currentFloorNumber = current.getFloorNumber();
                        List<List<Location>> backUpList = routeLists;

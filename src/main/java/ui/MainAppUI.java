@@ -337,6 +337,7 @@ public class MainAppUI extends JFrame{
                 resetMap(this.mapView);
                 java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
+                    stepCount = 0;
                     mapView.addRoute(route);
                     gps.setText("");
                     Instruction instruct = new Instruction();

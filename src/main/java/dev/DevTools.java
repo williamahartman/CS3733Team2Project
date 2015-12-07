@@ -149,7 +149,7 @@ public class DevTools extends JPanel {
         stairs.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == 1 && e.isShiftDown()) {
+                if (e.getButton() == 1 && currentEdge != null) {
                     if (stairs.isSelected() && !currentEdge.hasAttribute(EdgeAttribute.STAIRS)){
                         currentEdge.addAttribute(EdgeAttribute.STAIRS);
                     } else if (!stairs.isSelected() && currentEdge.hasAttribute(EdgeAttribute.STAIRS)){
@@ -164,7 +164,7 @@ public class DevTools extends JPanel {
         elevator.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == 1 && e.isShiftDown()) {
+                if (e.getButton() == 1 && currentEdge != null) {
                     if (elevator.isSelected() && !currentEdge.hasAttribute(EdgeAttribute.ELEVATOR)){
                         currentEdge.addAttribute(EdgeAttribute.ELEVATOR);
                     } else if (!elevator.isSelected() && currentEdge.hasAttribute(EdgeAttribute.ELEVATOR)){
@@ -179,7 +179,7 @@ public class DevTools extends JPanel {
         indoors.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == 1 && e.isShiftDown()) {
+                if (e.getButton() == 1 && currentEdge != null) {
                     if (indoors.isSelected() && !currentEdge.hasAttribute(EdgeAttribute.INDOORS)){
                         currentEdge.addAttribute(EdgeAttribute.INDOORS);
                     } else if (!indoors.isSelected() && currentEdge.hasAttribute(EdgeAttribute.INDOORS)){
@@ -194,7 +194,7 @@ public class DevTools extends JPanel {
         handicapAccess.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == 1 && e.isShiftDown()) {
+                if (e.getButton() == 1 && currentEdge != null) {
                     if (handicapAccess.isSelected() &&
                             !currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
                         currentEdge.addAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
@@ -316,50 +316,30 @@ public class DevTools extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 originalButton = lastButtonClicked;
                 lastButtonClicked = (LocationButton) e.getSource();
+                if (lastButtonClicked != null && originalButton != null){
+                    //Set the current edge being edited
+                    currentEdge = originalButton.getAssociatedLocation()
+                            .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
+                }
+                if (currentEdge != null){
+                    updateEdgeAttributes();
+                }
                 if (lastButtonClicked != null && lastButtonClicked.getAssociatedLocation() != null) {
                     if (originalButton == null) {
                         originalButton = lastButtonClicked;
                     }
-
                     setElementsEnabled(true);
                     updateLocationData();
-
-                    if (e.getButton() == 1) { //Left mouse click (adding things)
-                        if (e.isShiftDown()) { //if shift is being held down (in edge mode)
-                            if (currentEdge != null) { //already has edge
-                                //update the check boxes to reflect the edge attributes of the edge selected
-                                currentEdge = originalButton.getAssociatedLocation()
-                                        .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
-                                handicapAccess.setSelected(
-                                        currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
-                                indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
-                                stairs.setSelected(currentEdge.hasAttribute(EdgeAttribute.STAIRS));
-                                elevator.setSelected(currentEdge.hasAttribute(EdgeAttribute.ELEVATOR));
-                            } else { //does not have an edge
-                                //add an edge
-                                ArrayList<EdgeAttribute> listOfAttributes = new ArrayList<>();
-                                if (handicapAccess.isSelected() &&
-                                        !listOfAttributes.contains(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
-                                    listOfAttributes.add(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
-                                }
-                                if (indoors.isSelected() && !listOfAttributes.contains(EdgeAttribute.INDOORS)){
-                                    listOfAttributes.add(EdgeAttribute.INDOORS);
-                                }
-                                Edge newEdge = originalButton.getAssociatedLocation()
-                                        .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), listOfAttributes);
-                                if (newEdge != null) {
-                                    dblist.addedEdge(newEdge);
-                                }
-                            }
-                        }
-                    } else if (e.getButton() == 3) {//Right mouse click (deleting edges/nodes)
-                        if (!e.isShiftDown()) { //delete the clicked node
+                    if (e.getButton() == 1 && e.isShiftDown() && currentEdge == null) {
+                        addEdge(); //add an edge with the attributes currently selected
+                    } else if (e.getButton() == 3) { //Right mouse click (deleting edges/nodes)
+                        if (!e.isShiftDown()) { //remove the clicked node
                             dblist.removedLocation(lastButtonClicked.getAssociatedLocation());
                             lg.removeLocation(lastButtonClicked.getAssociatedLocation());
                             mapView.remove(lastButtonClicked);
                             reset();
                             mapView.repaint();
-                        } else { //delete the selected edge
+                        } else { //remove the selected edge
                             Edge edge = originalButton.getAssociatedLocation()
                                     .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
                             if (edge != null) {
@@ -402,6 +382,39 @@ public class DevTools extends JPanel {
         mapView.repaint();
     }
 
+    //Adds an edge with the currently selected edge attributes
+    private void addEdge(){
+        ArrayList<EdgeAttribute> listOfAttributes = new ArrayList<>();
+        if (handicapAccess.isSelected() &&
+                !listOfAttributes.contains(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
+            listOfAttributes.add(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
+        }
+        if (indoors.isSelected() && !listOfAttributes.contains(EdgeAttribute.INDOORS)){
+            listOfAttributes.add(EdgeAttribute.INDOORS);
+        }
+        if (stairs.isSelected() && !listOfAttributes.contains(EdgeAttribute.STAIRS)){
+            listOfAttributes.add(EdgeAttribute.STAIRS);
+        }
+        if (elevator.isSelected() && !listOfAttributes.contains(EdgeAttribute.ELEVATOR)){
+            listOfAttributes.add(EdgeAttribute.ELEVATOR);
+        }
+        Edge newEdge = originalButton.getAssociatedLocation()
+                .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), listOfAttributes);
+        if (newEdge != null) {
+            dblist.addedEdge(newEdge);
+        }
+    }
+
+    //update the check boxes to reflect the edge attributes of the edge selected
+    private void updateEdgeAttributes(){
+        currentEdge = originalButton.getAssociatedLocation()
+                .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
+        handicapAccess.setSelected(
+                currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
+        indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
+        stairs.setSelected(currentEdge.hasAttribute(EdgeAttribute.STAIRS));
+        elevator.setSelected(currentEdge.hasAttribute(EdgeAttribute.ELEVATOR));
+    }
 
     //Updates the location names and floor number of a node.
     private void updateLocationData(){

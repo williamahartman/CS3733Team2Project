@@ -4,7 +4,6 @@ import core.EdgeAttribute;
 import core.EdgeAttributeManager;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.util.Hashtable;
 

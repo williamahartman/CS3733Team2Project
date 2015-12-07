@@ -48,6 +48,13 @@ public class DevTools extends JPanel {
     private JFormattedTextField field1 = new JFormattedTextField();
     private JFormattedTextField field2 = new JFormattedTextField();
 
+    private int prevSaves;
+    private int dbChanges;
+
+    private JLabel databaseChanges = new JLabel("<html>Number of changes<br>" +
+            "since last save<br>" +
+            "to database: 0");
+
     /**
      * Creates a DevTools.
      *
@@ -79,6 +86,15 @@ public class DevTools extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (inDevMode) {
+                    dbChanges = dblist.getRemoveEdgeList().size() +
+                            dblist.getAddEdgeList().size() +
+                            dblist.getAddLocList().size() +
+                            dblist.getRemoveLocList().size() +
+                            dblist.getUpdateEdgeList().size() +
+                            dblist.getUpdateLocList().size();
+                    databaseChanges.setText("<html>Number of changes<br>" +
+                            "since last save<br>" +
+                            "to database: " + (dbChanges-prevSaves));
                     Point2D mousePos = mapPanel.getMousePosition();
                     Point2D.Double doubleMousePos = new Point2D.Double(
                             mousePos.getX() / mapPanel.getWidth(),
@@ -236,6 +252,7 @@ public class DevTools extends JPanel {
         labelPanel1.add(buttonLabel2);
         labelPanel1.add(blank3);
         labelPanel1.add(blank5);
+        labelPanel2.add(databaseChanges);
 
 
         //Panel displaying all the fields
@@ -255,6 +272,7 @@ public class DevTools extends JPanel {
         JButton saveToDatabase = new JButton("Save to database");
         saveToDatabase.setToolTipText("Commit the changes made to the online database.");
         saveToDatabase.addActionListener(listener -> {
+            prevSaves = dbChanges;
             try {
                 Database graphData = new Database();
                 graphData.updateDB(dblist);
@@ -420,6 +438,15 @@ public class DevTools extends JPanel {
                         mapView.repaint();
                     }
                 }
+                dbChanges = dblist.getRemoveEdgeList().size() +
+                        dblist.getAddEdgeList().size() +
+                        dblist.getAddLocList().size() +
+                        dblist.getRemoveLocList().size() +
+                        dblist.getUpdateEdgeList().size() +
+                        dblist.getUpdateLocList().size();
+                databaseChanges.setText("<html>Number of changes<br>" +
+                        "since last save<br>" +
+                        "to database: " + (dbChanges-prevSaves));
             }
         };
     }

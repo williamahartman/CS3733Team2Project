@@ -63,7 +63,7 @@ public class Email {
         // first part (the html)
         BodyPart messageBodyPart = new MimeBodyPart();
         String htmlText = "<H1>Hello Team!!</H1><p>" + instructions +
-                "</p><img src=\"cid:image\"><img src=\"cid:test2\">";
+                "</p><img src=\"cid:image\">" + "<p> test</p>" + "<img src=\"cid:test2\">";
         try {
             messageBodyPart.setContent(htmlText, "text/html");
             // add it

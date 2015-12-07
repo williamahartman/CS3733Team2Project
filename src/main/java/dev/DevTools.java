@@ -46,10 +46,6 @@ public class DevTools extends JPanel {
     private JFormattedTextField field1 = new JFormattedTextField();
     private JFormattedTextField field2 = new JFormattedTextField();
 
-    //Fields for button locations (X & Y coordinates)
-    private JFormattedTextField xPosition = new JFormattedTextField();
-    private JFormattedTextField yPosition = new JFormattedTextField();
-
     /**
      * Creates a DevTools.
      *
@@ -73,7 +69,7 @@ public class DevTools extends JPanel {
      * builds a listener for DevTools to use.
      *
      * @param mapPanel Clicked on mapPanel.
-     * @return
+     * @return A mouse adapter that can handle adding buttons
      */
     //Mouse adapter for creating LocationButtons
     public MouseAdapter buildAddLocationListener(JPanel mapPanel) {
@@ -89,7 +85,21 @@ public class DevTools extends JPanel {
                     //Creates a new button object where the panel is clicked
                     Location locAdd = new Location(doubleMousePos, mapView.getFloorNumber(), new String[0]);
                     graph.addLocation(locAdd, new HashMap<>());
+
+                    //Adds an edge to the new location if in edge mode
+                    if (e.isShiftDown() && lastButtonClicked != null) {
+                        addEdge(lastButtonClicked.getAssociatedLocation(), locAdd);
+                    }
+
                     dblist.addedLocation(locAdd);
+
+                    //Set last buttonClicked to the location we just added
+                    mapView.updateGraph(graph);
+                    mapView.getLocationButtonList().forEach(locationButton -> {
+                        if (locationButton.getAssociatedLocation() == locAdd) {
+                            lastButtonClicked = locationButton;
+                        }
+                    });
                     refreshGraph();
                     mapPanel.repaint();
                 }
@@ -124,10 +134,6 @@ public class DevTools extends JPanel {
                 "Only valid integers will be accepted.</html>");
         field2.setToolTipText("<html>The list of names that this node should be searchable by.<br>" +
                 "Separate multiple names with a comma.</html>");
-        xPosition.setToolTipText("<html>The X position of the currently selected node.<br>" +
-                "Edit to change the node's X position.");
-        yPosition.setToolTipText("<html>The Y position of the currently selected node.<br>" +
-                "Edit to change the node's Y position.");
 
         //Creates an OK button that updates the nodes with their inputted floor numbers & location names when clicked
         JButton okButton = new JButton("OK");
@@ -138,7 +144,6 @@ public class DevTools extends JPanel {
                 if (e.getButton() == 1 && lastButtonClicked != null) {
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
-                    lastButtonClicked.setLocation((int) xPosition.getValue(), (int) yPosition.getValue());
                     String tempString = (String) field2.getValue();
                     String[] nameList;
                     if (tempString.contains(",")) {
@@ -228,8 +233,6 @@ public class DevTools extends JPanel {
         //Attach labels to fields
         buttonLabel1.setLabelFor(field1);
         buttonLabel2.setLabelFor(field2);
-        xPositionLabel.setLabelFor(xPosition);
-        yPositionLabel.setLabelFor(yPosition);
 
         //Panel displaying all the labels
         JPanel labelPanel1 = new JPanel(new GridLayout(0, 1, 5, 20));
@@ -239,9 +242,7 @@ public class DevTools extends JPanel {
         labelPanel1.add(blank3);
         labelPanel1.add(blank5);
         labelPanel2.add(xPositionLabel);
-        labelPanel2.add(xPosition);
         labelPanel2.add(yPositionLabel);
-        labelPanel2.add(yPosition);
 
 
         //Panel displaying all the fields
@@ -380,8 +381,6 @@ public class DevTools extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 originalButton = lastButtonClicked;
                 lastButtonClicked = (LocationButton) e.getSource();
-                xPosition.setValue(lastButtonClicked.getAlignmentX());
-                yPosition.setValue(lastButtonClicked.getAlignmentY());
                 if (lastButtonClicked != null && originalButton != null){
                     //Set the current edge being edited
                     currentEdge = originalButton.getAssociatedLocation()
@@ -397,7 +396,8 @@ public class DevTools extends JPanel {
                     setElementsEnabled(true);
                     updateLocationData();
                     if (e.getButton() == 1 && e.isShiftDown() && currentEdge == null) {
-                        addEdge(); //add an edge with the attributes currently selected
+                        //add an edge with the attributes currently selected
+                        addEdge(originalButton.getAssociatedLocation(), lastButtonClicked.getAssociatedLocation());
                     } else if (e.getButton() == 3) { //Right mouse click (deleting edges/nodes)
                         if (!e.isShiftDown()) { //remove the clicked node
                             dblist.removedLocation(lastButtonClicked.getAssociatedLocation());
@@ -427,20 +427,13 @@ public class DevTools extends JPanel {
         mapView.updateGraph(graph);
 
         //Search for the new button that will be last button clicked
-        for (LocationButton loc: mapView.getLocationButtonList()) {
+        mapView.getLocationButtonList().forEach(loc -> {
             if (lastButtonClicked != null &&
                     loc.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
                 lastButtonClicked = loc;
             }
-            if (originalButton != null &&
-                    loc.getAssociatedLocation() == originalButton.getAssociatedLocation()) {
-                originalButton = loc;
-            }
-        }
+        });
         //Now set colors
-        if (originalButton != null) {
-            originalButton.setBgColor(Color.BLUE);
-        }
         if (lastButtonClicked != null) {
             lastButtonClicked.setBgColor(Color.CYAN);
         }
@@ -448,8 +441,10 @@ public class DevTools extends JPanel {
         mapView.repaint();
     }
 
-    //Adds an edge with the currently selected edge attributes
-    private void addEdge(){
+    /**
+     * Adds an edge with the currently selected edge attributes.
+     */
+    private void addEdge(Location loc1, Location loc2){
         ArrayList<EdgeAttribute> listOfAttributes = new ArrayList<>();
         if (handicapAccess.isSelected() &&
                 !listOfAttributes.contains(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
@@ -464,14 +459,15 @@ public class DevTools extends JPanel {
         if (elevator.isSelected() && !listOfAttributes.contains(EdgeAttribute.ELEVATOR)){
             listOfAttributes.add(EdgeAttribute.ELEVATOR);
         }
-        Edge newEdge = originalButton.getAssociatedLocation()
-                .makeAdjacentTo(lastButtonClicked.getAssociatedLocation(), listOfAttributes);
+        Edge newEdge = loc1.makeAdjacentTo(loc2, listOfAttributes);
         if (newEdge != null) {
             dblist.addedEdge(newEdge);
         }
     }
 
-    //update the check boxes to reflect the edge attributes of the edge selected
+    /**
+     * update the check boxes to reflect the edge attributes of the edge selected.
+     */
     private void updateEdgeAttributes(){
         currentEdge = originalButton.getAssociatedLocation()
                 .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
@@ -482,11 +478,13 @@ public class DevTools extends JPanel {
         elevator.setSelected(currentEdge.hasAttribute(EdgeAttribute.ELEVATOR));
     }
 
-    //Updates the location names and floor number of a node.
+    /**
+     * Updates the location names and floor number of a node.
+     */
     private void updateLocationData(){
         field1.setValue(lastButtonClicked.getAssociatedLocation().getFloorNumber());
         StringBuilder locationNames = new StringBuilder();
-        int i = 0;
+        int i;
         if (lastButtonClicked.getAssociatedLocation().getNameList().length > 0) {
             for (i = 0; i < lastButtonClicked.getAssociatedLocation().getNameList().length; i++) {
                 locationNames.append(lastButtonClicked.getAssociatedLocation().getNameList()[i]);

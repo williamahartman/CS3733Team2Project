@@ -59,16 +59,12 @@ public class MainAppUI extends JFrame{
                 true,
                 true,
                 new Color(250, 120, 0),
-                new Color(172, 43, 55),
-                new Color(255, 0, 0),
-                new Color(100, 0, 0));
+                new Color(15, 78, 152),
+                new Color(255, 240, 0),
+                new Color(79, 189, 255));
 //todo just combine them
-        style.setLocationColor(new Color(255, 240, 0));
-        style.setEdgeColor(new Color(250, 120, 0), 0);
         style.setEdgeColor(new Color(255, 60, 0), 1);
         style.setEdgeColor(new Color(255, 30, 0), 2);
-        style.setRouteLocationColor(new Color(79, 189, 255));
-        style.setRouteColor(new Color(15, 78, 152));
         style.setDestinationColor(new Color(0, 218, 57));
 
         this.mapView = new MapView(graph,

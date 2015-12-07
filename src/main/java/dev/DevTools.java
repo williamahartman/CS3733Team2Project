@@ -8,6 +8,7 @@ import database.Database;
 import database.DatabaseList;
 import ui.LocationButton;
 import ui.MapView;
+import ui.MapViewStyle;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -16,6 +17,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by Alora on 11/21/2015.
@@ -415,6 +417,16 @@ public class DevTools extends JPanel {
                         }
                     }
                     refreshGraph();
+                    //A* the edge
+                    if (originalButton.getAssociatedLocation().getFloorNumber() ==
+                            lastButtonClicked.getAssociatedLocation().getFloorNumber() &&
+                            originalButton.getAssociatedLocation().getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation()) != null){
+                        List<Location> pseudoRoute = new ArrayList<>();
+                        pseudoRoute.add(originalButton.getAssociatedLocation());
+                        pseudoRoute.add(lastButtonClicked.getAssociatedLocation());
+                        mapView.addRoute(pseudoRoute);
+                        mapView.repaint();
+                    }
                 }
             }
         };

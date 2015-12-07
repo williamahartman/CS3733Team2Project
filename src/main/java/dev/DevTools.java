@@ -119,17 +119,10 @@ public class DevTools extends JPanel {
         buttonLabel1 = new JLabel("Floor Number:");
         buttonLabel2 = new JLabel("Name List:");
 
-        //Labels that describe the X and Y position of a button
-        JLabel xPositionLabel = new JLabel("X Position:");
-        JLabel yPositionLabel = new JLabel("Y Position:");
-
         //Blank labels created to make the formatting of the panel better
         JLabel blank1 = new JLabel("");
-        JLabel blank2 = new JLabel("");
         JLabel blank3 = new JLabel("");
-        JLabel blank4 = new JLabel("");
         JLabel blank5 = new JLabel("");
-        JLabel blank6 = new JLabel("");
 
         field1.setValue("");
         field1.setToolTipText("<html>The floor number associated with the currently selected node.<br>" +
@@ -243,8 +236,6 @@ public class DevTools extends JPanel {
         labelPanel1.add(buttonLabel2);
         labelPanel1.add(blank3);
         labelPanel1.add(blank5);
-        labelPanel2.add(xPositionLabel);
-        labelPanel2.add(yPositionLabel);
 
 
         //Panel displaying all the fields
@@ -420,7 +411,8 @@ public class DevTools extends JPanel {
                     //A* the edge
                     if (originalButton.getAssociatedLocation().getFloorNumber() ==
                             lastButtonClicked.getAssociatedLocation().getFloorNumber() &&
-                            originalButton.getAssociatedLocation().getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation()) != null){
+                            originalButton.getAssociatedLocation().getConnectingEdgeFromNeighbor
+                                    (lastButtonClicked.getAssociatedLocation()) != null){
                         List<Location> pseudoRoute = new ArrayList<>();
                         pseudoRoute.add(originalButton.getAssociatedLocation());
                         pseudoRoute.add(lastButtonClicked.getAssociatedLocation());

@@ -36,7 +36,7 @@ public class DatabaseList {
     }
 
     public void removedEdge(Edge eRem) {
-        if(!addEdgeList.contains(eRem)) {
+        if (!addEdgeList.contains(eRem)) {
             removeEdgeList.add(eRem);
         } else {
             addEdgeList.remove(eRem);

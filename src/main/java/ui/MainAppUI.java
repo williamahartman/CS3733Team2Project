@@ -321,7 +321,7 @@ public class MainAppUI extends JFrame{
         gps = new JTextArea();
         gps.setVisible(true);
         gps.setEditable(false);
-
+//
 //        clearButton = new JButton("Clear Selections");
 //        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
 //        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));

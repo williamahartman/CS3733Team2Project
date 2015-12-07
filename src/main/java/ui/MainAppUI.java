@@ -417,7 +417,6 @@ public class MainAppUI extends JFrame{
         test.setToolTipText("TEST");
         test.addActionListener(e ->
         {
-            System.out.println(route.size() + "SC" + stepCount);
             if (stepCount < route.size())
             {
                 mapView.stepByStep(stepCount, true);

@@ -1,6 +1,5 @@
 import database.Database;
 import ui.MainAppUI;
-import ui.TextToVoice;
 import ui.VoiceThread;
 
 import javax.swing.*;
@@ -19,8 +18,18 @@ public class AppLauncher{
             VoiceThread speak = new VoiceThread("Starting W.P.I Mapper");
             try {
                 speak.start();
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
+            try {
+                System.out.println(speak.getState());
+                if(speak.getState() == Thread.State.WAITING){
+                    speak.interrupt();
+                }
+                speak = new VoiceThread("This is a test");
+                speak.start();
                 Thread.sleep(2000);
-                speak.interrupt();
+
+                //speak.interrupt();
             } catch (InterruptedException e) {}
 
             //Make a frame

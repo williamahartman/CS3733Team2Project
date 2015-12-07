@@ -4,6 +4,7 @@ import core.EdgeAttribute;
 import core.EdgeAttributeManager;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.util.Hashtable;
 
@@ -59,6 +60,29 @@ public class EdgeWeightMenu extends JPanel{
 
         setDefaultValue(EdgeAttribute.INDOORS, preferIndoors);
 
+        JSlider preferElevators = new JSlider(JSlider.HORIZONTAL, 0, 2, 1);
+        preferElevators.setLabelTable(sliderLabelTable);
+        preferElevators.setPaintLabels(true);
+        preferElevators.setBorder(BorderFactory.createTitledBorder("Elevators"));
+        preferElevators.addChangeListener(e -> {
+            JSlider source = (JSlider) e.getSource();
+            if (!source.getValueIsAdjusting()) {
+                switch (source.getValue()) {
+                    case 0:
+                        attributeManager.addModifierForAttribute(EdgeAttribute.ELEVATOR, AVOID_WEIGHT);
+                        break;
+                    case 1:
+                        attributeManager.addModifierForAttribute(EdgeAttribute.ELEVATOR, NEUTRAL_WEIGHT);
+                        break;
+                    case 2:
+                        attributeManager.addModifierForAttribute(EdgeAttribute.ELEVATOR, PREFER_WEIGHT);
+                        break;
+                }
+            }
+        });
+
+        setDefaultValue(EdgeAttribute.ELEVATOR, preferElevators);
+
         JSlider stairs = new JSlider(JSlider.HORIZONTAL, 0, 2, 1);
         stairs.setLabelTable(sliderLabelTable);
         stairs.setPaintLabels(true);
@@ -83,14 +107,19 @@ public class EdgeWeightMenu extends JPanel{
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JScrollPane scroll = new JScrollPane(panel);
+        scroll.createVerticalScrollBar();
+        scroll.setPreferredSize(new Dimension(300, 100));
+        scroll.setMaximumSize(new Dimension(300, 100));
         panel.add(preferIndoors);
         panel.add(Box.createVerticalGlue());
         panel.add(stairs);
         panel.add(Box.createVerticalGlue());
+        panel.add(preferElevators);
+        panel.add(Box.createVerticalGlue());
 
         this.setLayout(new BorderLayout());
-        this.add(panel);
-        setMinimumSize(new Dimension(300, 200));
+        this.add(scroll);
     }
 
     private void setDefaultValue(EdgeAttribute attribute, JSlider slider) {

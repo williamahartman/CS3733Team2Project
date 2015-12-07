@@ -518,10 +518,19 @@ public class MapView extends JPanel {
                    }
                } else {
                    for (LocationButton locButton : locationButtonList) {
-                       if (locButton.getAssociatedLocation().equals(current)) {
-                           locButton.setBgColor(new Color(250, 118, 0));
-                           searchList.add(locButton.getAssociatedLocation());
-                           repaint();
+                       if(way == true) {
+                           if (locButton.getAssociatedLocation().equals(current)) {
+                               locButton.setBgColor(new Color(250, 118, 0));
+                               searchList.add(locButton.getAssociatedLocation());
+                               repaint();
+                           }
+                       }
+                       else {
+                           if (locButton.getAssociatedLocation().equals(current)) {
+                               locButton.setBgColor(new Color(250, 118, 0));
+                               searchList.remove(locButton.getAssociatedLocation());
+                               repaint();
+                           }
                        }
                    }
                }
@@ -556,4 +565,9 @@ public class MapView extends JPanel {
     public int getFloorNumber() {
         return currentFloorNumber;
     }
+
+    public List<List<Location>> getRouteLists() {
+        return routeLists;
+    }
 }
+

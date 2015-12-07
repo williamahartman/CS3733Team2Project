@@ -335,7 +335,7 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 resetMap(this.mapView);
-                java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
+                route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
                     stepCount = 0;
                     mapView.addRoute(route);
@@ -417,8 +417,12 @@ public class MainAppUI extends JFrame{
         test.setToolTipText("TEST");
         test.addActionListener(e ->
         {
-            mapView.stepByStep(stepCount, true);
-            stepCount++;
+            System.out.println(route.size() + "SC" + stepCount);
+            if (stepCount < route.size())
+            {
+                mapView.stepByStep(stepCount, true);
+                stepCount++;
+            }
         });
         JButton backtest = new JButton();
         backtest.setPreferredSize(new Dimension(90, 30));

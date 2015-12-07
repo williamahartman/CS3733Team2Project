@@ -1,6 +1,8 @@
 import database.Database;
+import ui.Email;
 import ui.MainAppUI;
 
+import javax.mail.MessagingException;
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
@@ -18,6 +20,7 @@ public class AppLauncher{
             //Make a frame
             MainAppUI app = new MainAppUI(graphData.createGraph());
             graphData.closeConnection();
+
 
             //change the look and feel to the Nimbus style
             try {

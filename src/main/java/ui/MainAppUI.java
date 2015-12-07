@@ -6,6 +6,7 @@ import core.LocationGraph;
 import dev.DevPassword;
 import dev.DevTools;
 
+import javax.mail.MessagingException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -337,14 +338,20 @@ public class MainAppUI extends JFrame{
                 java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
                     mapView.addRoute(route);
+                    ImageFromMap img = new ImageFromMap();
+                    img.saveComponentAsJPEG(mapView, "picture.jpeg");
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
+                    String directions = "";
                     for (String str : instruct.stepByStepInstruction(route, 1)) {
                         count++;
                         gps.append(count + ") " + str);
-                    }
+                        directions += "<p>" + count + ") " + str + "</p>";
 
+                    }
+                    EmailThread emailThread = new EmailThread(directions);
+                    emailThread.start();
                     repaint();
                     startPoint = null;
                     endPoint = null;

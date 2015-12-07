@@ -351,7 +351,7 @@ public class MainAppUI extends JFrame{
                         directions += "<p>" + count + ") " + str + "</p>";
 
                     }
-                    String emailToSend ="swiwanicki@wpi.edu";
+                    String emailToSend = "swiwanicki@wpi.edu";
                     try {
                         Email emailThread = new Email(emailToSend, directions);
                         emailThread.start();

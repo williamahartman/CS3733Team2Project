@@ -70,12 +70,6 @@ public class MapView extends JPanel {
         this.universe = new SVGUniverse();
         this.zoomFactor = DEFAULT_ZOOM;
 
-        try {
-            BeautyEyeLNFHelper.launchBeautyEyeLNF();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         svg = new SVGIcon();
         setCurrentImage();
 

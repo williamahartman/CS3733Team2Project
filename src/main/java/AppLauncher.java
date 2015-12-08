@@ -37,13 +37,6 @@ public class AppLauncher{
             MainAppUI app = new MainAppUI(graphData.createGraph());
             graphData.closeConnection();
 
-            //change the look and feel to the BeautyEye style
-            try {
-                BeautyEyeLNFHelper.launchBeautyEyeLNF();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
             app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             app.setMinimumSize(new Dimension(1024, 768));
             app.setExtendedState(JFrame.MAXIMIZED_BOTH);

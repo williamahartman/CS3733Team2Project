@@ -510,7 +510,7 @@ public class DevTools extends JPanel {
         });
         //Now set colors
         if (lastButtonClicked != null) {
-            lastButtonClicked.setBgColor(Color.CYAN);
+            lastButtonClicked.setBgColor(mapView.getStyle().getPreviousSelectedColor());
         }
 
         mapView.repaint();

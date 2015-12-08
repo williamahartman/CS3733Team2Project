@@ -475,6 +475,7 @@ public class MainAppUI extends JFrame{
                     makeAStarRoute.setEnabled(false);
                     //clearButton.setEnabled(false);
                     multipleDestination.removeAllItems();
+                    addToStart.setEnabled(true);
                     desNum = 0;
                     multiLoc.clear();
                 } else {
@@ -503,7 +504,7 @@ public class MainAppUI extends JFrame{
         searchText.setVisible(true);
         searchText.setPreferredSize(new Dimension(100, 30));
         searchText.setMaximumSize(new Dimension(100, 30));
-        searchInfo = new JLabel("Search Result List: ");
+        searchInfo = new JLabel("Search: ");
 
         endLocInfo = new JLabel("Destination: ");
 
@@ -518,8 +519,8 @@ public class MainAppUI extends JFrame{
         tempLoc = null;
         multiLoc = new ArrayList<>();
 
-        addToStart = new JButton("Add");
-        addToDestination = new JButton("Add");
+        addToStart = new JButton("Add Start");
+        addToDestination = new JButton("Add Destination");
 
         //searchDropDownList.addItem("Search Result List      ");
         //startList.addItem("Start Location");
@@ -548,6 +549,9 @@ public class MainAppUI extends JFrame{
                 startPoint = tempLoc;
                 startInfo.setText("Start Point: " + locToSearch);
                 multiLoc.add(0, startPoint);
+                addToStart.setEnabled(false);
+                startList.removeAllItems(); // Trying to remove all items but not working
+                System.out.println("Tried to remove items, change focus\n");
             }
             if (multiLoc.size() > 1){
                 makeAStarRoute.setEnabled(true);
@@ -565,6 +569,12 @@ public class MainAppUI extends JFrame{
                 locToSearch = selectedName;
             }
 
+            if (tempLoc != null || startPoint != null) {
+                System.out.println("Transfer focus\n");
+                searchDropDownList.transferFocus();
+                searchDropDownList.hidePopup();
+                addToStart.requestFocus();
+            }
             /*if (searchSelectedName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
@@ -589,12 +599,13 @@ public class MainAppUI extends JFrame{
                     multiLoc.add(endPoint);
                     desNum += 1;
                     multipleDestination.setSelectedIndex(desNum - 1);
-
                 } else if (size > 0 && (multiLoc.get(size - 1).equals(endPoint))){
                     JOptionPane.showMessageDialog(this, "You already add this location.");
                 }
             }
             if (multiLoc.size() > 1){
+                destinationList.transferFocus();
+                addToDestination.requestFocus();
                 makeAStarRoute.setEnabled(true);
             }
         });
@@ -603,12 +614,12 @@ public class MainAppUI extends JFrame{
         sidePanel.add(searchInfo);
         sidePanel.add(searchDropDownList);
         sidePanel.add(Box.createHorizontalStrut(10));
-        sidePanel.add(startInfo);
         sidePanel.add(addToStart);
+        sidePanel.add(addToDestination);
+        sidePanel.add(startInfo);
         sidePanel.add(endLocInfo);
         sidePanel.add(multipleDestination);
         sidePanel.add(Box.createHorizontalStrut(10));
-        sidePanel.add(addToDestination);
 
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         edgeWeightPanel.setBackground(Color.GREEN);
@@ -654,10 +665,12 @@ public class MainAppUI extends JFrame{
                 if (startPoint == null) {
                     multiLoc.add(clickedLocation);
                     startPoint = clickedLocation;
+                    addToStart.setEnabled(false);
                     //route.add(clickedLocation);
                     ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getStartPointColor());
                     if (clickedLocation.getNameList().length == 0){
                         startInfo.setText("Start Point:  Unnamed Location");
+                        startList.removeAllItems();
                     } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
 
                     //clearButton.setEnabled(true);

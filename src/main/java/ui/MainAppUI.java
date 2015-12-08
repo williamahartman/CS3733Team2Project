@@ -19,6 +19,14 @@ public class MainAppUI extends JFrame{
     private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
 
+    //Button sized
+    private static final int UNNAMED_SIZE = 7;
+    private static final int NAMED_SIZE = 12;
+    private static final int START_SIZE = 15;
+    private static final int DEV_UNNAMED_SIZE = 10;
+    private static final int DEV_NAMED_SIZE = 15;
+    private static final int DEV_START_SIZE = 15;
+
     private MapView mapView;
     private MapViewStyle defaultMapViewStyle;
     private LocationGraph graph;
@@ -62,13 +70,13 @@ public class MainAppUI extends JFrame{
                 false,  //Draw all points
                 true,   //Draw named points
                 true,   //Draw routes
-                7,     //Unnamed button size
-                12,     //Name button size
-                15,     //Start or end button size
-                new Color(250, 120, 0), //Edge color
-                new Color(15, 78, 152), //Route Edge color
-                new Color(255, 240, 0),   //Location Color
-                new Color(79, 189, 255),   //Route Location color
+                UNNAMED_SIZE,   //Unnamed button size
+                NAMED_SIZE,     //Name button size
+                START_SIZE,     //Start or end button size
+                new Color(250, 120, 0),  //Edge color
+                new Color(15, 78, 152),  //Route Edge color
+                new Color(255, 240, 0),  //Location Color
+                new Color(79, 189, 255), //Route Location color
                 Color.RED,      //Start Point color
                 Color.GREEN,    //End Point color
                 Color.CYAN,     //Selected Point color
@@ -177,7 +185,8 @@ public class MainAppUI extends JFrame{
                     enterDeveloperMode.setText("Exit Developer Mode");
 
                     //Update the styles
-                    mapView.getStyle().setUnnamedButtonSize(10);
+                    mapView.getStyle().setUnnamedButtonSize(DEV_UNNAMED_SIZE);
+                    mapView.getStyle().setNamedButtonSize(DEV_NAMED_SIZE);
                     mapView.getStyle().setDrawAllEdges(true);
                     mapView.getStyle().setDrawAllPoints(true);
 
@@ -198,7 +207,8 @@ public class MainAppUI extends JFrame{
                 repaint();
 
                 //Update the styles
-                mapView.getStyle().setUnnamedButtonSize(7);
+                mapView.getStyle().setUnnamedButtonSize(UNNAMED_SIZE);
+                mapView.getStyle().setNamedButtonSize(NAMED_SIZE);
                 mapView.getStyle().setDrawAllEdges(oldViewEdges);
                 mapView.getStyle().setDrawAllPoints(oldViewLocs);
 
@@ -241,9 +251,9 @@ public class MainAppUI extends JFrame{
                     false,  //Draw all points
                     true,   //Draw named points
                     true,   //Draw routes
-                    devToolsPanel.getDevMode() ? 10 : 7,    //Unnamed button size
-                    12,                                     //Name button size
-                    15,                                     //Start or end button size
+                    devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
+                    devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
+                    devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
                     new Color(250, 120, 0), //Edge color
                     new Color(15, 78, 152), //Route Edge color
                     new Color(255, 240, 0),   //Location Color
@@ -267,9 +277,9 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() || drawAllLocations, //Draw all points
                     true,   //Draw named points
                     true,   //Draw routes
-                    devToolsPanel.getDevMode() ? 10 : 7,    //Unnamed button size
-                    12,                                     //Name button size
-                    15,                                     //Start or end button size
+                    devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
+                    devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
+                    devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
                     new Color(169, 176, 183), //Edge color
                     new Color(169, 176, 183), //Route Edge color
                     new Color(0, 0, 0),   //Location Color
@@ -293,9 +303,9 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() || drawAllLocations, //Draw all points
                     true,   //Draw named points
                     true,   //Draw routes
-                    devToolsPanel.getDevMode() ? 10 : 7,    //Unnamed button size
-                    12,                                     //Name button size
-                    15,                                     //Start or end button size
+                    devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
+                    devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
+                    devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
                     new Color(105, 138, 172), //Edge color
                     new Color(169, 176, 183), //Route Edge color
                     new Color(16, 78, 139),   //Location Color
@@ -319,9 +329,9 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() || drawAllLocations, //Draw all points
                     true,   //Draw named points
                     true,   //Draw routes
-                    devToolsPanel.getDevMode() ? 10 : 7,    //Unnamed button size
-                    12,                                     //Name button size
-                    15,                                     //Start or end button size
+                    devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
+                    devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
+                    devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
                     new Color(0, 255, 0),   //Edge color
                     new Color(0, 245, 255), //Route Edge color
                     new Color(255, 0, 255), //Location Color
@@ -345,9 +355,9 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() || drawAllLocations, //Draw all points
                     true,   //Draw named points
                     true,   //Draw routes
-                    devToolsPanel.getDevMode() ? 10 : 7,    //Unnamed button size
-                    12,                                     //Name button size
-                    15,                                     //Start or end button size
+                    devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
+                    devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
+                    devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
                     new Color(255, 99, 71),     //Edge color
                     new Color(0, 134, 139),     //Route Edge color
                     new Color(139, 71, 93),     //Location Color
@@ -371,9 +381,9 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() || drawAllLocations, //Draw all points
                     true,   //Draw named points
                     true,   //Draw routes
-                    devToolsPanel.getDevMode() ? 10 : 7,    //Unnamed button size
-                    12,                                     //Name button size
-                    15,                                     //Start or end button size
+                    devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
+                    devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
+                    devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
                     new Color(200, 0, 0),     //Edge color
                     new Color(255, 185, 15),     //Route Edge color
                     new Color(0, 0, 255),     //Location Color

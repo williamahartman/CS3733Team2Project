@@ -24,9 +24,6 @@ public class MapView extends JPanel {
     private static final double MINIMUM_ZOOM = 2;
     private static final double MAXIMUM_ZOOM = 50;
     private static final double ZOOM_SPEED = 0.25;
-    private static final int NODE_BUTTON_SIZE = 7;
-    private static final int NODE_BUTTON_SIZE_NAME = 12;
-    private static final int NODE_BUTTON_SIZE_END = 15;
     //TODO make un-named points bigger in edit mode
 
     private JScrollPane scrollPane;
@@ -104,7 +101,7 @@ public class MapView extends JPanel {
                 g2d.setStroke(new BasicStroke(4));
                 if (style.isDrawAllEdges()) {
                     for (Edge e : graphEdgeList) {
-                        g2d.setColor(style.getEdgeColor(currentFloorNumber));
+                        g2d.setColor(style.getEdgeColor());
 
                         int x1 = (int) (e.getNode1().getPosition().x * imageRes.getWidth());
                         int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
@@ -144,12 +141,13 @@ public class MapView extends JPanel {
                 //Draw arrows on search results
                 if (searchList != null && searchList.size() > 0){
                     for (Location loc: searchList) {
-                        g2d.setColor(Color.RED);
+                        g2d.setColor(style.getStartPointColor());
+                        double halfButtonSize = style.getNamedButtonSize() / 2.0;
                         int locX = (int) (loc.getPosition().x * imageRes.getWidth());
-                        int locY = (int) (loc.getPosition().y * imageRes.getHeight());
-                        g2d.drawLine(locX, locY - 5, locX, locY - 30);
-                        g2d.drawLine(locX, locY - 5, locX - 10, locY - 10);
-                        g2d.drawLine(locX, locY - 5, locX + 10, locY - 10);
+                        int locY = (int) ((loc.getPosition().y * imageRes.getHeight()) - halfButtonSize - 3);
+                        g2d.drawLine(locX, locY, locX, locY - 30);
+                        g2d.drawLine(locX, locY, locX - 10, locY - 10);
+                        g2d.drawLine(locX, locY, locX + 10, locY - 10);
                     }
                 }
             }
@@ -323,8 +321,7 @@ public class MapView extends JPanel {
             searchList.add(loc);
             locationButtonList.forEach(locationButton -> {
                 if (loc.equals(locationButton.getAssociatedLocation())){
-                    //TODO make a style attribute for this
-                    locationButton.setBgColor(Color.BLACK);
+                    locationButton.setBgColor(style.getSearchResultColor());
                 }
             });
         }
@@ -414,34 +411,49 @@ public class MapView extends JPanel {
         updateButtonAttributes();
     }
 
-    private void updateButtonAttributes() {
+    public void updateButtonAttributes() {
         for (LocationButton locButton: locationButtonList) {
-            if (locButton.getAssociatedLocation().getNameList().length == 0)
+            Location loc = locButton.getAssociatedLocation();
+
+            //Set the size, based on whether or not there is a name
+            if (loc.getNameList().length == 0)
             {
-                int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-                int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-                locButton.setBounds(xPos - (NODE_BUTTON_SIZE / 2), yPos - (NODE_BUTTON_SIZE / 2),
-                        NODE_BUTTON_SIZE, NODE_BUTTON_SIZE);
+                int xPos = (int) (loc.getPosition().x * getImagePixelSize().width);
+                int yPos = (int) (loc.getPosition().y * getImagePixelSize().height);
+
+                int buttonSize = (int) style.getUnnamedButtonSize();
+                locButton.setBounds(xPos - (buttonSize / 2), yPos - (buttonSize / 2), buttonSize, buttonSize);
             } else {
-                int xPos = (int) (locButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-                int yPos = (int) (locButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-                locButton.setBounds(xPos - (NODE_BUTTON_SIZE_NAME / 2), yPos - (NODE_BUTTON_SIZE_NAME / 2),
-                        NODE_BUTTON_SIZE_NAME, NODE_BUTTON_SIZE_NAME);
+                int xPos = (int) (loc.getPosition().x * getImagePixelSize().width);
+                int yPos = (int) (loc.getPosition().y * getImagePixelSize().height);
+
+                int buttonSize = (int) style.getNamedButtonSize();
+                locButton.setBounds(xPos - (buttonSize / 2), yPos - (buttonSize / 2), buttonSize, buttonSize);
             }
+
+            //Set colors
+            locButton.setBgColor(style.getLocationColor());
+            //Highlight routes
             for (List<Location> route: routeLists) {
-                if (route.contains(locButton.getAssociatedLocation())) {
+                if (route.contains(loc)) {
                     locButton.setBgColor(style.getRouteLocationColor());
                 }
-                if (locButton.getAssociatedLocation() == route.get(0)) {
-                    setToStartOrEnd(locButton, style.getDestinationColor(), "START");
+                if (loc == route.get(0)) {
+                    setToStartOrEnd(locButton, style.getStartPointColor(), "START",
+                            (int) style.getStartOrEndButtonSize());
                 }
-                if (locButton.getAssociatedLocation() == route.get(route.size() - 1)) {
-                    setToStartOrEnd(locButton, style.getDestinationColor(), "END");
+                if (loc == route.get(route.size() - 1)) {
+                    setToStartOrEnd(locButton, style.getEndPointColor(), "END",
+                            (int) style.getStartOrEndButtonSize());
                 }
-
+            }
+            //Highlight search results
+            if (searchList.contains(loc)) {
+                locButton.setBgColor(style.getSearchResultColor());
             }
 
-            Location loc = locButton.getAssociatedLocation();
+
+            //Set visibility
             if (style.isDrawAllPoints()) {
                 locButton.setVisible(true);
             } else {
@@ -451,15 +463,16 @@ public class MapView extends JPanel {
                 locButton.setVisible(true);
                 locButton.setToolTipText(loc.getNameList()[0]);
             }
+
             repaint();
         }
     }
     //Make the passed button even bigger
-    private void setToStartOrEnd(LocationButton locationButton, Color color, String tooltip) {
+    private void setToStartOrEnd(LocationButton locationButton, Color color, String tooltip, int size) {
         int xPos = (int) (locationButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
         int yPos = (int) (locationButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
-        locationButton.setBounds(xPos - (NODE_BUTTON_SIZE_END / 2), yPos - (NODE_BUTTON_SIZE_END / 2),
-                NODE_BUTTON_SIZE_END, NODE_BUTTON_SIZE_END);
+
+        locationButton.setBounds(xPos - (size / 2), yPos - (size / 2), size, size);
         locationButton.setBgColor(color);
         locationButton.setToolTipText(tooltip);
     }
@@ -481,6 +494,20 @@ public class MapView extends JPanel {
      */
     public MapViewStyle getStyle() {
         return style;
+    }
+
+    /**
+     * Sets the style of the mapview.
+     *
+     * @param style the passed style
+     */
+    public void setStyle(MapViewStyle style) {
+        this.style = style;
+
+        addButtons();
+        updateButtonAttributes();
+
+        repaint();
     }
 
     /**

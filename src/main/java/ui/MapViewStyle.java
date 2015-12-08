@@ -12,26 +12,70 @@ public class MapViewStyle {
     private boolean drawNamedPoints = true;
     private boolean drawRoutes = true;
 
+    private float unnamedButtonSize;
+    private float namedButtonSize;
+    private float startOrEndButtonSize;
     private Color edgeColor;
-    private HashMap<Integer, Color> floorEdgeColors;
     private Color routeColor;
     private Color locationColor;
     private Color routeLocationColor;
-    private Color destinationColor;
+    private Color startPointColor;
+    private Color endPointColor;
+    private Color selectedPointColor;
+    private Color previousSelectedColor;
+    private Color edgeHighlightColor;
+    private Color searchResultColor;
 
     public MapViewStyle(boolean drawAllEdges, boolean drawAllPoints, boolean drawNamedPoints,
-                        boolean drawRoutes, Color edgeColor, Color routeColor, Color locationColor,
-                        Color routeLocationColor) {
+                        boolean drawRoutes, float unnamedButtonSize, float namedButtonSize,
+                        float startOrEndButtonSize, Color edgeColor, Color routeColor,
+                        Color locationColor, Color routeLocationColor, Color startPointColor,
+                        Color endPointColor, Color selectedPointColor, Color previousSelectedColor,
+                        Color edgeHighlightColor, Color searchResultColor) {
         this.drawAllEdges = drawAllEdges;
         this.drawAllPoints = drawAllPoints;
         this.drawNamedPoints = drawNamedPoints;
         this.drawRoutes = drawRoutes;
+        this.unnamedButtonSize = unnamedButtonSize;
+        this.namedButtonSize = namedButtonSize;
+        this.startOrEndButtonSize = startOrEndButtonSize;
         this.edgeColor = edgeColor;
         this.routeColor = routeColor;
         this.locationColor = locationColor;
         this.routeLocationColor = routeLocationColor;
+        this.startPointColor = startPointColor;
+        this.endPointColor = endPointColor;
+        this.selectedPointColor = selectedPointColor;
+        this.previousSelectedColor = previousSelectedColor;
+        this.searchResultColor = searchResultColor;
+    }
 
-        floorEdgeColors = new HashMap<>();
+    public void setDrawAllEdges(boolean drawAllEdges) {
+        this.drawAllEdges = drawAllEdges;
+    }
+
+    public void setDrawAllPoints(boolean drawAllPoints) {
+        this.drawAllPoints = drawAllPoints;
+    }
+
+    public void setDrawNamedPoints(boolean drawNamedPoints) {
+        this.drawNamedPoints = drawNamedPoints;
+    }
+
+    public void setNamedButtonSize(float namedButtonSize) {
+        this.namedButtonSize = namedButtonSize;
+    }
+
+    public void setUnnamedButtonSize(float unnamedButtonSize) {
+        this.unnamedButtonSize = unnamedButtonSize;
+    }
+
+    public void setStartOrEndButtonSize(float startOrEndButtonSize) {
+        this.startOrEndButtonSize = startOrEndButtonSize;
+    }
+
+    public Color getEdgeColor() {
+        return edgeColor;
     }
 
     public boolean isDrawAllEdges() {
@@ -50,27 +94,21 @@ public class MapViewStyle {
         return drawRoutes;
     }
 
-    public void setDrawAllEdges(boolean drawAllEdges) {
-        this.drawAllEdges = drawAllEdges;
+    public float getUnnamedButtonSize() {
+        return unnamedButtonSize;
     }
 
-    public void setDrawAllPoints(boolean drawAllPoints) {
-        this.drawAllPoints = drawAllPoints;
+    public float getNamedButtonSize() {
+        return namedButtonSize;
     }
 
-    public void setDrawNamedPoints(boolean drawNamedPoints) {
-        this.drawNamedPoints = drawNamedPoints;
+    public float getStartOrEndButtonSize() {
+        return startOrEndButtonSize;
     }
 
-    public Color getEdgeColor(int floorNumber) {
-        if (floorEdgeColors.containsKey(floorNumber)) {
-            return floorEdgeColors.get(floorNumber);
-        }
-
-        return edgeColor;
+    public Color getRouteColor() {
+        return routeColor;
     }
-
-    public Color getRouteColor() { return routeColor; }
 
     public Color getLocationColor() {
         return locationColor;
@@ -80,23 +118,27 @@ public class MapViewStyle {
         return routeLocationColor;
     }
 
-    public void setRouteColor(Color routeColor) { this.routeColor = routeColor; }
-
-    public void setLocationColor(Color locationColor) {
-        this.locationColor = locationColor;
+    public Color getStartPointColor() {
+        return startPointColor;
     }
 
-    public void setEdgeColor(Color edgeColor, int floorNumber) {
-        if (floorEdgeColors.containsKey(floorNumber)) {
-            floorEdgeColors.replace(floorNumber, edgeColor);
-        } else {
-            floorEdgeColors.put(floorNumber, edgeColor);
-        }
+    public Color getEndPointColor() {
+        return endPointColor;
     }
 
-    public void setRouteLocationColor(Color routeLocationColor) { this.routeLocationColor = routeLocationColor; }
+    public Color getSelectedPointColor() {
+        return selectedPointColor;
+    }
 
-    public void setDestinationColor(Color destinationColor) { this.destinationColor = destinationColor; }
+    public Color getPreviousSelectedColor() {
+        return previousSelectedColor;
+    }
 
-    public Color getDestinationColor() { return destinationColor; }
+    public Color getEdgeHighlightColor() {
+        return edgeHighlightColor;
+    }
+
+    public Color getSearchResultColor() {
+        return searchResultColor;
+    }
 }

@@ -19,6 +19,10 @@ public class MainAppUI extends JFrame{
     private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
 
+    //Map scale
+    private static final int MAP_SCALE_X = 3355; // Map width in feet
+    private static final int MAP_SCALE_Y = 1780; // Map height in feet
+
     //Button sized
     private static final int UNNAMED_SIZE = 7;
     private static final int NAMED_SIZE = 12;
@@ -455,7 +459,7 @@ public class MainAppUI extends JFrame{
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
-                    for (String str : instruct.stepByStepInstruction(route, 1)) {
+                    for (String str : instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y)) {
                         count++;
                         gps.append(count + ") " + str);
                     }

@@ -19,11 +19,12 @@ public class Instruction {
      *
      * Return a list of step by step instructions.
      * @param locList a list of locations
-     * @param scale the map scale
+     * @param scaleX The width of the map in feet
+     * @param scaleY The height of the map in feet
      * @return The list of step by step instructions
      */
 
-    public List<String> stepByStepInstruction(List<Location> locList, int scale) {
+    public List<String> stepByStepInstruction(List<Location> locList, int scaleX, int scaleY) {
         totalDistance = 0.0;
         int flag; //records the relation between previous edge and next edge
         int flag2 = 0; //records the relation between previous edge and the edge before previous edge
@@ -112,11 +113,11 @@ public class Instruction {
                 String str = " ";
 
                 //distance between previous node and current node
-                double l1 = locCurrent.getPosition().distance(locPrev.getPosition());
+                double l1 = makeScaledDistance(locCurrent.getPosition(), locPrev.getPosition(), scaleX, scaleY);
                 //distance between next node and current node
-                double l2 = locCurrent.getPosition().distance(locNext.getPosition());
+                double l2 = makeScaledDistance(locCurrent.getPosition(), locNext.getPosition(), scaleX, scaleY);
                 //distance between previous node and next node
-                double l3 = locPrev.getPosition().distance(locNext.getPosition());
+                double l3 = makeScaledDistance(locPrev.getPosition(), locNext.getPosition(), scaleX, scaleY);
 
                 //if it is not going straight, check what degree need to turn
                 if (flag != 3){
@@ -140,14 +141,14 @@ public class Instruction {
                         //if previous step is turning
                         distance = l1;
                     }
-                    temp = this.make2Decimal(distance, scale);
+                    temp = this.make2Decimal(distance);
                     totalDistance += temp;
-                    instruction.add("Go " + temp + " miles.\n");
+                    instruction.add("Go " + temp + " feet.\n");
                     instruction.add("Turn" + str + turn + "\n");
                     //if next location is at the end of the location list
                     if (i == listSize - 2){
-                        temp = this.make2Decimal(l2, scale);
-                        instruction.add("Go " + temp + " miles.\n");
+                        temp = this.make2Decimal(l2);
+                        instruction.add("Go " + temp + " feet.\n");
                         totalDistance += temp;
                     }
                     flag2 = 0;
@@ -158,9 +159,9 @@ public class Instruction {
                     //if next location is at the end of the location list
                     if (i == listSize - 2) {
                         distance += l2;
-                        temp = this.make2Decimal(distance, scale);
+                        temp = this.make2Decimal(distance);
                         totalDistance += temp;
-                        instruction.add("Go " + temp + " miles.\n");
+                        instruction.add("Go " + temp + " feet.\n");
                     }
                     flag2 = 1;
                 }
@@ -168,10 +169,10 @@ public class Instruction {
         }
 
         instruction.add("You arrive at your destination.\n");
-        totalDistance = this.make2Decimal(totalDistance, 1);
-        instruction.add("The total distance is " + totalDistance + " miles.\n");
+        totalDistance = this.make2Decimal(totalDistance);
+        instruction.add("The total distance is " + totalDistance + " feet.\n");
         //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
-        int timeNeed = (int) (totalDistance / 0.052);
+        int timeNeed = (int) (totalDistance / 237);
         instruction.add("On average it takes " + timeNeed + " minutes to arrive at your destination.\n");
         return instruction;
     }
@@ -180,14 +181,20 @@ public class Instruction {
      *
      * A helper function to make the distance be two decimal number.
      * @param distance distance wanted to save two decimal
-     * @param scale scale of map
      * @return the distance
      */
-    private double make2Decimal(double distance, int scale){
-        distance = distance * scale;
+    private double make2Decimal(double distance){
         String temp = String.format(("%.2f"), distance);
-        distance = Double.parseDouble(temp);
-        return distance;
+        return Double.parseDouble(temp);
+    }
+
+    private double makeScaledDistance(Point2D.Double pos1, Point2D.Double pos2, int scaleX, int scaleY) {
+        double x1 = pos1.x * scaleX;
+        double y1 = pos1.y * scaleY;
+        double x2 = pos2.x * scaleX;
+        double y2 = pos2.y * scaleY;
+
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
     /**

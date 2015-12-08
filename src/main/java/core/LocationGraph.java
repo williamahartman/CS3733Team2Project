@@ -96,15 +96,17 @@ public class LocationGraph {
             ArrayList<Location> neighbors = new ArrayList<Location>();
             for (Edge e:eList)
             {
-                Location loc1 = e.getNode1(); //a possible location
-                Location loc2 = e.getNode2(); // a possible location
-                if (!loc1.equals(current)) // if the location is not equal to current then add to neighbors
-                {
-                    neighbors.add(loc1);
-                }
-                if (!loc2.equals(current)) // if the location is not equal to current then add to neighbors
-                {
-                    neighbors.add(loc2);
+                if(!e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)) {
+                    Location loc1 = e.getNode1(); //a possible location
+                    Location loc2 = e.getNode2(); // a possible location
+                    if (!loc1.equals(current)) // if the location is not equal to current then add to neighbors
+                    {
+                        neighbors.add(loc1);
+                    }
+                    if (!loc2.equals(current)) // if the location is not equal to current then add to neighbors
+                    {
+                        neighbors.add(loc2);
+                    }
                 }
 
             }

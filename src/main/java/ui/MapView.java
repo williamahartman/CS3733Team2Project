@@ -496,8 +496,8 @@ public class MapView extends JPanel {
            if (step < ll.size()) {
                Location current = ll.get(step);
                Instruction instruct = new Instruction();
-               textStep = instruct.stepByStepInstruction(ll, 1).get(step)
-                       + instruct.stepByStepInstruction(ll, 1).get(step + 1);
+               textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y).get(step)
+                       + instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y).get(step + 1);
                if (current.getFloorNumber() != currentFloorNumber)
                {
                    currentFloorNumber = current.getFloorNumber();
@@ -509,8 +509,8 @@ public class MapView extends JPanel {
                    repaint();
                }
                if (step > 0) {
-                   textStep = instruct.stepByStepInstruction(ll, 1).get(step * 2)
-                           + instruct.stepByStepInstruction(ll, 1).get(step * 2 + 1);
+                   textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y).get(step * 2)
+                           + instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y).get(step * 2 + 1);
                    Location previous;
                    if (way == true) {
                        previous = ll.get(step - 1);

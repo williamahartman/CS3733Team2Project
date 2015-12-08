@@ -20,8 +20,8 @@ public class MainAppUI extends JFrame{
     private static final int SIDEPANEL_WIDTH = 250;
 
     //Map scale
-    private static final int MAP_SCALE_X = 3355; // Map width in feet
-    private static final int MAP_SCALE_Y = 1780; // Map height in feet
+    public static final int MAP_SCALE_X = 3355; // Map width in feet
+    public static final int MAP_SCALE_Y = 1780; // Map height in feet
 
     //Button sized
     private static final int UNNAMED_SIZE = 7;
@@ -470,7 +470,7 @@ public class MainAppUI extends JFrame{
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
-                    for (String str : instruct.stepByStepInstruction(route, 1)) {
+                    for (String str : instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y)) {
                         if (!str.equals("Continue straight\n") && !str.equals(""))
                         {
                             count++;

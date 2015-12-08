@@ -96,7 +96,6 @@ public class LocationGraph {
             ArrayList<Location> neighbors = new ArrayList<Location>();
             for (Edge e:eList)
             {
-                if(!e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)) {
                     Location loc1 = e.getNode1(); //a possible location
                     Location loc2 = e.getNode2(); // a possible location
                     if (!loc1.equals(current)) // if the location is not equal to current then add to neighbors
@@ -107,7 +106,6 @@ public class LocationGraph {
                     {
                         neighbors.add(loc2);
                     }
-                }
 
             }
             //System.out.println(neighbors.get(0));
@@ -128,28 +126,27 @@ public class LocationGraph {
                     double gL = distanceValues.get(current).get(0) +
                             current.getConnectingEdgeFromNeighbor(loc).getCost(attributeManager);
                     // ^initial G Value
-                    double hL = loc.getPosition().distance(destination.getPosition()); // H Value of L
-                    locValues.add(gL); locValues.add(hL);  // creating the list of values for L
-                    double fL = locValues.get(0) + locValues.get(1); //F Value of L
-                    locValues.add(fL);
+                    if(current.getConnectingEdgeFromNeighbor(loc).getCost(attributeManager) != 0) {
+                        double hL = loc.getPosition().distance(destination.getPosition()); // H Value of L
+                        locValues.add(gL);
+                        locValues.add(hL);  // creating the list of values for L
+                        double fL = locValues.get(0) + locValues.get(1); //F Value of L
+                        locValues.add(fL);
 
-                    if (uncheckedLocations.contains(loc)) //if L is already in uncheckedLocations
-                    {
-                        if (distanceValues.get(loc).get(2) < fL) // if instance of L already has a lower F
+                        if (uncheckedLocations.contains(loc)) //if L is already in uncheckedLocations
                         {
-                            //ignore this neighbor
-                        }
-                        else
-                        {
+                            if (distanceValues.get(loc).get(2) < fL) // if instance of L already has a lower F
+                            {
+                                //ignore this neighbor
+                            } else {
+                                distanceValues.put(loc, locValues); //L and its corresponding G,H,F values
+                                path.put(loc, current);
+                            }
+                        } else {
+                            uncheckedLocations.add(loc);
                             distanceValues.put(loc, locValues); //L and its corresponding G,H,F values
                             path.put(loc, current);
                         }
-                    }
-                    else
-                    {
-                        uncheckedLocations.add(loc);
-                        distanceValues.put(loc, locValues); //L and its corresponding G,H,F values
-                        path.put(loc, current);
                     }
                 }
             }

@@ -1,5 +1,8 @@
 import database.Database;
+import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import ui.MainAppUI;
+import ui.VoiceThread;
+
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;

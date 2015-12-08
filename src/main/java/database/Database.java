@@ -75,8 +75,8 @@ public class Database {
     }
 
 
-    /*
-      * Attepmts to connect to the database with the given username and password
+    /**
+      * Attepmts to connect to the database with the given username and password.
       *
       * @param username username of the database user
       *
@@ -96,8 +96,8 @@ public class Database {
                 username, password);
     }
 
-    /*
-     * Add a node to the database
+    /**
+     * Add a node to the database.
      *
      * @param locToAdd The location/node that needs to be added to the database
      */
@@ -131,8 +131,8 @@ public class Database {
         }
     }
 
-    /*
-     * Remove a node from the database
+    /**
+     * Remove a node from the database.
      *
      * @param locToRem The location/node that needs to be removed to the database
      */
@@ -182,8 +182,8 @@ public class Database {
         }
     }
 
-    /*
-     * Update a node in the database
+    /**
+     * Update a node in the database.
      *
      * @param locToUpdate The location/node that needs to be updated in the database
      */
@@ -222,8 +222,8 @@ public class Database {
         }
     }
 
-    /*
-     * Add an edge to the database
+    /**
+     * Add an edge to the database.
      *
      * @param edgeToAdd The edge that needs to be added to the database
      */
@@ -294,11 +294,12 @@ public class Database {
 
     }
 
-    /*
-     * Remove an edge from the database
+    /**
+     * Remove an edge from the database.
      *
-     * @param edgeToRem The edge that needs to be removed to the database
-     */
+     * @param loc1 The edges first location that needs to be removed to the database
+     * @param loc2 The edges second location that needs to be removed to the database
+    */
     public void removeEdge(Location loc1, Location loc2) {
         //gets the x and y of both nodes in the edge
         double x1 = loc1.getPosition().getX();
@@ -360,8 +361,8 @@ public class Database {
 
     }
 
-    /*
-     * Update an edge in the database
+    /**
+     * Update an edge in the database.
      *
      * @param edgeToUpdate The edge that needs to be updated in the database
      */
@@ -445,8 +446,8 @@ public class Database {
         }
 
     }
-    /*
-     * Create a location graph based on node and edge information in the database
+    /**
+     * Create a location graph based on node and edge information in the database.
      *
      *
      */
@@ -595,8 +596,8 @@ public class Database {
         return graph;
     }
 
-    /*
-    * Update the database with all new locations/edges
+    /**
+    * Update the database with all new locations/edges.
     *
     * @param dbList Class that contains all necessary node and edge lists
     */

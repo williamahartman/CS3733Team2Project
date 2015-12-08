@@ -546,13 +546,15 @@ public class DevTools extends JPanel {
      * update the check boxes to reflect the edge attributes of the edge selected.
      */
     private void updateEdgeAttributes(){
-        currentEdge = originalButton.getAssociatedLocation()
-                .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
-        handicapAccess.setSelected(
-                currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
-        indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
-        stairs.setSelected(currentEdge.hasAttribute(EdgeAttribute.STAIRS));
-        elevator.setSelected(currentEdge.hasAttribute(EdgeAttribute.ELEVATOR));
+        if (originalButton != null && lastButtonClicked != null) {
+            currentEdge = originalButton.getAssociatedLocation()
+                    .getConnectingEdgeFromNeighbor(lastButtonClicked.getAssociatedLocation());
+            handicapAccess.setSelected(
+                    currentEdge.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE));
+            indoors.setSelected(currentEdge.hasAttribute(EdgeAttribute.INDOORS));
+            stairs.setSelected(currentEdge.hasAttribute(EdgeAttribute.STAIRS));
+            elevator.setSelected(currentEdge.hasAttribute(EdgeAttribute.ELEVATOR));
+        }
     }
 
     /**

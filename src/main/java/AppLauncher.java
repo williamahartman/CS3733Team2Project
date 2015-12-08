@@ -15,22 +15,14 @@ public class AppLauncher{
     public static void main(String[] args) {
         try {
             Database graphData = new Database();
-            TextToVoice speak = new TextToVoice("Starting W.P.I Mapper");
-            try {
-                speak.start();
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {}
-            try {
-                System.out.println(speak.getState());
-                if (speak.getState() == Thread.State.WAITING){
-                    speak.interrupt();
-                }
-                speak = new TextToVoice("This is a test");
-                speak.start();
-                Thread.sleep(2000);
-
-                //speak.interrupt();
-            } catch (InterruptedException e) {}
+            TextToVoice speak = new TextToVoice("IntelliJ");
+            speak.start();
+            System.out.println(speak.getState());
+            if (speak.getState() == Thread.State.RUNNABLE){
+                speak.interrupt();
+            }
+            speak = new TextToVoice("Activating Text To Speech");
+            speak.start();
 
             //Make a frame
             MainAppUI app = new MainAppUI(graphData.createGraph());

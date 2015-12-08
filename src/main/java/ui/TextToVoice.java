@@ -26,6 +26,7 @@ public class TextToVoice  extends Thread{
         Voice voice;
         VoiceManager voiceManager = VoiceManager.getInstance();
         voice = voiceManager.getVoice(VOICENAME_kevin);
+        voice.setRate(110);
         voice.allocate();
         voice.speak(text);
         voice.deallocate();

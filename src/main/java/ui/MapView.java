@@ -7,11 +7,8 @@ import core.Location;
 import core.LocationGraph;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
 import java.awt.*;
 import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.List;
@@ -122,7 +119,6 @@ public class MapView extends JPanel {
                 //Draw routes
                 if (style.isDrawRoutes()) {
                     for (List<Location> route: routeLists) {
-                        //TODO previousX and Y are redundant
                         Location previousLoc = route.get(0);
                         int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
                         int previousY = (int) (route.get(0).getPosition().y * imageRes.getHeight());
@@ -475,7 +471,8 @@ public class MapView extends JPanel {
            if (step < ll.size()) {
                Location current = ll.get(step);
                Instruction instruct = new Instruction();
-               textStep = instruct.stepByStepInstruction(ll, 1).get(step) + instruct.stepByStepInstruction(ll, 1).get(step + 1);
+               textStep = instruct.stepByStepInstruction(ll, 1).get(step)
+                       + instruct.stepByStepInstruction(ll, 1).get(step + 1);
                if (current.getFloorNumber() != currentFloorNumber)
                {
                    currentFloorNumber = current.getFloorNumber();
@@ -487,7 +484,8 @@ public class MapView extends JPanel {
                    repaint();
                }
                if (step > 0) {
-                   textStep = instruct.stepByStepInstruction(ll, 1).get(step*2) + instruct.stepByStepInstruction(ll, 1).get(step*2 + 1);
+                   textStep = instruct.stepByStepInstruction(ll, 1).get(step * 2)
+                           + instruct.stepByStepInstruction(ll, 1).get(step * 2 + 1);
                    Location previous;
                    if (way == true) {
                        previous = ll.get(step - 1);
@@ -521,7 +519,7 @@ public class MapView extends JPanel {
                    }
                } else {
                    for (LocationButton locButton : locationButtonList) {
-                       if(way == true) {
+                       if (way == true) {
                            if (locButton.getAssociatedLocation().equals(current)) {
                                locButton.setBgColor(new Color(250, 118, 0));
                                searchList.add(locButton.getAssociatedLocation());
@@ -568,10 +566,6 @@ public class MapView extends JPanel {
      */
     public int getFloorNumber() {
         return currentFloorNumber;
-    }
-
-    public List<List<Location>> getRouteLists() {
-        return routeLists;
     }
 }
 

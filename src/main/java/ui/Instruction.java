@@ -14,7 +14,7 @@ public class Instruction {
     public Instruction(){
         this.instruction = new ArrayList<>();
         this.totalDistance = 0;
-        this.count =0;
+        this.count = 0;
     }
 
     /**
@@ -145,7 +145,7 @@ public class Instruction {
                     temp = this.make2Decimal(distance, scale);
                     totalDistance += temp;
                     instruction.add("Go " + temp + " miles.\n");
-                    for(int j = 0; j < count; j++ ) {
+                    for (int j = 0; j < count; j++) {
                         if (i != 0) {
                             instruction.add("Continue straight\n");
                             instruction.add("");

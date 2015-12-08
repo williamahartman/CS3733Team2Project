@@ -50,7 +50,7 @@ public class LocationGraph {
         /**
          * Initialise the path at start Location
          */
-        ArrayList<Double> initialValues = new ArrayList<Double>(); // The List of G,H,F for start
+        ArrayList<Double> initialValues = new ArrayList<>(); // The List of G,H,F for start
         uncheckedLocations.add(start); //initialising uncheckedLocations
         initialValues.add(0.0); //initial G Value
         initialValues.add(start.getPosition().distance(destination.getPosition())); //initial H Value
@@ -93,7 +93,7 @@ public class LocationGraph {
              */
 
             List<Edge> eList = new ArrayList<>(current.getEdges()); //a list of all edges that current is a part of
-            ArrayList<Location> neighbors = new ArrayList<Location>();
+            ArrayList<Location> neighbors = new ArrayList<>();
             for (Edge e:eList)
             {
                     Location loc1 = e.getNode1(); //a possible location
@@ -120,11 +120,11 @@ public class LocationGraph {
                 }
                 else
                 {
-                    ArrayList<Double> locValues = new ArrayList<Double>(); // The List of G,H,F for L
+                    ArrayList<Double> locValues = new ArrayList<>(); // The List of G,H,F for L
                     double gL = distanceValues.get(current).get(0) +
                             current.getConnectingEdgeFromNeighbor(loc).getCost(attributeManager);
                     // ^initial G Value
-                    if(current.getConnectingEdgeFromNeighbor(loc).getCost(attributeManager) != 0) {
+                    if (current.getConnectingEdgeFromNeighbor(loc).getCost(attributeManager) != 0) {
                         double hL = loc.getPosition().distance(destination.getPosition()); // H Value of L
                         locValues.add(gL);
                         locValues.add(hL);  // creating the list of values for L

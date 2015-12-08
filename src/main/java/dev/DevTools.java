@@ -8,7 +8,6 @@ import database.Database;
 import database.DatabaseList;
 import ui.LocationButton;
 import ui.MapView;
-import ui.MapViewStyle;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -16,7 +15,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -151,28 +151,28 @@ public class DevTools extends JPanel {
         stairsHL.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                updateHighlightedEdges();
+                refreshGraph();
             }
         });
 
         elevatorHL.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                updateHighlightedEdges();
+                refreshGraph();
             }
         });
 
         notHandicapHL.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                updateHighlightedEdges();
+                refreshGraph();
             }
         });
 
         indoorsHL.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                updateHighlightedEdges();
+                refreshGraph();
             }
         });
 
@@ -501,6 +501,8 @@ public class DevTools extends JPanel {
     public void refreshGraph() {
         mapView.updateGraph(graph);
 
+        updateHighlightedEdges();
+
         //Search for the new button that will be last button clicked
         mapView.getLocationButtonList().forEach(loc -> {
             if (lastButtonClicked != null &&
@@ -573,11 +575,16 @@ public class DevTools extends JPanel {
     public void setDevMode(boolean devMode){ inDevMode = devMode; }
 
     private void updateHighlightedEdges(){
-        int i;
-        //iterate through entire list of edges
-        for(i = 0; i < graph.edgeByFloorNumber(mapView.getFloorNumber()).size(); i++){
+        for (Edge e:  graph.edgeByFloorNumber(mapView.getFloorNumber())){
             //TODO make changes in checkboxes result in style change
 
+            if ((stairsHL.isSelected() && e.hasAttribute(EdgeAttribute.STAIRS)) ||
+                (elevatorHL.isSelected() && e.hasAttribute(EdgeAttribute.ELEVATOR)) ||
+                (notHandicapHL.isSelected() && e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)) ||
+                (indoorsHL.isSelected() && e.hasAttribute(EdgeAttribute.INDOORS))) {
+                mapView.addToHighlightList(e);
+            }
         }
+        mapView.repaint();
     }
 }

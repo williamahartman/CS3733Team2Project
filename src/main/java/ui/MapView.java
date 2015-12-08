@@ -32,6 +32,7 @@ public class MapView extends JPanel {
 
     //TODO locationList is redundant with locationButtonList
     private List<Edge> graphEdgeList; //The list of edges from the represented graph
+    private List<Edge> edgeHighlightList; //The list of edge that will be highlighted when drawn
     private List<Location> locationList; //The list of locations from the represented graph
     private List<LocationButton> locationButtonList;
     private List<List<Location>> routeLists;
@@ -102,6 +103,10 @@ public class MapView extends JPanel {
                 if (style.isDrawAllEdges()) {
                     for (Edge e : graphEdgeList) {
                         g2d.setColor(style.getEdgeColor());
+
+                        if (edgeHighlightList.contains(e)) {
+                            g2d.setColor(style.getEdgeHighlightColor());
+                        }
 
                         int x1 = (int) (e.getNode1().getPosition().x * imageRes.getWidth());
                         int y1 = (int) (e.getNode1().getPosition().y * imageRes.getHeight());
@@ -327,6 +332,10 @@ public class MapView extends JPanel {
         }
     }
 
+    public void addToHighlightList(Edge e) {
+        edgeHighlightList.add(e);
+    }
+
     /**
      * Add a route that will be displayed.
      *
@@ -408,6 +417,7 @@ public class MapView extends JPanel {
         this.locationList = graph.locationByFloorNumber(currentFloorNumber);
         this.routeLists = new ArrayList<>();
         this.searchList = new ArrayList<>();
+        this.edgeHighlightList = new ArrayList<>();
 
         addButtons();
         updateButtonAttributes();

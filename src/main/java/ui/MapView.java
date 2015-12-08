@@ -468,12 +468,14 @@ public class MapView extends JPanel {
         locationButton.setToolTipText(tooltip);
     }
 
-    public void stepByStep(int step, boolean way)
+    public String stepByStep(int step, boolean way)
     {
-
+        String textStep = "";
        for (List<Location> ll:routeLists) {
            if (step < ll.size()) {
                Location current = ll.get(step);
+               Instruction instruct = new Instruction();
+               textStep = instruct.stepByStepInstruction(ll, 1).get(step) + instruct.stepByStepInstruction(ll, 1).get(step + 1);
                if (current.getFloorNumber() != currentFloorNumber)
                {
                    currentFloorNumber = current.getFloorNumber();
@@ -485,6 +487,7 @@ public class MapView extends JPanel {
                    repaint();
                }
                if (step > 0) {
+                   textStep = instruct.stepByStepInstruction(ll, 1).get(step*2) + instruct.stepByStepInstruction(ll, 1).get(step*2 + 1);
                    Location previous;
                    if (way == true) {
                        previous = ll.get(step - 1);
@@ -536,6 +539,7 @@ public class MapView extends JPanel {
                }
            }
        }
+        return textStep;
     }
 
     /**

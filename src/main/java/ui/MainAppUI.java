@@ -343,8 +343,12 @@ public class MainAppUI extends JFrame{
                     Instruction instruct = new Instruction();
                     int count = 0;
                     for (String str : instruct.stepByStepInstruction(route, 1)) {
-                        count++;
-                        gps.append(count + ") " + str);
+                        System.out.print(str);
+                        if (!str.equals("Keep Going\n") && !str.equals(""))
+                        {
+                            count++;
+                            gps.append(count + ") " + str);
+                        }
                     }
 
                     repaint();
@@ -419,7 +423,7 @@ public class MainAppUI extends JFrame{
         {
             if (stepCount < route.size())
             {
-                mapView.stepByStep(stepCount, true);
+                gps.setText(mapView.stepByStep(stepCount, true));
                 stepCount++;
             }
         });

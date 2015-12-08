@@ -55,6 +55,13 @@ public class DevTools extends JPanel {
             "since last save<br>" +
             "to database: 0");
 
+
+    private JCheckBox stairsHL = new JCheckBox("Stairs");
+    private JCheckBox elevatorHL = new JCheckBox("Elevators");
+    private JCheckBox notHandicapHL = new JCheckBox("Not Handicap");
+    private JCheckBox indoorsHL = new JCheckBox("Indoors");
+
+
     /**
      * Creates a DevTools.
      *
@@ -94,7 +101,7 @@ public class DevTools extends JPanel {
                             dblist.getUpdateLocList().size();
                     databaseChanges.setText("<html>Number of changes<br>" +
                             "since last save<br>" +
-                            "to database: " + (dbChanges-prevSaves));
+                            "to database: " + (dbChanges - prevSaves));
                     Point2D mousePos = mapPanel.getMousePosition();
                     Point2D.Double doubleMousePos = new Point2D.Double(
                             mousePos.getX() / mapPanel.getWidth(),
@@ -139,6 +146,36 @@ public class DevTools extends JPanel {
         JLabel blank1 = new JLabel("");
         JLabel blank3 = new JLabel("");
         JLabel blank5 = new JLabel("");
+
+        //Highlighting different edge attributes
+        stairsHL.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                updateHighlightedEdges();
+            }
+        });
+
+        elevatorHL.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                updateHighlightedEdges();
+            }
+        });
+
+        notHandicapHL.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                updateHighlightedEdges();
+            }
+        });
+
+        indoorsHL.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                updateHighlightedEdges();
+            }
+        });
+
 
         field1.setValue("");
         field1.setToolTipText("<html>The floor number associated with the currently selected node.<br>" +
@@ -252,8 +289,11 @@ public class DevTools extends JPanel {
         labelPanel1.add(buttonLabel2);
         labelPanel1.add(blank3);
         labelPanel1.add(blank5);
-        labelPanel2.add(databaseChanges);
 
+        labelPanel2.add(notHandicapHL);
+        labelPanel2.add(indoorsHL);
+        labelPanel2.add(stairsHL);
+        labelPanel2.add(elevatorHL);
 
         //Panel displaying all the fields
         JPanel textPanel1 = new JPanel(new GridLayout(0, 1, 5, 20));
@@ -285,9 +325,12 @@ public class DevTools extends JPanel {
             }
         });
 
-        TitledBorder title;
-        title = BorderFactory.createTitledBorder("Edge Attributes");
+
+        TitledBorder title = BorderFactory.createTitledBorder("Edge Attributes");
+        TitledBorder highlightTitle = BorderFactory.createTitledBorder("Highlight Edges");
+        highlightTitle.setTitleJustification(TitledBorder.CENTER);
         title.setTitleJustification(TitledBorder.CENTER);
+        labelPanel2.setBorder(highlightTitle);
         textPanel2.setBorder(title);
 
         setElementsEnabled(false);
@@ -302,6 +345,7 @@ public class DevTools extends JPanel {
 
         panel2.add(labelPanel2, BorderLayout.WEST);
         panel2.add(textPanel2, BorderLayout.EAST);
+        panel2.add(databaseChanges);
         panel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel2.setPreferredSize(new Dimension(330, 50));
 
@@ -446,7 +490,7 @@ public class DevTools extends JPanel {
                         dblist.getUpdateLocList().size();
                 databaseChanges.setText("<html>Number of changes<br>" +
                         "since last save<br>" +
-                        "to database: " + (dbChanges-prevSaves));
+                        "to database: " + (dbChanges - prevSaves));
             }
         };
     }
@@ -527,4 +571,13 @@ public class DevTools extends JPanel {
 
     public boolean getDevMode(){ return inDevMode; }
     public void setDevMode(boolean devMode){ inDevMode = devMode; }
+
+    private void updateHighlightedEdges(){
+        int i;
+        //iterate through entire list of edges
+        for(i = 0; i < graph.edgeByFloorNumber(mapView.getFloorNumber()).size(); i++){
+            //TODO make changes in checkboxes result in style change
+
+        }
+    }
 }

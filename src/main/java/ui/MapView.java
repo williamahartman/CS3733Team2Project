@@ -49,7 +49,7 @@ public class MapView extends JPanel {
     private int svgHeight;
 
     private EventListener buttonListener;
-
+    private LocationGraph graph;
     /**
      * Constructor.
      *
@@ -59,6 +59,7 @@ public class MapView extends JPanel {
      * @param viewStyle The viewStyle used by the mapView
      */
     public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
+        this.graph = graph;
         this.floorsImagePaths = floorImagePaths;
         this.currentFloorNumber = defaultFloor;
         this.style = viewStyle;
@@ -120,7 +121,6 @@ public class MapView extends JPanel {
                 //Draw routes
                 if (style.isDrawRoutes()) {
                     for (List<Location> route: routeLists) {
-                        //TODO previousX and Y are redundant
                         Location previousLoc = route.get(0);
                         int previousX = (int) (route.get(0).getPosition().x * imageRes.getWidth());
                         int previousY = (int) (route.get(0).getPosition().y * imageRes.getHeight());
@@ -169,12 +169,11 @@ public class MapView extends JPanel {
         JSlider floorSlider = new JSlider(JSlider.VERTICAL);
         floorSlider.setMinimum(0);
         floorSlider.setMaximum(floorImagePaths.length - 1);
-        floorSlider.setValue(defaultFloor);
+        floorSlider.setValue(currentFloorNumber);
         floorSlider.setPaintTicks(true);
         floorSlider.setMajorTickSpacing(1);
         floorSlider.addChangeListener(e ->  {
             JSlider source = (JSlider) e.getSource();
-
             if (!source.getValueIsAdjusting()) {
                 currentFloorNumber = source.getValue();
 
@@ -190,6 +189,7 @@ public class MapView extends JPanel {
         floorSlider.setPreferredSize(new Dimension(50, 500));
         JPanel floorSliderPanel = new JPanel();
         floorSliderPanel.add(floorSlider);
+        floorSlider.update(getGraphics());
 
         setLayout(new BorderLayout());
         add(scrollPane);
@@ -489,6 +489,82 @@ public class MapView extends JPanel {
         locationButton.setToolTipText(tooltip);
     }
 
+    public String stepByStep(int step, boolean way)
+    {
+        String textStep = "";
+       for (List<Location> ll:routeLists) {
+           if (step < ll.size()) {
+               Location current = ll.get(step);
+               Instruction instruct = new Instruction();
+               textStep = instruct.stepByStepInstruction(ll, 1).get(step)
+                       + instruct.stepByStepInstruction(ll, 1).get(step + 1);
+               if (current.getFloorNumber() != currentFloorNumber)
+               {
+                   currentFloorNumber = current.getFloorNumber();
+                   List<List<Location>> backUpList = routeLists;
+                   setCurrentImage();
+                   updateGraph(graph);
+                   routeLists = backUpList;
+                   updateButtonAttributes();
+                   repaint();
+               }
+               if (step > 0) {
+                   textStep = instruct.stepByStepInstruction(ll, 1).get(step * 2)
+                           + instruct.stepByStepInstruction(ll, 1).get(step * 2 + 1);
+                   Location previous;
+                   if (way == true) {
+                       previous = ll.get(step - 1);
+                   }
+                   else
+                   {
+                       previous = ll.get(step);
+                       current = ll.get(step - 1);
+                   }
+                   if (current.getFloorNumber() != previous.getFloorNumber())
+                   {
+                       currentFloorNumber = current.getFloorNumber();
+                       List<List<Location>> backUpList = routeLists;
+                       setCurrentImage();
+                       updateGraph(graph);
+                       routeLists = backUpList;
+                       updateButtonAttributes();
+                       repaint();
+                   }
+                   for (LocationButton locButton : locationButtonList) {
+                       if (locButton.getAssociatedLocation().equals(current)) {
+                           locButton.setBgColor(new Color(250, 118, 0));
+                           searchList.add(locButton.getAssociatedLocation());
+                           repaint();
+                       }
+                       if (locButton.getAssociatedLocation().equals(previous)) {
+                           locButton.setBgColor(style.getRouteLocationColor());
+                           searchList.remove(locButton.getAssociatedLocation());
+                           repaint();
+                       }
+                   }
+               } else {
+                   for (LocationButton locButton : locationButtonList) {
+                       if (way == true) {
+                           if (locButton.getAssociatedLocation().equals(current)) {
+                               locButton.setBgColor(new Color(250, 118, 0));
+                               searchList.add(locButton.getAssociatedLocation());
+                               repaint();
+                           }
+                       }
+                       else {
+                           if (locButton.getAssociatedLocation().equals(current)) {
+                               locButton.setBgColor(new Color(250, 118, 0));
+                               searchList.remove(locButton.getAssociatedLocation());
+                               repaint();
+                           }
+                       }
+                   }
+               }
+           }
+       }
+        return textStep;
+    }
+
     /**
      * Sets the listener that will be associated with all buttons in the MapView.
      *
@@ -531,3 +607,4 @@ public class MapView extends JPanel {
         return currentFloorNumber;
     }
 }
+

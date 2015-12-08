@@ -10,9 +10,11 @@ import java.util.*;
 public class Instruction {
     private List<String> instruction;
     private double totalDistance;
+    private int count;
     public Instruction(){
         this.instruction = new ArrayList<>();
         this.totalDistance = 0;
+        this.count = 0;
     }
 
     /**
@@ -53,7 +55,7 @@ public class Instruction {
                 Location locCurrent = locList.get(i); //current location
                 Location locNext = locList.get(i + 1); //next location
                 double locPrevX = locPrev.getPosition().getX(); //x value of previous location
-                double locPrevY = -locPrev.getPosition().getY(); //y value of previous location
+                double locPrevY = -locPrev.getPosition().getY(); //y value +of previous location
                 double locCurrentX = locCurrent.getPosition().getX(); //x value of current location
                 double locCurrentY = -locCurrent.getPosition().getY(); //y value of current location
                 double locNextX = locNext.getPosition().getX(); //x value of next location
@@ -143,18 +145,27 @@ public class Instruction {
                     temp = this.make2Decimal(distance, scale);
                     totalDistance += temp;
                     instruction.add("Go " + temp + " miles.\n");
+                    for (int j = 0; j < count; j++) {
+                        if (i != 0) {
+                            instruction.add("Continue straight\n");
+                            instruction.add("");
+                        }
+                    }
+                    count = 0;
                     instruction.add("Turn" + str + turn + "\n");
                     //if next location is at the end of the location list
                     if (i == listSize - 2){
                         temp = this.make2Decimal(l2, scale);
                         instruction.add("Go " + temp + " miles.\n");
                         totalDistance += temp;
+
                     }
                     flag2 = 0;
                     distance = 0;
                 } else {
                     //this step is going straight, add the distance between previous location and current location
                     distance += l1;
+                    if (i != 0) {count++; }
                     //if next location is at the end of the location list
                     if (i == listSize - 2) {
                         distance += l2;

@@ -61,6 +61,7 @@ public class MainAppUI extends JFrame{
     private Color oldStartColor;
     private Color oldEndColor;
 
+    private int stepCount = 0;
     /**
      * Constructor.
      *
@@ -457,15 +458,19 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 resetMap(this.mapView);
-                java.util.List<Location> route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
+                route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
                 if (route.size() > 0) {
+                    stepCount = 0;
                     mapView.addRoute(route);
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
                     for (String str : instruct.stepByStepInstruction(route, 1)) {
-                        count++;
-                        gps.append(count + ") " + str);
+                        if (!str.equals("Continue straight\n") && !str.equals(""))
+                        {
+                            count++;
+                            gps.append(count + ") " + str);
+                        }
                     }
 
                     repaint();
@@ -532,6 +537,32 @@ public class MainAppUI extends JFrame{
             }
 
         });
+        JButton test = new JButton();
+        test.setPreferredSize(new Dimension(90, 30));
+        test.setMaximumSize(new Dimension(90, 30));
+        test.setToolTipText("TEST");
+        test.addActionListener(e ->
+        {
+            if (stepCount < route.size())
+            {
+                gps.setText(mapView.stepByStep(stepCount, true));
+                stepCount++;
+            }
+        });
+        JButton backtest = new JButton();
+        backtest.setPreferredSize(new Dimension(90, 30));
+        backtest.setMaximumSize(new Dimension(90, 30));
+        backtest.setToolTipText("TEST");
+        backtest.addActionListener(e ->
+        {
+            if (stepCount > 0)
+            {
+                stepCount--;
+                mapView.stepByStep(stepCount, false);
+            }
+
+        });
+
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         JScrollPane text = new JScrollPane(gps);
         JScrollPane routePane = new JScrollPane(routeInfo);
@@ -548,6 +579,8 @@ public class MainAppUI extends JFrame{
         sidePanel.add(makeAStarRoute);
         sidePanel.add(text);
         sidePanel.add(edgeWeightPanel);
+        sidePanel.add(test);
+        sidePanel.add(backtest);
         //sidePanel.add(clearButton, BorderLayout.SOUTH);
 
 

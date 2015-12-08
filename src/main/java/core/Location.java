@@ -157,11 +157,4 @@ public class Location {
     public void setNameList(String[] s){
         nameList = s;
     }
-    public Location createStairUp(int floor, List<EdgeAttribute> ea)
-    {
-        Location above = new Location(this.getPosition(), floor, new String[0]);
-        this.makeAdjacentTo(above, ea);
-        return above;
-    }
-
 }

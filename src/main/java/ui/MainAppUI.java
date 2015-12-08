@@ -19,6 +19,10 @@ public class MainAppUI extends JFrame{
     private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
 
+    //Map scale
+    private static final int MAP_SCALE_X = 3355; // Map width in feet
+    private static final int MAP_SCALE_Y = 1780; // Map height in feet
+
     //Button sized
     private static final int UNNAMED_SIZE = 7;
     private static final int NAMED_SIZE = 12;
@@ -62,6 +66,7 @@ public class MainAppUI extends JFrame{
     private Color oldEndColor;
 
     private int stepCount = 0;
+
     /**
      * Constructor.
      *

@@ -537,11 +537,11 @@ public class MainAppUI extends JFrame{
             }
 
         });
-        JButton test = new JButton();
-        test.setPreferredSize(new Dimension(90, 30));
-        test.setMaximumSize(new Dimension(90, 30));
-        test.setToolTipText("TEST");
-        test.addActionListener(e ->
+        JButton stepForwardOnRouteButton = new JButton("Next Step");
+        stepForwardOnRouteButton.setPreferredSize(new Dimension(150, 30));
+        stepForwardOnRouteButton.setMaximumSize(new Dimension(150, 30));
+        stepForwardOnRouteButton.setToolTipText("TEST");
+        stepForwardOnRouteButton.addActionListener(e ->
         {
             if (stepCount < route.size())
             {
@@ -549,11 +549,11 @@ public class MainAppUI extends JFrame{
                 stepCount++;
             }
         });
-        JButton backtest = new JButton();
-        backtest.setPreferredSize(new Dimension(90, 30));
-        backtest.setMaximumSize(new Dimension(90, 30));
-        backtest.setToolTipText("TEST");
-        backtest.addActionListener(e ->
+        JButton stepBackOnRouteButton = new JButton("Previous Step");
+        stepBackOnRouteButton.setPreferredSize(new Dimension(150, 30));
+        stepBackOnRouteButton.setMaximumSize(new Dimension(150, 30));
+        stepBackOnRouteButton.setToolTipText("TEST");
+        stepBackOnRouteButton.addActionListener(e ->
         {
             if (stepCount > 0)
             {
@@ -579,8 +579,8 @@ public class MainAppUI extends JFrame{
         sidePanel.add(makeAStarRoute);
         sidePanel.add(text);
         sidePanel.add(edgeWeightPanel);
-        sidePanel.add(test);
-        sidePanel.add(backtest);
+        sidePanel.add(stepBackOnRouteButton);
+        sidePanel.add(stepForwardOnRouteButton);
         //sidePanel.add(clearButton, BorderLayout.SOUTH);
 
 

@@ -56,6 +56,11 @@ public class MainAppUI extends JFrame{
     private boolean drawEdges = false;
     private boolean drawAllLocations = false;
 
+    //Save start and end colors as class data to help allow restoring when changing
+    //in and out of devmode
+    private Color oldStartColor;
+    private Color oldEndColor;
+
     /**
      * Constructor.
      *
@@ -158,9 +163,6 @@ public class MainAppUI extends JFrame{
         changeStyle.add(colorBlindStyle);
 
         enterDeveloperMode.addActionListener(e -> {
-            Color oldStartColor = mapView.getStyle().getStartPointColor();
-            Color oldEndColor = mapView.getStyle().getEndPointColor();
-
             if (!devToolsPanel.getDevMode()) {
                 devToolsPanel.reset();
 
@@ -183,6 +185,10 @@ public class MainAppUI extends JFrame{
                     add(devToolsPanel, BorderLayout.WEST);
                     showNodes.setText("Show Only Named Locations");
                     enterDeveloperMode.setText("Exit Developer Mode");
+
+                    //Save the old style
+                    oldStartColor = mapView.getStyle().getStartPointColor();
+                    oldEndColor = mapView.getStyle().getEndPointColor();
 
                     //Update default view things
                     drawAllLocations = true;
@@ -225,6 +231,8 @@ public class MainAppUI extends JFrame{
                 mapView.getStyle().setStartOrEndButtonSize(START_SIZE);
                 mapView.getStyle().setStartPointColor(oldStartColor);
                 mapView.getStyle().setEndPointColor(oldEndColor);
+
+                System.out.println(oldStartColor);
 
                 //Get mapView back to the way it was
                 mapView.removeMouseListener(devToolClickListener);

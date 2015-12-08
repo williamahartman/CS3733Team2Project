@@ -1,5 +1,6 @@
 package ui;
 
+import core.EdgeAttribute;
 import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
@@ -78,7 +79,9 @@ public class MainAppUI extends JFrame{
 
         //change the look and feel to the BeautyEye style
         try {
+            BeautyEyeLNFHelper.frameBorderStyle = BeautyEyeLNFHelper.FrameBorderStyle.osLookAndFeelDecorated;
             BeautyEyeLNFHelper.launchBeautyEyeLNF();
+            UIManager.put("FrameBorderStyle.osLookAndFeelDecorated", true);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -551,6 +554,8 @@ public class MainAppUI extends JFrame{
             }
 
         });
+
+        //Back and forward buttons
         JButton stepForwardOnRouteButton = new JButton("Next Step");
         stepForwardOnRouteButton.setPreferredSize(new Dimension(150, 30));
         stepForwardOnRouteButton.setMaximumSize(new Dimension(150, 30));
@@ -577,24 +582,50 @@ public class MainAppUI extends JFrame{
 
         });
 
-        EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
+        //Edge Prefs Panel
+        JCheckBox checkBox = new JCheckBox("Only Make Handicap Accessible Routes");
+        checkBox.addActionListener(e -> {
+            JCheckBox source = (JCheckBox) e.getSource();
+            attributeManager.addModifierForAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE,
+                    source.isSelected() ? 0 : 1);
+        });
+        JButton editRoutePrefs = new JButton("Change Route Settings");
+        editRoutePrefs.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 50));
+        editRoutePrefs.addActionListener(e -> {
+            JDialog editWindow = new JDialog(this, "Edit Route Preferences", Dialog.ModalityType.APPLICATION_MODAL);
+            editWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            editWindow.setMinimumSize(new Dimension(640, 480));
+            editWindow.setLocationRelativeTo(null);
+            editWindow.getContentPane().setLayout(new BorderLayout());
+
+            JButton okayButton = new JButton("OK");
+            okayButton.setPreferredSize(new Dimension(300, 75));
+            okayButton.addActionListener(actionEvent -> editWindow.dispose());
+
+            editWindow.add(new EdgeWeightMenu(attributeManager));
+            editWindow.add(okayButton, BorderLayout.SOUTH);
+            editWindow.setVisible(true);
+        });
+
         JScrollPane text = new JScrollPane(gps);
         JScrollPane routePane = new JScrollPane(routeInfo);
         routePane.setPreferredSize(new Dimension(300, 50));
         routePane.setMaximumSize(new Dimension(300, 50));
         text.setPreferredSize(new Dimension(300, 300));
         text.setMaximumSize(new Dimension(300, 300));
-        //Add elements to the search panel
+
+        //Add elements to the side panel
         sidePanel.add(searchText);
         sidePanel.add(searchButton);
         sidePanel.add(startInfo);
         sidePanel.add(endPointInfo);
         sidePanel.add(routePane);
         sidePanel.add(makeAStarRoute);
-        sidePanel.add(text);
-        sidePanel.add(edgeWeightPanel);
         sidePanel.add(stepBackOnRouteButton);
         sidePanel.add(stepForwardOnRouteButton);
+        sidePanel.add(text);
+        sidePanel.add(checkBox);
+        sidePanel.add(editRoutePrefs);
         //sidePanel.add(clearButton, BorderLayout.SOUTH);
 
 

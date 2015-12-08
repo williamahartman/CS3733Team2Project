@@ -37,6 +37,7 @@ public class EdgeWeightMenu extends JPanel{
         sliderLabelTable.put(2, new JLabel("Prefer"));
 
         JSlider preferIndoors = new JSlider(JSlider.HORIZONTAL, 0, 2, 1);
+        preferIndoors.setMaximumSize(new Dimension(500, 70));
         preferIndoors.setLabelTable(sliderLabelTable);
         preferIndoors.setPaintLabels(true);
         preferIndoors.setBorder(BorderFactory.createTitledBorder("Interior Paths"));
@@ -56,10 +57,10 @@ public class EdgeWeightMenu extends JPanel{
                 }
             }
         });
-
         setDefaultValue(EdgeAttribute.INDOORS, preferIndoors);
 
         JSlider preferElevators = new JSlider(JSlider.HORIZONTAL, 0, 2, 1);
+        preferElevators.setMaximumSize(new Dimension(500, 70));
         preferElevators.setLabelTable(sliderLabelTable);
         preferElevators.setPaintLabels(true);
         preferElevators.setBorder(BorderFactory.createTitledBorder("Elevators"));
@@ -79,10 +80,10 @@ public class EdgeWeightMenu extends JPanel{
                 }
             }
         });
-
         setDefaultValue(EdgeAttribute.ELEVATOR, preferElevators);
 
         JSlider stairs = new JSlider(JSlider.HORIZONTAL, 0, 2, 1);
+        stairs.setMaximumSize(new Dimension(500, 70));
         stairs.setLabelTable(sliderLabelTable);
         stairs.setPaintLabels(true);
         stairs.setBorder(BorderFactory.createTitledBorder("Stairs"));
@@ -104,21 +105,14 @@ public class EdgeWeightMenu extends JPanel{
         });
         setDefaultValue(EdgeAttribute.STAIRS, stairs);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        JScrollPane scroll = new JScrollPane(panel);
-        scroll.createVerticalScrollBar();
-        scroll.setPreferredSize(new Dimension(300, 100));
-        scroll.setMaximumSize(new Dimension(300, 100));
-        panel.add(preferIndoors);
-        panel.add(Box.createVerticalGlue());
-        panel.add(stairs);
-        panel.add(Box.createVerticalGlue());
-        panel.add(preferElevators);
-        panel.add(Box.createVerticalGlue());
-
-        this.setLayout(new BorderLayout());
-        this.add(scroll);
+        add(Box.createVerticalStrut(50));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        add(preferIndoors);
+        add(Box.createVerticalStrut(50));
+        add(stairs);
+        add(Box.createVerticalStrut(50));
+        add(preferElevators);
+        add(Box.createVerticalStrut(50));
     }
 
     private void setDefaultValue(EdgeAttribute attribute, JSlider slider) {

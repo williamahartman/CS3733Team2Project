@@ -63,6 +63,7 @@ public class MainAppUI extends JFrame{
     private JComboBox multipleDestination;
     private Location tempLoc;
     private List<Location> multiLoc;
+    private int desNum;
 
 
     private DevTools devToolsPanel;
@@ -474,6 +475,7 @@ public class MainAppUI extends JFrame{
                     makeAStarRoute.setEnabled(false);
                     //clearButton.setEnabled(false);
                     multipleDestination.removeAllItems();
+                    desNum = 0;
                     multiLoc.clear();
                 } else {
                     JOptionPane.showMessageDialog(this,
@@ -491,7 +493,7 @@ public class MainAppUI extends JFrame{
             }
         });
 
-
+        desNum = 0;
         searchDropDownList = new SearchComboBox(graph);
         searchDropDownList.setEditable(true);
         searchDropDownList.setPreferredSize(new Dimension(180, 30));
@@ -555,18 +557,18 @@ public class MainAppUI extends JFrame{
         searchDropDownList.addActionListener(e -> {
             resetMap(mapView);
             String selectedName = (String) searchDropDownList.getSelectedItem();
-            System.out.println(selectedName);
+            //System.out.println(selectedName);
             if (searchExactName(selectedName) != null) {
-                searchDropDownList.removeAllItems();
-                searchDropDownList.addItem(selectedName);
+               // searchDropDownList.removeAllItems();
+                //searchDropDownList.addItem(selectedName);
                 tempLoc = searchExactName(selectedName);
                 locToSearch = selectedName;
-                System.out.println(tempLoc);
             }
-            if (searchSelectedName(selectedName) != null) {
+
+            /*if (searchSelectedName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
-            }
+            }*/
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 makeAStarRoute.setEnabled(true);
             }
@@ -580,9 +582,14 @@ public class MainAppUI extends JFrame{
                 if (size == 0) {
                     multipleDestination.addItem(locToSearch);
                     multiLoc.add(endPoint);
+                    desNum += 1;
+                    multipleDestination.setSelectedIndex(desNum - 1);
                 } else if (size > 0 && (!multiLoc.get(size - 1).equals(endPoint))){
                     multipleDestination.addItem(locToSearch);
                     multiLoc.add(endPoint);
+                    desNum += 1;
+                    multipleDestination.setSelectedIndex(desNum - 1);
+
                 } else if (size > 0 && (multiLoc.get(size - 1).equals(endPoint))){
                     JOptionPane.showMessageDialog(this, "You already add this location.");
                 }
@@ -592,25 +599,6 @@ public class MainAppUI extends JFrame{
             }
         });
 
-        startList.addActionListener(e -> {
-            clearState(mapView);
-            String selectedName = (String) startList.getSelectedItem();
-            startPoint = searchSelectedName(selectedName);
-            if (startPoint != null && endPoint != null && startPoint != endPoint) {
-                makeAStarRoute.setEnabled(true);
-            }
-        });
-
-        destinationList.addActionListener(e -> {
-            if (endPoint != null && startPoint == null){
-                clearState(mapView);
-            }
-            String selectedName = (String) destinationList.getSelectedItem();
-            endPoint = searchSelectedName(selectedName);
-            if (startPoint != null && endPoint != null && startPoint != endPoint) {
-                makeAStarRoute.setEnabled(true);
-            }
-        });
 
         sidePanel.add(searchInfo);
         sidePanel.add(searchDropDownList);
@@ -664,21 +652,30 @@ public class MainAppUI extends JFrame{
                 Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
 
                 if (startPoint == null) {
+                    multiLoc.add(clickedLocation);
                     startPoint = clickedLocation;
-                    route.add(clickedLocation);
+                    //route.add(clickedLocation);
                     ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getStartPointColor());
                     if (clickedLocation.getNameList().length == 0){
                         startInfo.setText("Start Point:  Unnamed Location");
                     } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
 
                     //clearButton.setEnabled(true);
-                } else if (endPoint == null && clickedLocation != startPoint) {
+                } else if (startPoint != null && clickedLocation != endPoint) {
                     endPoint = clickedLocation;
-                    route.add(clickedLocation);
+                    //route.add(clickedLocation);
+                    multiLoc.add(clickedLocation);
                     ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getEndPointColor());
                     if (clickedLocation.getNameList().length == 0){
-                        endPointInfo.setText("End Point:  Unnamed Location");
-                    } else { endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]); }
+                        multipleDestination.addItem("Unnamed Location");
+                        desNum += 1;
+                        multipleDestination.setSelectedIndex(desNum - 1);
+                    } else {
+                        //endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]);
+                        multipleDestination.addItem(clickedLocation.getNameList()[0]);
+                        desNum += 1;
+                        multipleDestination.setSelectedIndex(desNum - 1);
+                    }
 
                     //clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);

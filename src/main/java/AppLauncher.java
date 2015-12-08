@@ -16,7 +16,7 @@ public class AppLauncher{
     public static void main(String[] args) {
         try {
             Database graphData = new Database();
-
+            System.out.println(System.getProperty("java.io.tmpdir"));
             //Make a frame
             MainAppUI app = new MainAppUI(graphData.createGraph());
             graphData.closeConnection();

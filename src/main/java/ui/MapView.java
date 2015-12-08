@@ -577,6 +577,8 @@ public class MapView extends JPanel {
                    routeLists = backUpList;
                    updateButtonAttributes();
                    repaint();
+                   ImageFromMap img = new ImageFromMap();
+                   img.saveComponentAsJPEG(this, "image" + step + ".jpeg");
                }
                if (step > 0) {
                    textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y)

@@ -691,4 +691,6 @@ public class MainAppUI extends JFrame{
             }
         }
     }
+
+    public MapView getMapView(){ return mapView;  }
 }

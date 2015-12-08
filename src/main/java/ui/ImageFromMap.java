@@ -25,7 +25,7 @@ public class ImageFromMap {
         g2.drawImage(myImage,  (int) size.getWidth(), (int) size.getHeight(), null);
         myComponent.paint(g2);
         try {
-            ImageIO.write(myImage, "JPEG", new File(filename));
+            ImageIO.write(myImage, "JPEG", new File(System.getProperty("java.io.tmpdir") + filename));
         } catch (Exception e) {
             System.out.println(e);
         }

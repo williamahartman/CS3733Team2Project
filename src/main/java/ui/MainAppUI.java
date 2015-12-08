@@ -5,6 +5,7 @@ import core.Location;
 import core.LocationGraph;
 import dev.DevPassword;
 import dev.DevTools;
+import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -74,6 +75,14 @@ public class MainAppUI extends JFrame{
      */
     public MainAppUI(LocationGraph graph) {
         super(FRAME_TITLE);
+
+        //change the look and feel to the BeautyEye style
+        try {
+            BeautyEyeLNFHelper.launchBeautyEyeLNF();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         this.graph = graph;
 
         defaultMapViewStyle = new MapViewStyle(

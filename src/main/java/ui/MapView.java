@@ -5,6 +5,8 @@ import com.kitfox.svg.app.beans.SVGIcon;
 import core.Edge;
 import core.Location;
 import core.LocationGraph;
+import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
+import org.jb2011.lnf.beautyeye.BeautyEyeLookAndFeelCross;
 
 import javax.swing.*;
 import java.awt.*;

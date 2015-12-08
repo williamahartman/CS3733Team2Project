@@ -343,7 +343,6 @@ public class MainAppUI extends JFrame{
                     Instruction instruct = new Instruction();
                     int count = 0;
                     for (String str : instruct.stepByStepInstruction(route, 1)) {
-                        System.out.print(str);
                         if (!str.equals("Continue straight\n") && !str.equals(""))
                         {
                             count++;

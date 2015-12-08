@@ -108,13 +108,11 @@ public class LocationGraph {
                     }
 
             }
-            //System.out.println(neighbors.get(0));
             /**
              * Determining which neighbors to add to uncheckedLocations
              */
             for (Location loc: neighbors)
             {
-               // System.out.println(loc);
 
                 if (checkedLocations.contains(loc)) // this location has already been checked
                 {

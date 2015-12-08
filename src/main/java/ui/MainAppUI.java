@@ -49,15 +49,10 @@ public class MainAppUI extends JFrame{
     //private JButton clearButton;
     private JButton makeAStarRoute;
 
-    //-------------------------------------
-    private static final String HeadHolder = "Search Result List      ";
 
     private JComboBox searchDropDownList;
     private JLabel searchInfo;
     private JLabel endLocInfo;
-    private JComboBox startList;
-    private JComboBox destinationList;
-    private JTextField searchText;
     private JButton addToStart;
     private JButton addToDestination;
     private JComboBox multipleDestination;
@@ -499,19 +494,9 @@ public class MainAppUI extends JFrame{
         searchDropDownList.setPreferredSize(new Dimension(180, 30));
         searchDropDownList.setMaximumSize(new Dimension(180, 30));
 
-        searchText = new JTextField(15);
-        searchText.setVisible(true);
-        searchText.setPreferredSize(new Dimension(100, 30));
-        searchText.setMaximumSize(new Dimension(100, 30));
-        searchInfo = new JLabel("Search Result List: ");
 
+        searchInfo = new JLabel("Search: ");
         endLocInfo = new JLabel("Destination: ");
-
-
-        startList = new JComboBox();
-        startList.setEditable(true);
-        destinationList = new JComboBox();
-        destinationList.setEditable(true);
         multipleDestination = new JComboBox();
         multipleDestination.setPreferredSize(new Dimension(160, 30));
         multipleDestination.setMaximumSize(new Dimension(160, 30));
@@ -520,29 +505,6 @@ public class MainAppUI extends JFrame{
 
         addToStart = new JButton("Add");
         addToDestination = new JButton("Add");
-
-        //searchDropDownList.addItem("Search Result List      ");
-        //startList.addItem("Start Location");
-        //destinationList.addItem("Destination");
-        //initializeSearch();
-
-        //using external library for auto completed
-        //AutoCompleteDecorator.decorate(searchDropDownList);
-        //AutoCompleteDecorator.decorate(startList);
-        //AutoCompleteDecorator.decorate(destinationList);
-/*
-        searchDropDownList.addActionListener(e -> {
-            resetMap(mapView);
-            String selectedName = (String) searchDropDownList.getSelectedItem();
-            tempLoc = searchExactName(selectedName);
-            if (tempLoc != null){
-                if (!tempLoc.equals(HeadHolder)){
-                    searchText.setText(selectedName);
-                    locToSearch = selectedName;
-                }
-            }
-        });
-*/
         addToStart.addActionListener(e -> {
             if (tempLoc != null){
                 startPoint = tempLoc;
@@ -559,16 +521,23 @@ public class MainAppUI extends JFrame{
             String selectedName = (String) searchDropDownList.getSelectedItem();
             //System.out.println(selectedName);
             if (searchExactName(selectedName) != null) {
-               // searchDropDownList.removeAllItems();
-                //searchDropDownList.addItem(selectedName);
+                searchDropDownList.removeAllItems();
+                searchDropDownList.addItem(selectedName);
                 tempLoc = searchExactName(selectedName);
                 locToSearch = selectedName;
             }
-
-            /*if (searchSelectedName(selectedName) != null) {
+            /*
+            if (tempLoc != null || startPoint != null) {
+                System.out.println("Transfer focus\n");
+                searchDropDownList.transferFocus();
+                searchDropDownList.hidePopup();
+                addToStart.requestFocus();
+                }
+            */
+            if (searchSelectedName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
-            }*/
+            }
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 makeAStarRoute.setEnabled(true);
             }
@@ -595,6 +564,8 @@ public class MainAppUI extends JFrame{
                 }
             }
             if (multiLoc.size() > 1){
+                //multipleDestination.transferFocus();
+                //addToDestination.requestFocus();
                 makeAStarRoute.setEnabled(true);
             }
         });
@@ -647,6 +618,7 @@ public class MainAppUI extends JFrame{
 
     private ActionListener buildRouteSelectListener() {
         return new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
                 Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
@@ -729,16 +701,7 @@ public class MainAppUI extends JFrame{
             if (selectedName.length() > 0) {
                 //search the name in nameLList for all locations in the graph
                 List<Location> loc = graph.searchLocationByName(selectedName);
-                if (loc.size() > 0) {
-                    result = loc.get(0);
-                    //if locations are found
-                    JFrame frameSearch = new JFrame("Search");
-                    frameSearch.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                    frameSearch.setMinimumSize(new Dimension(1024, 768));
-                    mapView.addToSearchList(loc);
-                    repaint();
-                    //clearButton.setEnabled(true);
-                }
+                result = addSearchToView(loc);
             }
         } catch (Exception ex) {
             //JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
@@ -746,24 +709,6 @@ public class MainAppUI extends JFrame{
         return result;
     }
 
-    private ArrayList<String> initializeSearch(){
-        searchDropDownList.removeAllItems();
-        searchDropDownList.addItem(HeadHolder);
-        List<Location> locationList = graph.getAllLocations();
-        ArrayList<String> nameList = new ArrayList<>();
-        for (Location loc: locationList){
-            for (String name: loc.getNameList()){
-                nameList.add(name);
-            }
-        }
-        Collections.sort(nameList);
-        for (String name: nameList){
-            searchDropDownList.addItem(name);
-            startList.addItem(name);
-            destinationList.addItem(name);
-        }
-        return nameList;
-    }
 
     private Location searchExactName(String selectedName){
         Location result = null;
@@ -772,19 +717,25 @@ public class MainAppUI extends JFrame{
             if (selectedName.length() > 0) {
                 //search the name in nameLList for all locations in the graph
                 List<Location> loc = graph.searchLocationByExacName(selectedName);
-                if (loc.size() > 0) {
-                    result = loc.get(0);
-                    //if locations are found
-                    JFrame frameSearch = new JFrame("Search");
-                    frameSearch.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                    frameSearch.setMinimumSize(new Dimension(1024, 768));
-                    mapView.addToSearchList(loc);
-                    repaint();
-                    //clearButton.setEnabled(true);
-                }
+                result = addSearchToView(loc);
             }
         } catch (Exception ex) {
             //JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
+        }
+        return result;
+    }
+
+    private Location addSearchToView(List<Location> loc){
+        Location result = null;
+        if (loc.size() > 0) {
+            result = loc.get(0);
+            //if locations are found
+            JFrame frameSearch = new JFrame("Search");
+            frameSearch.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            frameSearch.setMinimumSize(new Dimension(1024, 768));
+            mapView.addToSearchList(loc);
+            repaint();
+            //clearButton.setEnabled(true);
         }
         return result;
     }

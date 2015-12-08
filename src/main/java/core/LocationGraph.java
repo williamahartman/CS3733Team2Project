@@ -167,7 +167,12 @@ public class LocationGraph {
 
         return result;
     }
-
+    /**
+     * Return a list of locations whose names are equal to the passed String.
+     *
+     * @param searchString The String that will be searched for.
+     * @return The list of Locations whose names exactly same as the search string
+     */
     public List<Location> searchLocationByExacName(String searchString) {
         ArrayList<Location> result = new ArrayList<>();
         locationList.stream().filter(loc -> loc.nameEqual(searchString)).forEach(result::add);
@@ -282,6 +287,15 @@ public class LocationGraph {
         return new ArrayList<>(edgeSet);
     }
 
+    /**
+     * Returns a list of locations in order. This list describes the optimal route passing a list of locations.
+     *
+     * @param attributeManager The attribute manager used to calculate the cost of moving
+     *                         across an edge
+     * @param multiLoc The list of location want to walk through
+     * @return The list of Locations that comprise an optimal route
+     */
+
     public List<Location> makeMultipleRoute(EdgeAttributeManager attributeManager, List<Location> multiLoc){
         List<Location> route = new ArrayList<>();
         List<Location> subRoute;
@@ -301,7 +315,6 @@ public class LocationGraph {
                 }
             }
         }
-        System.out.println("Size" + route.size());
         return route;
     }
 }

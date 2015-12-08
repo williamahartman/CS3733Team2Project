@@ -142,11 +142,12 @@ public class MapView extends JPanel {
                 if (searchList != null && searchList.size() > 0){
                     for (Location loc: searchList) {
                         g2d.setColor(style.getStartPointColor());
+                        double halfButtonSize = style.getNamedButtonSize() / 2.0;
                         int locX = (int) (loc.getPosition().x * imageRes.getWidth());
-                        int locY = (int) (loc.getPosition().y * imageRes.getHeight());
-                        g2d.drawLine(locX, locY - 5, locX, locY - 30);
-                        g2d.drawLine(locX, locY - 5, locX - 10, locY - 10);
-                        g2d.drawLine(locX, locY - 5, locX + 10, locY - 10);
+                        int locY = (int) ((loc.getPosition().y * imageRes.getHeight()) - halfButtonSize - 3);
+                        g2d.drawLine(locX, locY, locX, locY - 30);
+                        g2d.drawLine(locX, locY, locX - 10, locY - 10);
+                        g2d.drawLine(locX, locY, locX + 10, locY - 10);
                     }
                 }
             }

@@ -1,4 +1,5 @@
 import database.Database;
+import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import ui.MainAppUI;
 import ui.VoiceThread;
 
@@ -35,15 +36,6 @@ public class AppLauncher{
             //Make a frame
             MainAppUI app = new MainAppUI(graphData.createGraph());
             graphData.closeConnection();
-
-            //change the look and feel to the Nimbus style
-            try {
-                UIManager
-                        .setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-            } catch (ClassNotFoundException | InstantiationException
-                    | IllegalAccessException | UnsupportedLookAndFeelException e) {
-                e.printStackTrace();
-            }
 
             app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             app.setMinimumSize(new Dimension(1024, 768));

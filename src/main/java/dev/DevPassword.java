@@ -8,7 +8,7 @@ import java.awt.*;
  * This class is to handle the verification to enable use of the
  * developer tools
  */
-public class DevPassword extends JFrame{
+public class DevPassword {
     String username;
     String password;
 
@@ -21,7 +21,6 @@ public class DevPassword extends JFrame{
     public DevPassword (String username, String password){
         this.username = username;
         this.password = password;
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -30,34 +29,41 @@ public class DevPassword extends JFrame{
      * either log into Dev mode or stay in the User mode
      */
     public int passwordBox() {
-        //Set up titles for the fields.
-        //todo database username and password implementation
-        JPanel label = new JPanel(new GridLayout(2, 2, 1, 10));
-        label.add(new JLabel("Username:", SwingConstants.LEFT));
-        JTextField uname = new JTextField();
-        label.add(uname);
-        label.add(new JLabel("Password:", SwingConstants.LEFT));
-        JPasswordField password = new JPasswordField();
-        label.add(password);
+        try {
+            //Set up titles for the fields.
+            //todo database username and password implementation
+            JPanel label = new JPanel(new GridLayout(2, 2, 1, 10));
+            label.add(new JLabel("Username:", SwingConstants.LEFT));
+            JTextField uname = new JTextField();
+            label.add(uname);
+            label.add(new JLabel("Password:", SwingConstants.LEFT));
+            JPasswordField password = new JPasswordField();
+            label.add(password);
 
-        //Decide whether the user logged in using the correct credentials, tried
-        //to log in using wrong ones, or selected cancel.
-        int result = JOptionPane.showConfirmDialog(null, label,
-                "Are You an Authorized Developer?", JOptionPane.OK_CANCEL_OPTION);
-        int flag = 0;
-        if (result == JOptionPane.OK_OPTION) {
-            char[] pass = password.getPassword();
-            String passString = new String(pass);
-            if (((uname.getText().compareTo(this.username)) == 0)
-                    && (((passString).compareTo(this.password)) == 0)) {
-                flag = 1; //Condition to switch into dev mode
-            } else {
-                flag = 2; //Condition to display error message
+            //Decide whether the user logged in using the correct credentials, tried
+            //to log in using wrong ones, or selected cancel.
+            int result = JOptionPane.showConfirmDialog(null, label,
+                    "Are You a Developer?", JOptionPane.OK_CANCEL_OPTION);
+
+            int flag = 0;
+            if (result == JOptionPane.OK_OPTION) {
+                char[] pass = password.getPassword();
+                String passString = new String(pass);
+                if (((uname.getText().compareTo(this.username)) == 0)
+                        && (((passString).compareTo(this.password)) == 0)) {
+                    flag = 1; //Condition to switch into dev mode
+                } else {
+                    flag = 2; //Condition to display error message
+                }
+            } else if (result == JOptionPane.CANCEL_OPTION) {
+                flag = 3; //Close out of the window
             }
-        } else if (result == JOptionPane.CANCEL_OPTION) {
-            flag = 3; //Close out of the window
+            return flag;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return flag;
+
+        return 2;
     }
 }
 

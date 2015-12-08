@@ -2,9 +2,7 @@ package core;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.TreeSet;
 
 /**
  * This class represents a Location for a LocationGraph. These are the nodes in the graph
@@ -140,14 +138,13 @@ public class Location {
         }
         return null;
     }
-   public List<Edge> getEdges() {
+    public List<Edge> getEdges() {
         return edgeList;
     }
 
     public int getFloorNumber() {
         return floorNumber;
     }
-
     public Point2D.Double getPosition() {
         return position;
     }

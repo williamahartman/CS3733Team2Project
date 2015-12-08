@@ -3,25 +3,21 @@ package database;
 import core.Edge;
 import core.Location;
 
-import java.sql.*;
-import java.util.*;
-import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Created by hollyn on 11/21/15.
+ * This class keeps track of what elements were added or removed from a location.
+ * These changes can then be applied to the database later.
  */
 
 public class DatabaseList {
-    List<Location> addLocList = new ArrayList<Location>();
-    List<Location> removeLocList = new ArrayList<Location>();
-    List<Location> updateLocList = new ArrayList<Location>();
-    List<Edge> addEdgeList = new ArrayList<Edge>();
-    List<Edge> removeEdgeList = new ArrayList<Edge>();
-    List<Edge> updateEdgeList = new ArrayList<Edge>();
-
-    public DatabaseList() {
-
-    }
+    List<Location> addLocList = new ArrayList<>();
+    List<Location> removeLocList = new ArrayList<>();
+    List<Location> updateLocList = new ArrayList<>();
+    List<Edge> addEdgeList = new ArrayList<>();
+    List<Edge> removeEdgeList = new ArrayList<>();
+    List<Edge> updateEdgeList = new ArrayList<>();
 
     public void addedLocation(Location locAdd) {
         addLocList.add(locAdd);
@@ -40,7 +36,11 @@ public class DatabaseList {
     }
 
     public void removedEdge(Edge eRem) {
-        removeEdgeList.add(eRem);
+        if (!addEdgeList.contains(eRem)) {
+            removeEdgeList.add(eRem);
+        } else {
+            addEdgeList.remove(eRem);
+        }
     }
 
     public void updatedEdge(Edge eUpdate) {

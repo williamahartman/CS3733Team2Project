@@ -81,7 +81,7 @@ public class MainAppUI extends JFrame{
                 Color.GREEN,    //End Point color
                 Color.CYAN,     //Selected Point color
                 Color.BLUE,     //Previously Selected Point color
-                Color.MAGENTA,  //Edge highlight color
+                Color.MAGENTA,     //Edge highlight color
                 Color.GRAY      //Search Result Color
         );
 
@@ -130,7 +130,7 @@ public class MainAppUI extends JFrame{
 
         //'View' contains toggleEdges, showNodes, and changeStyle
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
-        JMenuItem showNodes = new JMenuItem("Toggle Show All Locations");
+        JMenuItem showNodes = new JMenuItem("Toggle Showing All Locations");
         JMenu changeStyle = new JMenu("Change Style");
 
         //changeStyle contains defaultStyle, WPIStyle, monochromaticStyle
@@ -158,8 +158,10 @@ public class MainAppUI extends JFrame{
         changeStyle.add(colorBlindStyle);
 
         enterDeveloperMode.addActionListener(e -> {
-            boolean oldViewLocs = drawAllLocations;
-            boolean oldViewEdges = drawEdges;
+            boolean oldDrawLocations = drawAllLocations;
+            boolean oldDrawEdges = drawEdges;
+            Color oldStartColor = mapView.getStyle().getStartPointColor();
+            Color oldEndColor = mapView.getStyle().getEndPointColor();
 
             if (!devToolsPanel.getDevMode()) {
                 devToolsPanel.reset();
@@ -184,11 +186,18 @@ public class MainAppUI extends JFrame{
                     showNodes.setText("Show Only Named Locations");
                     enterDeveloperMode.setText("Exit Developer Mode");
 
+                    //Update default view things
+                    drawAllLocations = true;
+                    drawEdges = true;
+                    mapView.getStyle().setDrawAllEdges(true);
+                    mapView.getStyle().setDrawAllPoints(true);
+
                     //Update the styles
                     mapView.getStyle().setUnnamedButtonSize(DEV_UNNAMED_SIZE);
                     mapView.getStyle().setNamedButtonSize(DEV_NAMED_SIZE);
-                    mapView.getStyle().setDrawAllEdges(true);
-                    mapView.getStyle().setDrawAllPoints(true);
+                    mapView.getStyle().setStartOrEndButtonSize(DEV_START_SIZE);
+                    mapView.getStyle().setStartPointColor(mapView.getStyle().getSelectedPointColor());
+                    mapView.getStyle().setEndPointColor(mapView.getStyle().getSelectedPointColor());
 
                     //Update mapView for use with devtools
                     clearState(mapView);
@@ -206,11 +215,18 @@ public class MainAppUI extends JFrame{
                 add(sidePanel, BorderLayout.WEST);
                 repaint();
 
+                //Update default view things
+                drawAllLocations = oldDrawLocations;
+                drawEdges = oldDrawEdges;
+                mapView.getStyle().setDrawAllEdges(oldDrawEdges);
+                mapView.getStyle().setDrawAllPoints(oldDrawLocations);
+
                 //Update the styles
                 mapView.getStyle().setUnnamedButtonSize(UNNAMED_SIZE);
                 mapView.getStyle().setNamedButtonSize(NAMED_SIZE);
-                mapView.getStyle().setDrawAllEdges(oldViewEdges);
-                mapView.getStyle().setDrawAllPoints(oldViewLocs);
+                mapView.getStyle().setStartOrEndButtonSize(START_SIZE);
+                mapView.getStyle().setStartPointColor(oldStartColor);
+                mapView.getStyle().setEndPointColor(oldEndColor);
 
                 //Get mapView back to the way it was
                 mapView.removeMouseListener(devToolClickListener);
@@ -254,15 +270,15 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
                     devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
                     devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
-                    new Color(250, 120, 0), //Edge color
-                    new Color(15, 78, 152), //Route Edge color
-                    new Color(255, 240, 0),   //Location Color
-                    new Color(79, 189, 255),   //Route Location color
+                    new Color(250, 120, 0),     //Edge color
+                    new Color(15, 78, 152),     //Route Edge color
+                    new Color(255, 240, 0),     //Location Color
+                    new Color(79, 189, 255),    //Route Location color
                     Color.RED,      //Start Point color
                     Color.GREEN,    //End Point color
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
-                    Color.MAGENTA,  //Edge highlight color
+                    Color.MAGENTA,     //Edge highlight color
                     Color.GRAY      //Search Result Color
             );
 
@@ -280,15 +296,15 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
                     devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
                     devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
-                    new Color(169, 176, 183), //Edge color
-                    new Color(169, 176, 183), //Route Edge color
-                    new Color(0, 0, 0),   //Location Color
-                    new Color(100, 0, 0),   //Route Location color
+                    new Color(169, 176, 183),   //Edge color
+                    new Color(169, 176, 183),   //Route Edge color
+                    new Color(0, 0, 0),         //Location Color
+                    new Color(100, 0, 0),       //Route Location color
                     Color.RED,      //Start Point color
                     Color.GREEN,    //End Point color
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
-                    Color.MAGENTA,  //Edge highlight color
+                    Color.MAGENTA,     //Edge highlight color
                     Color.GRAY      //Search Result Color
             );
 
@@ -314,7 +330,7 @@ public class MainAppUI extends JFrame{
                     Color.GREEN,    //End Point color
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
-                    Color.MAGENTA,  //Edge highlight color
+                    Color.MAGENTA,     //Edge highlight color
                     Color.GRAY      //Search Result Color
             );
 
@@ -340,7 +356,7 @@ public class MainAppUI extends JFrame{
                     Color.GREEN,    //End Point color
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
-                    Color.MAGENTA,  //Edge highlight color
+                    Color.MAGENTA,     //Edge highlight color
                     Color.GRAY      //Search Result Color
             );
 
@@ -366,7 +382,7 @@ public class MainAppUI extends JFrame{
                     Color.GREEN,    //End Point color
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
-                    Color.MAGENTA,  //Edge highlight color
+                    Color.MAGENTA,     //Edge highlight color
                     Color.GRAY      //Search Result Color
             );
 
@@ -384,15 +400,15 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
                     devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
                     devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
-                    new Color(200, 0, 0),     //Edge color
-                    new Color(255, 185, 15),     //Route Edge color
-                    new Color(0, 0, 255),     //Location Color
-                    new Color(0, 0, 0),    //Route Location color
-                    new Color(10, 255, 200), //Start Point color
-                    new Color(191, 0, 255),            //End Point color
-                    Color.CYAN,             //Selected Point color
-                    Color.BLUE,             //Previously Selected Point color
-                    Color.MAGENTA,  //Edge highlight color
+                    new Color(200, 0, 0),       //Edge color
+                    new Color(255, 185, 15),    //Route Edge color
+                    new Color(0, 0, 255),       //Location Color
+                    new Color(0, 0, 0),         //Route Location color
+                    new Color(10, 255, 200),    //Start Point color
+                    new Color(191, 0, 255),     //End Point color
+                    Color.CYAN,     //Selected Point color
+                    Color.BLUE,     //Previously Selected Point color
+                    Color.MAGENTA,     //Edge highlight color
                     Color.GRAY      //Search Result Color
             );
 

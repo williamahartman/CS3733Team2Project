@@ -47,6 +47,7 @@ public class MapViewStyle {
         this.endPointColor = endPointColor;
         this.selectedPointColor = selectedPointColor;
         this.previousSelectedColor = previousSelectedColor;
+        this.edgeHighlightColor = edgeHighlightColor;
         this.searchResultColor = searchResultColor;
     }
 
@@ -62,16 +63,60 @@ public class MapViewStyle {
         this.drawNamedPoints = drawNamedPoints;
     }
 
-    public void setNamedButtonSize(float namedButtonSize) {
-        this.namedButtonSize = namedButtonSize;
+    public void setDrawRoutes(boolean drawRoutes) {
+        this.drawRoutes = drawRoutes;
     }
 
     public void setUnnamedButtonSize(float unnamedButtonSize) {
         this.unnamedButtonSize = unnamedButtonSize;
     }
 
+    public void setNamedButtonSize(float namedButtonSize) {
+        this.namedButtonSize = namedButtonSize;
+    }
+
     public void setStartOrEndButtonSize(float startOrEndButtonSize) {
         this.startOrEndButtonSize = startOrEndButtonSize;
+    }
+
+    public void setEdgeColor(Color edgeColor) {
+        this.edgeColor = edgeColor;
+    }
+
+    public void setRouteColor(Color routeColor) {
+        this.routeColor = routeColor;
+    }
+
+    public void setLocationColor(Color locationColor) {
+        this.locationColor = locationColor;
+    }
+
+    public void setRouteLocationColor(Color routeLocationColor) {
+        this.routeLocationColor = routeLocationColor;
+    }
+
+    public void setStartPointColor(Color startPointColor) {
+        this.startPointColor = startPointColor;
+    }
+
+    public void setEndPointColor(Color endPointColor) {
+        this.endPointColor = endPointColor;
+    }
+
+    public void setSelectedPointColor(Color selectedPointColor) {
+        this.selectedPointColor = selectedPointColor;
+    }
+
+    public void setPreviousSelectedColor(Color previousSelectedColor) {
+        this.previousSelectedColor = previousSelectedColor;
+    }
+
+    public void setEdgeHighlightColor(Color edgeHighlightColor) {
+        this.edgeHighlightColor = edgeHighlightColor;
+    }
+
+    public void setSearchResultColor(Color searchResultColor) {
+        this.searchResultColor = searchResultColor;
     }
 
     public Color getEdgeColor() {

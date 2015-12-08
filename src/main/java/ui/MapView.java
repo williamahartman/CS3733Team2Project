@@ -509,8 +509,10 @@ public class MapView extends JPanel {
                    repaint();
                }
                if (step > 0) {
-                   textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y).get(step * 2)
-                           + instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y).get(step * 2 + 1);
+                   textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y)
+                           .get(step * 2)
+                           + instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y)
+                           .get(step * 2 + 1);
                    Location previous;
                    if (way == true) {
                        previous = ll.get(step - 1);

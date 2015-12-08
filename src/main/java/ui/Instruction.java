@@ -147,7 +147,7 @@ public class Instruction {
                     instruction.add("Go " + temp + " miles.\n");
                     for(int j = 0; j < count; j++ ) {
                         if (i != 0) {
-                            instruction.add("Keep Going\n");
+                            instruction.add("Continue straight\n");
                             instruction.add("");
                         }
                     }

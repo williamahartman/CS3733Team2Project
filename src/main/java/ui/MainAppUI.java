@@ -344,7 +344,7 @@ public class MainAppUI extends JFrame{
                     int count = 0;
                     for (String str : instruct.stepByStepInstruction(route, 1)) {
                         System.out.print(str);
-                        if (!str.equals("Keep Going\n") && !str.equals(""))
+                        if (!str.equals("Continue straight\n") && !str.equals(""))
                         {
                             count++;
                             gps.append(count + ") " + str);

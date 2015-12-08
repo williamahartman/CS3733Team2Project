@@ -24,13 +24,14 @@ public class MapViewStyle {
     private Color selectedPointColor;
     private Color previousSelectedColor;
     private Color edgeHighlightColor;
+    private Color searchResultColor;
 
     public MapViewStyle(boolean drawAllEdges, boolean drawAllPoints, boolean drawNamedPoints,
                         boolean drawRoutes, float unnamedButtonSize, float namedButtonSize,
                         float startOrEndButtonSize, Color edgeColor, Color routeColor,
                         Color locationColor, Color routeLocationColor, Color startPointColor,
                         Color endPointColor, Color selectedPointColor, Color previousSelectedColor,
-                        Color edgeHighlightColor) {
+                        Color edgeHighlightColor, Color searchResultColor) {
         this.drawAllEdges = drawAllEdges;
         this.drawAllPoints = drawAllPoints;
         this.drawNamedPoints = drawNamedPoints;
@@ -46,6 +47,7 @@ public class MapViewStyle {
         this.endPointColor = endPointColor;
         this.selectedPointColor = selectedPointColor;
         this.previousSelectedColor = previousSelectedColor;
+        this.searchResultColor = searchResultColor;
     }
 
     public void setDrawAllEdges(boolean drawAllEdges) {
@@ -134,5 +136,9 @@ public class MapViewStyle {
 
     public Color getEdgeHighlightColor() {
         return edgeHighlightColor;
+    }
+
+    public Color getSearchResultColor() {
+        return searchResultColor;
     }
 }

@@ -500,14 +500,14 @@ public class MapView extends JPanel {
             //Set the size, based on whether or not there is a name
             if (loc.getNameList().length == 0)
             {
-                int xPos = (int) (loc.getPosition().x * getImagePixelSize().width);
-                int yPos = (int) (loc.getPosition().y * getImagePixelSize().height);
+                int xPos = (int) (loc.getPosition().x * getCurrentPixelSize().width);
+                int yPos = (int) (loc.getPosition().y * getCurrentPixelSize().height);
 
                 int buttonSize = (int) style.getUnnamedButtonSize();
                 locButton.setBounds(xPos - (buttonSize / 2), yPos - (buttonSize / 2), buttonSize, buttonSize);
             } else {
-                int xPos = (int) (loc.getPosition().x * getImagePixelSize().width);
-                int yPos = (int) (loc.getPosition().y * getImagePixelSize().height);
+                int xPos = (int) (loc.getPosition().x * getCurrentPixelSize().width);
+                int yPos = (int) (loc.getPosition().y * getCurrentPixelSize().height);
 
                 int buttonSize = (int) style.getNamedButtonSize();
                 locButton.setBounds(xPos - (buttonSize / 2), yPos - (buttonSize / 2), buttonSize, buttonSize);
@@ -551,8 +551,8 @@ public class MapView extends JPanel {
     }
     //Make the passed button even bigger
     private void setToStartOrEnd(LocationButton locationButton, Color color, String tooltip, int size) {
-        int xPos = (int) (locationButton.getAssociatedLocation().getPosition().x * getImagePixelSize().width);
-        int yPos = (int) (locationButton.getAssociatedLocation().getPosition().y * getImagePixelSize().height);
+        int xPos = (int) (locationButton.getAssociatedLocation().getPosition().x * getCurrentPixelSize().width);
+        int yPos = (int) (locationButton.getAssociatedLocation().getPosition().y * getCurrentPixelSize().height);
 
         locationButton.setBounds(xPos - (size / 2), yPos - (size / 2), size, size);
         locationButton.setBgColor(color);

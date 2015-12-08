@@ -167,6 +167,13 @@ public class LocationGraph {
 
         return result;
     }
+
+    public List<Location> searchLocationByExacName(String searchString) {
+        ArrayList<Location> result = new ArrayList<>();
+        locationList.stream().filter(loc -> loc.nameEqual(searchString)).forEach(result::add);
+        return result;
+    }
+
     /**
      * Return a list of locations whose are on a certain floor.
      *
@@ -273,5 +280,28 @@ public class LocationGraph {
         getAllLocations().forEach(loc -> loc.getEdges().forEach(edgeSet::add));
 
         return new ArrayList<>(edgeSet);
+    }
+
+    public List<Location> makeMultipleRoute(EdgeAttributeManager attributeManager, List<Location> multiLoc){
+        List<Location> route = new ArrayList<>();
+        List<Location> subRoute;
+        int size = multiLoc.size();
+        if (size > 1) {
+            for (int i = 0; i < (size - 1); i++) {
+                Location start = multiLoc.get(i);
+                Location end = multiLoc.get(i + 1);
+                subRoute = this.makeAStarRoute(attributeManager, start, end);
+                for (Location l: subRoute){
+                    int sizeRoute = route.size();
+                    if (sizeRoute == 0) {
+                        route.add(l);
+                    } else if (!route.get(sizeRoute - 1).equals(l)){
+                        route.add(l);
+                    }
+                }
+            }
+        }
+        System.out.println("Size" + route.size());
+        return route;
     }
 }

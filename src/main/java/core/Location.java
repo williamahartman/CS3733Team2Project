@@ -64,6 +64,15 @@ public class Location {
         return false;
     }
 
+    public boolean nameEqual(String searchName){
+        for (String s: nameList) {
+            if (s.toLowerCase().equals(searchName.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Make the current Location adjacent to the passed location on the graph. This method will
      * build an edge between the two points.

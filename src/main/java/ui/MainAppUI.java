@@ -659,7 +659,7 @@ public class MainAppUI extends JFrame{
             if (stepCount > 0)
             {
                 stepCount--;
-                mapView.stepByStep(stepCount, false, false);
+                gps.setText(mapView.stepByStep(stepCount, false, false));
             }
 
         });
@@ -753,11 +753,12 @@ public class MainAppUI extends JFrame{
         sidePanel.add(makeAStarRoute);
         sidePanel.add(clearButton, BorderLayout.SOUTH);
         sidePanel.add(text);
-        sidePanel.add(emailText);
-        sidePanel.add(emailButton);
-        sidePanel.add(edgeWeightPanel);
         sidePanel.add(stepBackOnRouteButton);
         sidePanel.add(stepForwardOnRouteButton);
+        sidePanel.add(emailText);
+        sidePanel.add(emailButton);
+        //sidePanel.add(edgeWeightPanel);
+
         sidePanel.add(checkBox);
         sidePanel.add(editRoutePrefs);
 

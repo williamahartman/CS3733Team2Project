@@ -486,7 +486,7 @@ public class MapView extends JPanel {
      *
      * @param graph The graph whose edges will be displayed
      */
-    public final void updateGraph(LocationGraph graph) {
+    public void updateGraph(LocationGraph graph) {
         this.graphEdgeList = graph.edgeByFloorNumber(currentFloorNumber);
         this.locationList = graph.locationByFloorNumber(currentFloorNumber);
         this.routeLists = new ArrayList<>();
@@ -495,6 +495,7 @@ public class MapView extends JPanel {
 
         addButtons();
         updateButtonAttributes();
+
     }
 
     public void updateButtonAttributes() {

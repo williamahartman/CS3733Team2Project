@@ -141,6 +141,9 @@ public class MainAppUI extends JFrame{
                         "campusmap5.svg"},
                 3, defaultMapViewStyle);
         this.mapView.setButtonListener(buildRouteSelectListener());
+        this.mapView.getScrollPane().addMouseWheelListener(e -> {
+            resetMap(mapView);
+        });
         this.attributeManager = new EdgeAttributeManager();
 
         startPoint = null;
@@ -657,7 +660,7 @@ public class MainAppUI extends JFrame{
                 gps.setText(mapView.stepByStep(stepCount, true, false));
                 stepCount++;
                 TextToVoice tv = new TextToVoice(gps.getText());
-                if(voiceDirections) {
+                if (voiceDirections) {
                     tv.start();
                 }
             }
@@ -760,7 +763,7 @@ public class MainAppUI extends JFrame{
             public void mouseReleased(MouseEvent e) {
                 if (textToVoice.isSelected()){
                     voiceDirections = true;
-                } else{
+                } else {
                     voiceDirections = false;
                 }
             }
@@ -880,21 +883,22 @@ public class MainAppUI extends JFrame{
      * @param toReset the mapView to reset
      */
     private void resetMap(MapView toReset) {
-        //todo fix this?
         gps.setText("");
-        toReset.updateGraph(graph);
+        //toReset.updateGraph(graph);
 
         updateStartEndColors();
     }
 
     private void updateStartEndColors() {
+        //TODO rewrite to keep start and end locations
         for (LocationButton locButton: mapView.getLocationButtonList()) {
+            if (multiLoc.contains(locButton.getAssociatedLocation())) {
+                locButton.setBgColor(mapView.getStyle().getEndPointColor());
+            }
             if (locButton.getAssociatedLocation() == startPoint) {
                 locButton.setBgColor(mapView.getStyle().getStartPointColor());
             }
-            if (locButton.getAssociatedLocation() == endPoint) {
-                locButton.setBgColor(mapView.getStyle().getEndPointColor());
-            }
+            locButton.repaint();
         }
     }
 

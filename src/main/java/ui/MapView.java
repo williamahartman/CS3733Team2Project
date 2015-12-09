@@ -31,6 +31,7 @@ public class MapView extends JPanel {
 
     private JScrollPane scrollPane;
     private JPanel mapPanel;
+    private JSlider floorSlider;
     private double zoomFactor;
 
     //TODO locationList is redundant with locationButtonList
@@ -169,7 +170,7 @@ public class MapView extends JPanel {
         addDefaultListeners();
 
         //Add the slider
-        JSlider floorSlider = new JSlider(JSlider.VERTICAL);
+        this.floorSlider = new JSlider(JSlider.VERTICAL);
         floorSlider.setMinimum(0);
         floorSlider.setMaximum(floorImagePaths.length - 1);
         floorSlider.setValue(currentFloorNumber);
@@ -576,6 +577,9 @@ public class MapView extends JPanel {
                if (current.getFloorNumber() != currentFloorNumber)
                {
                    currentFloorNumber = current.getFloorNumber();
+                   floorSlider.setValue(currentFloorNumber);
+                   repaint();
+
                    List<List<Location>> backUpList = routeLists;
                    setCurrentImage();
                    updateGraph(graph);
@@ -614,7 +618,11 @@ public class MapView extends JPanel {
                    }
                    if (current.getFloorNumber() != previous.getFloorNumber())
                    {
+                       //TODO put these threee lines in a nicer mehtod.
                        currentFloorNumber = current.getFloorNumber();
+                       floorSlider.setValue(currentFloorNumber);
+                       repaint();
+
                        List<List<Location>> backUpList = routeLists;
                        setCurrentImage();
                        updateGraph(graph);

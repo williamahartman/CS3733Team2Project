@@ -27,10 +27,14 @@ import java.util.List;
  * makes devPanel and listeners for editing
  */
 public class DevTools extends JPanel {
-
     private LocationGraph graph;
+
     private MapView mapView;
     private boolean inDevMode = false;
+
+    private String username;
+    private String password;
+
     private Edge currentEdge;
     private LocationButton lastButtonClicked; //The last button you clicked
     private LocationButton originalButton; //The button you clicked before the last one
@@ -80,57 +84,6 @@ public class DevTools extends JPanel {
         this.add(createEditor());
 
         refreshGraph();
-    }
-
-    /**
-     * builds a listener for DevTools to use.
-     *
-     * @param mapPanel Clicked on mapPanel.
-     * @return A mouse adapter that can handle adding buttons
-     */
-    //Mouse adapter for creating LocationButtons
-    public MouseAdapter buildAddLocationListener(JPanel mapPanel) {
-        return new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (inDevMode) {
-                    dbChanges = dblist.getRemoveEdgeList().size() +
-                            dblist.getAddEdgeList().size() +
-                            dblist.getAddLocList().size() +
-                            dblist.getRemoveLocList().size() +
-                            dblist.getUpdateEdgeList().size() +
-                            dblist.getUpdateLocList().size();
-                    databaseChanges.setText("<html>Number of changes<br>" +
-                            "since last save<br>" +
-                            "to database: " + (dbChanges - prevSaves));
-                    Point2D mousePos = mapPanel.getMousePosition();
-                    Point2D.Double doubleMousePos = new Point2D.Double(
-                            mousePos.getX() / mapPanel.getWidth(),
-                            mousePos.getY() / mapPanel.getHeight());
-
-                    //Creates a new button object where the panel is clicked
-                    Location locAdd = new Location(doubleMousePos, mapView.getFloorNumber(), new String[0]);
-                    graph.addLocation(locAdd, new HashMap<>());
-
-                    //Adds an edge to the new location if in edge mode
-                    if (e.isShiftDown() && lastButtonClicked != null) {
-                        addEdge(lastButtonClicked.getAssociatedLocation(), locAdd);
-                    }
-
-                    dblist.addedLocation(locAdd);
-
-                    //Set last buttonClicked to the location we just added
-                    mapView.updateGraph(graph);
-                    mapView.getLocationButtonList().forEach(locationButton -> {
-                        if (locationButton.getAssociatedLocation() == locAdd) {
-                            lastButtonClicked = locationButton;
-                        }
-                    });
-                    refreshGraph();
-                    mapPanel.repaint();
-                }
-            }
-        };
     }
 
     /**
@@ -315,9 +268,13 @@ public class DevTools extends JPanel {
         saveToDatabase.addActionListener(listener -> {
             prevSaves = dbChanges;
             try {
-                Database graphData = new Database();
-                graphData.updateDB(dblist);
-                graphData.closeConnection();
+                if(username != null && password != null) {
+                    Database graphData = new Database(username, password);
+                    graphData.updateDB(dblist);
+                    graphData.closeConnection();
+                } else {
+                    System.err.println("Username or password not set");
+                }
             } catch (SQLException exception) {
                 JOptionPane.showMessageDialog(mapView.getParent(),
                         "Failed to connect to the online database (be on the internet!)",
@@ -382,6 +339,56 @@ public class DevTools extends JPanel {
         lastButtonClicked = null;
         originalButton = null;
         setElementsEnabled(false);
+    }
+
+    /**
+     * builds a listener for DevTools to use.
+     *
+     * @param mapPanel Clicked on mapPanel.
+     * @return A mouse adapter that can handle adding buttons
+     */
+    public MouseAdapter buildAddLocationListener(JPanel mapPanel) {
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (inDevMode) {
+                    dbChanges = dblist.getRemoveEdgeList().size() +
+                            dblist.getAddEdgeList().size() +
+                            dblist.getAddLocList().size() +
+                            dblist.getRemoveLocList().size() +
+                            dblist.getUpdateEdgeList().size() +
+                            dblist.getUpdateLocList().size();
+                    databaseChanges.setText("<html>Number of changes<br>" +
+                            "since last save<br>" +
+                            "to database: " + (dbChanges - prevSaves));
+                    Point2D mousePos = mapPanel.getMousePosition();
+                    Point2D.Double doubleMousePos = new Point2D.Double(
+                            mousePos.getX() / mapPanel.getWidth(),
+                            mousePos.getY() / mapPanel.getHeight());
+
+                    //Creates a new button object where the panel is clicked
+                    Location locAdd = new Location(doubleMousePos, mapView.getFloorNumber(), new String[0]);
+                    graph.addLocation(locAdd, new HashMap<>());
+
+                    //Adds an edge to the new location if in edge mode
+                    if (e.isShiftDown() && lastButtonClicked != null) {
+                        addEdge(lastButtonClicked.getAssociatedLocation(), locAdd);
+                    }
+
+                    dblist.addedLocation(locAdd);
+
+                    //Set last buttonClicked to the location we just added
+                    mapView.updateGraph(graph);
+                    mapView.getLocationButtonList().forEach(locationButton -> {
+                        if (locationButton.getAssociatedLocation() == locAdd) {
+                            lastButtonClicked = locationButton;
+                        }
+                    });
+                    refreshGraph();
+                    mapPanel.repaint();
+                }
+            }
+        };
     }
 
     /** Mouse listener that checks for clicks on nodes.
@@ -497,6 +504,30 @@ public class DevTools extends JPanel {
     }
 
     /**
+     * Adds an edge with the currently selected edge attributes.
+     */
+    private void addEdge(Location loc1, Location loc2){
+        ArrayList<EdgeAttribute> listOfAttributes = new ArrayList<>();
+        if (handicapAccess.isSelected() &&
+                !listOfAttributes.contains(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
+            listOfAttributes.add(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
+        }
+        if (indoors.isSelected() && !listOfAttributes.contains(EdgeAttribute.INDOORS)){
+            listOfAttributes.add(EdgeAttribute.INDOORS);
+        }
+        if (stairs.isSelected() && !listOfAttributes.contains(EdgeAttribute.STAIRS)){
+            listOfAttributes.add(EdgeAttribute.STAIRS);
+        }
+        if (elevator.isSelected() && !listOfAttributes.contains(EdgeAttribute.ELEVATOR)){
+            listOfAttributes.add(EdgeAttribute.ELEVATOR);
+        }
+        Edge newEdge = loc1.makeAdjacentTo(loc2, listOfAttributes);
+        if (newEdge != null) {
+            dblist.addedEdge(newEdge);
+        }
+    }
+
+    /**
      * Redraws the graph with colors and stuff.
      */
     public void refreshGraph() {
@@ -519,28 +550,18 @@ public class DevTools extends JPanel {
         mapView.repaint();
     }
 
-    /**
-     * Adds an edge with the currently selected edge attributes.
-     */
-    private void addEdge(Location loc1, Location loc2){
-        ArrayList<EdgeAttribute> listOfAttributes = new ArrayList<>();
-        if (handicapAccess.isSelected() &&
-                !listOfAttributes.contains(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)){
-            listOfAttributes.add(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE);
+    private void updateHighlightedEdges(){
+        for (Edge e:  graph.edgeByFloorNumber(mapView.getFloorNumber())){
+            //TODO make changes in checkboxes result in style change
+
+            if ((stairsHL.isSelected() && e.hasAttribute(EdgeAttribute.STAIRS)) ||
+                    (elevatorHL.isSelected() && e.hasAttribute(EdgeAttribute.ELEVATOR)) ||
+                    (notHandicapHL.isSelected() && e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)) ||
+                    (indoorsHL.isSelected() && e.hasAttribute(EdgeAttribute.INDOORS))) {
+                mapView.addToHighlightList(e);
+            }
         }
-        if (indoors.isSelected() && !listOfAttributes.contains(EdgeAttribute.INDOORS)){
-            listOfAttributes.add(EdgeAttribute.INDOORS);
-        }
-        if (stairs.isSelected() && !listOfAttributes.contains(EdgeAttribute.STAIRS)){
-            listOfAttributes.add(EdgeAttribute.STAIRS);
-        }
-        if (elevator.isSelected() && !listOfAttributes.contains(EdgeAttribute.ELEVATOR)){
-            listOfAttributes.add(EdgeAttribute.ELEVATOR);
-        }
-        Edge newEdge = loc1.makeAdjacentTo(loc2, listOfAttributes);
-        if (newEdge != null) {
-            dblist.addedEdge(newEdge);
-        }
+        mapView.repaint();
     }
 
     /**
@@ -574,20 +595,12 @@ public class DevTools extends JPanel {
         field2.setValue(locationNames.toString());
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
     public boolean getDevMode(){ return inDevMode; }
     public void setDevMode(boolean devMode){ inDevMode = devMode; }
-
-    private void updateHighlightedEdges(){
-        for (Edge e:  graph.edgeByFloorNumber(mapView.getFloorNumber())){
-            //TODO make changes in checkboxes result in style change
-
-            if ((stairsHL.isSelected() && e.hasAttribute(EdgeAttribute.STAIRS)) ||
-                (elevatorHL.isSelected() && e.hasAttribute(EdgeAttribute.ELEVATOR)) ||
-                (notHandicapHL.isSelected() && e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)) ||
-                (indoorsHL.isSelected() && e.hasAttribute(EdgeAttribute.INDOORS))) {
-                mapView.addToHighlightList(e);
-            }
-        }
-        mapView.repaint();
-    }
 }

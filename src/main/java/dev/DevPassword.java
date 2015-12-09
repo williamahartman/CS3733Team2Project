@@ -1,7 +1,10 @@
 package dev;
 
+import database.Database;
+
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLException;
 
 /**
  * Created by Elizabeth on 11/27/2015.
@@ -9,19 +12,8 @@ import java.awt.*;
  * developer tools
  */
 public class DevPassword {
-    String username;
-    String password;
-
-    /**
-     * Constructor.
-     *
-     * @param username The username of the person signing in.
-     * @param password The password of the person signing in.
-     */
-    public DevPassword (String username, String password){
-        this.username = username;
-        this.password = password;
-    }
+    private String usernameSuccess;
+    private String passwordSuccess;
 
     /**
      * Set up the box for the verification pop-up.
@@ -49,8 +41,10 @@ public class DevPassword {
             if (result == JOptionPane.OK_OPTION) {
                 char[] pass = password.getPassword();
                 String passString = new String(pass);
-                if (((uname.getText().compareTo(this.username)) == 0)
-                        && (((passString).compareTo(this.password)) == 0)) {
+                if (tryLogin(uname.getText(), passString)) {
+                    usernameSuccess = uname.getText();
+                    passwordSuccess = passString;
+
                     flag = 1; //Condition to switch into dev mode
                 } else {
                     flag = 2; //Condition to display error message
@@ -64,6 +58,28 @@ public class DevPassword {
         }
 
         return 2;
+    }
+
+    private boolean tryLogin(String username, String password) {
+        boolean logonSuccessful = false;
+
+        try {
+            Database loginTest = new Database(username, password);
+            loginTest.closeConnection();
+            logonSuccessful = true;
+        } catch (SQLException e) {
+            System.err.println("Login with username \"" + username + "\" failed!");
+        }
+
+        return logonSuccessful;
+    }
+
+    public String getSuccessfulUsername() {
+        return usernameSuccess;
+    }
+
+    public String getSuccessfulPassword() {
+        return passwordSuccess;
     }
 }
 

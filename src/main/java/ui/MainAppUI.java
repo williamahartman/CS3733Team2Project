@@ -166,7 +166,7 @@ public class MainAppUI extends JFrame{
         });
         JMenuItem enterDeveloperMode = new JMenuItem("Edit Map (Developers Only!)");
 
-        DevPassword passBox = new DevPassword("aztec", "wash");
+        DevPassword passBox = new DevPassword();
 
         devToolsPanel = new DevTools(graph, mapView);
         devToolsPanel.setVisible(false);
@@ -216,6 +216,8 @@ public class MainAppUI extends JFrame{
                     passResult = passBox.passwordBox();
                     if (passResult == 1) {
                         userLoggedIn = true;
+                        devToolsPanel.setUsername(passBox.getSuccessfulUsername());
+                        devToolsPanel.setPassword(passBox.getSuccessfulPassword());
                     } else if (passResult == 2) {
                         JOptionPane.showMessageDialog(null, "Error: incorrect credentials. Please try again",
                                 "Incorrect!", JOptionPane.ERROR_MESSAGE);

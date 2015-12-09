@@ -49,7 +49,6 @@ public class DevTools extends JPanel {
     private JFormattedTextField field1 = new JFormattedTextField();
     private JFormattedTextField field2 = new JFormattedTextField();
 
-    private int prevSaves;
     private int dbChanges;
 
     private JLabel databaseChanges = new JLabel("<html>Number of changes<br>" +
@@ -94,15 +93,6 @@ public class DevTools extends JPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (inDevMode) {
-                    dbChanges = dblist.getRemoveEdgeList().size() +
-                            dblist.getAddEdgeList().size() +
-                            dblist.getAddLocList().size() +
-                            dblist.getRemoveLocList().size() +
-                            dblist.getUpdateEdgeList().size() +
-                            dblist.getUpdateLocList().size();
-                    databaseChanges.setText("<html>Number of changes<br>" +
-                            "since last save<br>" +
-                            "to database: " + (dbChanges - prevSaves));
                     Point2D mousePos = mapPanel.getMousePosition();
                     Point2D.Double doubleMousePos = new Point2D.Double(
                             mousePos.getX() / mapPanel.getWidth(),
@@ -287,39 +277,40 @@ public class DevTools extends JPanel {
 
         //Panel displaying all the labels
         JPanel labelPanel1 = new JPanel(new GridLayout(0, 1, 5, 20));
-        JPanel labelPanel2 = new JPanel(new GridLayout(0, 1, 5, 20));
+        JPanel highlightPanel = new JPanel(new GridLayout(0, 1, 5, 20));
         labelPanel1.add(buttonLabel1);
         labelPanel1.add(buttonLabel2);
         labelPanel1.add(blank3);
         labelPanel1.add(blank5);
 
-        labelPanel2.add(notHandicapHL);
-        labelPanel2.add(indoorsHL);
-        labelPanel2.add(stairsHL);
-        labelPanel2.add(elevatorHL);
+        highlightPanel.add(notHandicapHL);
+        highlightPanel.add(indoorsHL);
+        highlightPanel.add(stairsHL);
+        highlightPanel.add(elevatorHL);
 
         //Panel displaying all the fields
         JPanel textPanel1 = new JPanel(new GridLayout(0, 1, 5, 20));
-        JPanel textPanel2 = new JPanel(new GridLayout(0, 1, 5, 20));
+        JPanel edgeAttributePanel = new JPanel(new GridLayout(0, 1, 5, 20));
         textPanel1.add(field1);
         textPanel1.add(field2);
         textPanel1.add(okButton);
         textPanel1.add(blank1);
 
-        textPanel2.add(handicapAccess);
-        textPanel2.add(indoors);
-        textPanel2.add(stairs);
-        textPanel2.add(elevator);
+        edgeAttributePanel.add(handicapAccess);
+        edgeAttributePanel.add(indoors);
+        edgeAttributePanel.add(stairs);
+        edgeAttributePanel.add(elevator);
 
         //create save to database button
         JButton saveToDatabase = new JButton("Save to database");
         saveToDatabase.setToolTipText("Commit the changes made to the online database.");
         saveToDatabase.addActionListener(listener -> {
-            prevSaves = dbChanges;
             try {
                 Database graphData = new Database();
                 graphData.updateDB(dblist);
                 graphData.closeConnection();
+
+                dblist = new DatabaseList();
             } catch (SQLException exception) {
                 JOptionPane.showMessageDialog(mapView.getParent(),
                         "Failed to connect to the online database (be on the internet!)",
@@ -333,8 +324,8 @@ public class DevTools extends JPanel {
         TitledBorder highlightTitle = BorderFactory.createTitledBorder("Highlight Edges");
         highlightTitle.setTitleJustification(TitledBorder.CENTER);
         title.setTitleJustification(TitledBorder.CENTER);
-        labelPanel2.setBorder(highlightTitle);
-        textPanel2.setBorder(title);
+        highlightPanel.setBorder(highlightTitle);
+        edgeAttributePanel.setBorder(title);
 
         setElementsEnabled(false);
 
@@ -346,9 +337,9 @@ public class DevTools extends JPanel {
         panel1.add(labelPanel1, BorderLayout.WEST);
         panel1.add(textPanel1, BorderLayout.EAST);
 
-        panel2.add(labelPanel2, BorderLayout.WEST);
-        panel2.add(textPanel2, BorderLayout.EAST);
-        panel2.add(databaseChanges);
+        panel2.add(edgeAttributePanel);
+        panel2.add(highlightPanel, BorderLayout.NORTH);
+        panel2.add(databaseChanges, BorderLayout.SOUTH);
         panel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel2.setPreferredSize(new Dimension(330, 50));
 
@@ -495,15 +486,6 @@ public class DevTools extends JPanel {
                         mapView.repaint();
                     }
                 }
-                dbChanges = dblist.getRemoveEdgeList().size() +
-                        dblist.getAddEdgeList().size() +
-                        dblist.getAddLocList().size() +
-                        dblist.getRemoveLocList().size() +
-                        dblist.getUpdateEdgeList().size() +
-                        dblist.getUpdateLocList().size();
-                databaseChanges.setText("<html>Number of changes<br>" +
-                        "since last save<br>" +
-                        "to database: " + (dbChanges - prevSaves));
             }
         };
     }
@@ -529,6 +511,16 @@ public class DevTools extends JPanel {
         }
 
         mapView.repaint();
+
+        dbChanges = dblist.getRemoveEdgeList().size() +
+                dblist.getAddEdgeList().size() +
+                dblist.getAddLocList().size() +
+                dblist.getRemoveLocList().size() +
+                dblist.getUpdateEdgeList().size() +
+                dblist.getUpdateLocList().size();
+        databaseChanges.setText("<html>Number of changes<br>" +
+                "since last save<br>" +
+                "to database: " + dbChanges);
     }
 
     /**
@@ -588,6 +580,18 @@ public class DevTools extends JPanel {
 
     public boolean getDevMode(){ return inDevMode; }
     public void setDevMode(boolean devMode){ inDevMode = devMode; }
+
+    /**
+     * Revert all changes that were made. They will still apply locally, but will not
+     * push them to the database. Be careful with this.
+     */
+    public void wipeChangeList() {
+        dblist = new DatabaseList();
+    }
+
+    public void setLocationGraph(LocationGraph graph) {
+        this.graph = graph;
+    }
 
     private void updateHighlightedEdges(){
         for (Edge e:  graph.edgeByFloorNumber(mapView.getFloorNumber())){

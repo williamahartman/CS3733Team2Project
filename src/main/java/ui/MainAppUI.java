@@ -520,7 +520,7 @@ public class MainAppUI extends JFrame{
 
                 //changed makeAStarRoute to makeMultipleRoute
                 route = graph.makeMultipleRoute(attributeManager, multiLoc);
-
+                java.util.List<Location> routeTime = graph.makeMultipleRoute(attributeManager, multiLoc);
                 if (route.size() > 0) {
                     stepCount = 0;
                     mapView.addRoute(routeTime);

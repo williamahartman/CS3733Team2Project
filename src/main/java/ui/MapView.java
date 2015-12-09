@@ -559,7 +559,7 @@ public class MapView extends JPanel {
         locationButton.setToolTipText(tooltip);
     }
 
-    public String stepByStep(int step, boolean way)
+    public String stepByStep(int step, boolean way, boolean emailMode)
     {
         String textStep = "";
        for (List<Location> ll:routeLists) {
@@ -579,8 +579,10 @@ public class MapView extends JPanel {
                    updateButtonAttributes();
                    repaint();
                    setPosAndZoom();
-                   ImageFromMap img = new ImageFromMap();
-                   img.saveComponentAsJPEG(this, "image" + step + ".jpeg");
+                   if(emailMode) {
+                       ImageFromMap img = new ImageFromMap();
+                       img.saveComponentAsJPEG(this, "image" + step + ".jpeg");
+                   }
                }
                if (step == 0) {
                    setPosAndZoom();

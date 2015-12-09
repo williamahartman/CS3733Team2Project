@@ -561,7 +561,7 @@ public class MainAppUI extends JFrame{
         {
             if (stepCount < route.size())
             {
-                gps.setText(mapView.stepByStep(stepCount, true));
+                gps.setText(mapView.stepByStep(stepCount, true, false));
                 stepCount++;
             }
         });
@@ -574,7 +574,7 @@ public class MainAppUI extends JFrame{
             if (stepCount > 0)
             {
                 stepCount--;
-                mapView.stepByStep(stepCount, false);
+                mapView.stepByStep(stepCount, false, false);
             }
 
         });
@@ -601,7 +601,7 @@ public class MainAppUI extends JFrame{
 
                         Instruction instruct = new Instruction();
                         for (int i = 0; i < route.size(); i++) {
-                            mapView.stepByStep(i, true);
+                            mapView.stepByStep(i, true, true);
                         }
                         java.util.List<String> instructions =
                                 instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);

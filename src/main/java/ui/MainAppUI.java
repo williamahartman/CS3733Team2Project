@@ -162,7 +162,7 @@ public class MainAppUI extends JFrame{
         JMenuBar menuBar = new JMenuBar();
         JMenu editMenu = new JMenu("Edit");
         editMenu.addChangeListener(e -> {
-            ((JComponent) e.getSource()).repaint();
+            menuBar.repaint();
         });
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
@@ -204,7 +204,7 @@ public class MainAppUI extends JFrame{
         //Sets up the 'view' menu bar
         JMenu view = new JMenu("View");
         view.addChangeListener(e -> {
-            ((JComponent) e.getSource()).repaint();
+            menuBar.repaint();
         });
 
         //'View' contains toggleEdges, showNodes, and changeStyle

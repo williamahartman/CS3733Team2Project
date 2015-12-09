@@ -30,6 +30,7 @@ public class MapView extends JPanel {
 
     private JScrollPane scrollPane;
     private JPanel mapPanel;
+    private JPanel sliderPanel;
     private double zoomFactor;
 
     //TODO locationList is redundant with locationButtonList
@@ -189,13 +190,13 @@ public class MapView extends JPanel {
         });
         floorSlider.setToolTipText("Change the displayed floor.");
         floorSlider.setPreferredSize(new Dimension(50, 500));
-        JPanel floorSliderPanel = new JPanel();
-        floorSliderPanel.add(floorSlider);
+        sliderPanel = new JPanel();
+        sliderPanel.add(floorSlider);
         floorSlider.update(getGraphics());
 
         setLayout(new BorderLayout());
         add(scrollPane);
-        add(floorSliderPanel, BorderLayout.WEST);
+        add(sliderPanel, BorderLayout.WEST);
 
         //Scroll to start point
         Point newViewportPos = new Point();
@@ -346,33 +347,6 @@ public class MapView extends JPanel {
     public void addRoute(List<Location> routeToAdd) {
         routeLists.add(routeToAdd);
         updateButtonAttributes();
-    }
-
-    /**
-     * Returns the list of LocationButtons contained in the MapView.
-     *
-     * @return the list of LocationButtons contained in the MapView
-     */
-    public List<LocationButton> getLocationButtonList() {
-        return locationButtonList;
-    }
-
-    /**
-     * Return the backing JPanel for this MapView. This is where the buttons are drawn
-     *
-     * @return The backing JPanel
-     */
-    public JPanel getMapPanel() {
-        return mapPanel;
-    }
-
-    /**
-     * Return the backing JScrollPane for this MapView. This is what moves around
-     *
-     * @return The backing JScrollPane
-     */
-    public JScrollPane getScrollPane() {
-        return scrollPane;
     }
 
     /**
@@ -577,6 +551,37 @@ public class MapView extends JPanel {
     public void setButtonListener(EventListener buttonListener) {
         this.buttonListener = buttonListener;
         addButtons();
+    }
+
+    /**
+     * Returns the list of LocationButtons contained in the MapView.
+     *
+     * @return the list of LocationButtons contained in the MapView
+     */
+    public List<LocationButton> getLocationButtonList() {
+        return locationButtonList;
+    }
+
+    /**
+     * Return the backing JPanel for this MapView. This is where the buttons are drawn
+     *
+     * @return The backing JPanel
+     */
+    public JPanel getMapPanel() {
+        return mapPanel;
+    }
+
+    /**
+     * Return the backing JScrollPane for this MapView. This is what moves around
+     *
+     * @return The backing JScrollPane
+     */
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
+    public JPanel getSliderPanel() {
+        return sliderPanel;
     }
 
     /**

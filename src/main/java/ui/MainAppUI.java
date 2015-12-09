@@ -8,6 +8,7 @@ import database.Database;
 import dev.DevPassword;
 import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
+import org.jb2011.lnf.beautyeye.ch3_button.BEButtonUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,13 +28,17 @@ public class MainAppUI extends JFrame{
     public static final int MAP_SCALE_X = 3355; // Map width in feet
     public static final int MAP_SCALE_Y = 1780; // Map height in feet
 
-    //Button sized
+    //Button sizes
     private static final int UNNAMED_SIZE = 7;
     private static final int NAMED_SIZE = 12;
     private static final int START_SIZE = 15;
     private static final int DEV_UNNAMED_SIZE = 10;
     private static final int DEV_NAMED_SIZE = 15;
     private static final int DEV_START_SIZE = 15;
+
+    //Colors
+    private static final Color BACKGROUND_COLOR = new Color(59, 59, 59);
+    private static final Color FOREGROUND_COLOR = new Color(212, 212, 212);
 
     private MapView mapView;
     private MapViewStyle defaultMapViewStyle;
@@ -121,8 +126,18 @@ public class MainAppUI extends JFrame{
                         "campusmap4.svg",
                         "campusmap5.svg"},
                 3, defaultMapViewStyle);
-        this.mapView.setButtonListener(buildRouteSelectListener());
-        this.attributeManager = new EdgeAttributeManager();
+        mapView.setButtonListener(buildRouteSelectListener());
+        mapView.getMapPanel().setBackground(BACKGROUND_COLOR);
+        mapView.getScrollPane().setBackground(BACKGROUND_COLOR);
+        mapView.getSliderPanel().setBackground(BACKGROUND_COLOR);
+        mapView.getScrollPane().getHorizontalScrollBar().setBackground(BACKGROUND_COLOR);
+        mapView.getScrollPane().getVerticalScrollBar().setBackground(BACKGROUND_COLOR);
+
+        for (Component c: mapView.getSliderPanel().getComponents()) {
+            c.setBackground(BACKGROUND_COLOR);
+        }
+
+        attributeManager = new EdgeAttributeManager();
 
         startPoint = null;
         endPoint = null;
@@ -136,7 +151,9 @@ public class MainAppUI extends JFrame{
         //Set up menubar
         JPanel sidePanel = new JPanel();
         JMenuBar menuBar = new JMenuBar();
+        menuBar.setBackground(BACKGROUND_COLOR);
         JMenu editMenu = new JMenu("Edit");
+        editMenu.setForeground(FOREGROUND_COLOR);
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
         refreshMap.addActionListener(e -> {
@@ -176,6 +193,7 @@ public class MainAppUI extends JFrame{
 
         //Sets up the 'view' menu bar
         JMenu view = new JMenu("View");
+        view.setForeground(FOREGROUND_COLOR);
 
         //'View' contains toggleEdges, showNodes, and changeStyle
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
@@ -471,22 +489,29 @@ public class MainAppUI extends JFrame{
         sidePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         sidePanel.setPreferredSize(new Dimension(350, 768));
         sidePanel.setVisible(true);
+        sidePanel.setBackground(BACKGROUND_COLOR);
 
         startInfo = new JLabel();
         startInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         startInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        startInfo.setForeground(FOREGROUND_COLOR);
 
         endPointInfo = new JLabel();
         endPointInfo.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 30));
         endPointInfo.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 30));
+        endPointInfo.setForeground(FOREGROUND_COLOR);
 
         routeInfo = new JTextArea();
+        routeInfo.setBackground(BACKGROUND_COLOR);
+        routeInfo.setForeground(FOREGROUND_COLOR);
         routeInfo.setVisible(true);
         routeInfo.setEditable(false);
 
         gps = new JTextArea();
         gps.setVisible(true);
         gps.setEditable(false);
+        gps.setBackground(BACKGROUND_COLOR);
+        gps.setForeground(FOREGROUND_COLOR);
 
 //        clearButton = new JButton("Clear Selections");
 //        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -495,6 +520,7 @@ public class MainAppUI extends JFrame{
 //        clearButton.addActionListener(e -> clearState(mapView));
 
         makeAStarRoute = new JButton("Find Shortest Route");
+        makeAStarRoute.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
@@ -583,6 +609,7 @@ public class MainAppUI extends JFrame{
 
         //Back and forward buttons
         JButton stepForwardOnRouteButton = new JButton("Next Step");
+        stepForwardOnRouteButton.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.green));
         stepForwardOnRouteButton.setPreferredSize(new Dimension(150, 30));
         stepForwardOnRouteButton.setMaximumSize(new Dimension(150, 30));
         stepForwardOnRouteButton.setToolTipText("TEST");
@@ -595,6 +622,7 @@ public class MainAppUI extends JFrame{
             }
         });
         JButton stepBackOnRouteButton = new JButton("Previous Step");
+        stepBackOnRouteButton.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.red));
         stepBackOnRouteButton.setPreferredSize(new Dimension(150, 30));
         stepBackOnRouteButton.setMaximumSize(new Dimension(150, 30));
         stepBackOnRouteButton.setToolTipText("TEST");
@@ -610,12 +638,15 @@ public class MainAppUI extends JFrame{
 
         //Edge Prefs Panel
         JCheckBox checkBox = new JCheckBox("Only Make Handicap Accessible Routes");
+        checkBox.setBackground(BACKGROUND_COLOR);
+        checkBox.setForeground(FOREGROUND_COLOR);
         checkBox.addActionListener(e -> {
             JCheckBox source = (JCheckBox) e.getSource();
             attributeManager.addModifierForAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE,
                     source.isSelected() ? 0 : 1);
         });
         JButton editRoutePrefs = new JButton("Change Route Settings");
+        editRoutePrefs.setUI(new BEButtonUI().setNormalColor(BEButtonUI.NormalColor.lightBlue));
         editRoutePrefs.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 50));
         editRoutePrefs.addActionListener(e -> {
             JDialog editWindow = new JDialog(this, "Edit Route Preferences", Dialog.ModalityType.APPLICATION_MODAL);
@@ -634,7 +665,12 @@ public class MainAppUI extends JFrame{
         });
 
         JScrollPane text = new JScrollPane(gps);
+        text.setBackground(BACKGROUND_COLOR);
+        text.getViewport().setBackground(BACKGROUND_COLOR);
+        text.getHorizontalScrollBar().setBackground(BACKGROUND_COLOR);
+        text.getVerticalScrollBar().setBackground(BACKGROUND_COLOR);
         JScrollPane routePane = new JScrollPane(routeInfo);
+        routePane.setBackground(BACKGROUND_COLOR);
         routePane.setPreferredSize(new Dimension(300, 50));
         routePane.setMaximumSize(new Dimension(300, 50));
         text.setPreferredSize(new Dimension(300, 300));

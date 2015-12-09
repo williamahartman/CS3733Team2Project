@@ -205,6 +205,12 @@ public class Instruction {
                             temp = this.make2Decimal(distance);
                             totalDistance += temp;
                             instruction.add("Go " + temp + " feet.\n");
+                            for (int j = 0; j < count; j++) {
+                                if (i != 0) {
+                                    instruction.add("Continue straight\n");
+                                    instruction.add("");
+                                }
+                            }
                         }
                         flag2 = 1;
                     }

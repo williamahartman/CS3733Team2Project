@@ -611,10 +611,10 @@ public class MainAppUI extends JFrame{
                 tempLoc = searchExactName(selectedName);
                 locToSearch = selectedName;
             }
-            if (searchSelectedName(selectedName) != null) {
+            /*if (searchSelectedName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
-            }
+            }*/
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 makeAStarRoute.setEnabled(true);
             }
@@ -657,7 +657,7 @@ public class MainAppUI extends JFrame{
                 gps.setText(mapView.stepByStep(stepCount, true, false));
                 stepCount++;
                 TextToVoice tv = new TextToVoice(gps.getText());
-                if(voiceDirections) {
+                if (voiceDirections) {
                     tv.start();
                 }
             }
@@ -760,7 +760,7 @@ public class MainAppUI extends JFrame{
             public void mouseReleased(MouseEvent e) {
                 if (textToVoice.isSelected()){
                     voiceDirections = true;
-                } else{
+                } else {
                     voiceDirections = false;
                 }
             }

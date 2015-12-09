@@ -154,10 +154,20 @@ public class SearchComboBox extends JComboBox {
 
     public List<Location> searchNamesInList(HashSet<Location> locationList, String searchString) {
         ArrayList<Location> result = new ArrayList<>();
+        ArrayList<Location> exactName = new ArrayList<>();
+
 
         locationList.stream().filter(loc -> loc.namesInclude(searchString)).forEach(result::add);
+        //adding
+        result.stream().filter(loc -> loc.nameEqual(searchString)).forEach(exactName::add);
+        //adding
+        if (exactName.size() > 0){
+            return exactName;
+        } else {
+            return result;
+        }
 
-        return result;
+        //return result;
     }
 
    /* public ItemListener checkItem() {

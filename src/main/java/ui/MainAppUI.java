@@ -713,6 +713,7 @@ public class MainAppUI extends JFrame{
         emailButton.setMaximumSize(new Dimension(90, 30));
         emailButton.setToolTipText("Send an email.");
         emailButton.addActionListener(e -> {
+            emailButton.setEnabled(false);
             emailToSend = null;
             try {
                 emailToSend = emailText.getText(); //gets the name from text field
@@ -742,6 +743,7 @@ public class MainAppUI extends JFrame{
                 JOptionPane.showMessageDialog(null, "Error: Invalid Email!",
                         "Incorrect!", JOptionPane.ERROR_MESSAGE);
             }
+            emailButton.setEnabled(true);
 
         });
 

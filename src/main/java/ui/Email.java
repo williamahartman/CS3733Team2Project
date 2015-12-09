@@ -69,9 +69,7 @@ public class Email extends Thread{
                 File image = new File(directory + "image" + stepNum + ".jpeg");
                 if (image.exists() && !image.isDirectory()) {
                     instructions += "<img src=\"cid:image" + imageNum + "\">";
-                    System.out.println("<img src=\"cid:image" + imageNum + "\">");
                     imagePaths.add(directory + "image" + stepNum + ".jpeg");
-                    System.out.println(directory + "image" + stepNum + ".jpeg");
                     imageNum++;
                 }
                 stepNum++;
@@ -114,7 +112,6 @@ public class Email extends Thread{
             String imagePath = imgIter.next();
             messageBodyPart = new MimeBodyPart();
             DataSource fds = new FileDataSource(imagePath);
-            System.out.println("Image Path: " + imagePath + "\n" +  "<image" + imageNum + ">");
             try {
                 messageBodyPart.setDataHandler(new DataHandler(fds));
                 messageBodyPart.setHeader("Content-ID", "<image" + imageNum + ">");

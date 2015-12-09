@@ -79,11 +79,11 @@ public class Instruction {
                             System.out.println("if statement 2");
                             if (e.hasAttribute(EdgeAttribute.STAIRS)
                                     && locCurrent.getFloorNumber() == locPrev.getFloorNumber() + 1) {
-                                instruction.add("Go down the stairs\n");
+                                instruction.add("Go up the stairs\n");
                                 instruction.add("");
                             } else if (e.hasAttribute(EdgeAttribute.STAIRS)
                                     && locCurrent.getFloorNumber() == locPrev.getFloorNumber() - 1) {
-                                instruction.add("Go up the stairs\n");
+                                instruction.add("Go down the stairs\n");
                                 instruction.add("");
                             } else if (e.hasAttribute(EdgeAttribute.ELEVATOR)) {
                                 instruction.add("Take the elevator to floor  " + locCurrent.getFloorNumber() + "\n");

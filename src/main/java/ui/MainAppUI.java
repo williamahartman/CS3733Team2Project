@@ -4,6 +4,7 @@ import core.EdgeAttribute;
 import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
+import database.Database;
 import dev.DevPassword;
 import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
@@ -11,6 +12,7 @@ import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -137,7 +139,31 @@ public class MainAppUI extends JFrame{
         JMenu editMenu = new JMenu("Edit");
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
-        refreshMap.addActionListener(e -> resetMap(mapView));
+        refreshMap.addActionListener(e -> {
+            int result = JOptionPane.OK_OPTION;
+            if (devToolsPanel.getDevMode()) {
+                result = JOptionPane.showConfirmDialog(null, new JLabel(
+                        "<html>Refreshing the map will pull a new version from the database.<br>" +
+                        "Any local changes will be lost." +
+                        "<br><br>Is that ok?</html>"),
+                        "Are You a Developer?", JOptionPane.OK_CANCEL_OPTION);
+                System.out.println(result);
+            }
+
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    Database graphData = new Database();
+                    graph = graphData.createGraph();
+                } catch (SQLException exception) {
+                    JOptionPane.showMessageDialog(mapView.getParent(),
+                            "Failed to connect to the online database (be on the internet!)",
+                            "Database error!",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+            resetMap(mapView);
+        });
         JMenuItem enterDeveloperMode = new JMenuItem("Edit Map (Developers Only!)");
 
         DevPassword passBox = new DevPassword("aztec", "wash");

@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -317,7 +318,7 @@ public class DevTools extends JPanel {
                 Database graphData = new Database();
                 graphData.updateDB(dblist);
                 graphData.closeConnection();
-            } catch (Exception exception) {
+            } catch (SQLException exception) {
                 JOptionPane.showMessageDialog(mapView.getParent(),
                         "Failed to connect to the online database (be on the internet!)",
                         "Database error!",

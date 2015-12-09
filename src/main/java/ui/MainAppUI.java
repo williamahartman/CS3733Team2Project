@@ -590,6 +590,9 @@ public class MainAppUI extends JFrame{
                 startPoint = tempLoc;
                 startInfo.setText("Start Point: " + locToSearch);
                 multiLoc.add(0, startPoint);
+                //searchDropDownList.removeAllItems();
+                //searchDropDownList.setSelectedItem("");
+                //searchDropDownList.setPopupVisible(false);
             }
             if (multiLoc.size() > 1){
                 makeAStarRoute.setEnabled(true);
@@ -651,8 +654,8 @@ public class MainAppUI extends JFrame{
             {
                 gps.setText(mapView.stepByStep(stepCount, true, false));
                 stepCount++;
-                /*TextToVoice tv = new TextToVoice(gps.getText());
-                tv.start();*/
+                TextToVoice tv = new TextToVoice(gps.getText());
+                tv.start();
             }
         });
         JButton stepBackOnRouteButton = new JButton("Previous Step");

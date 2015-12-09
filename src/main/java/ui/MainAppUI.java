@@ -691,11 +691,9 @@ public class MainAppUI extends JFrame{
         });
 
         JScrollPane text = new JScrollPane(gps);
-        JScrollPane routePane = new JScrollPane(routeInfo);
-        routePane.setPreferredSize(new Dimension(300, 50));
-        routePane.setMaximumSize(new Dimension(300, 50));
         text.setPreferredSize(new Dimension(300, 300));
         text.setMaximumSize(new Dimension(300, 300));
+
         //Add elements to the search panel
         sidePanel.add(searchInfo);
         sidePanel.add(searchDropDownList);
@@ -706,8 +704,6 @@ public class MainAppUI extends JFrame{
         sidePanel.add(multipleDestination);
         sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(addToDestination);
-
-        sidePanel.add(routePane);
         sidePanel.add(makeAStarRoute);
         sidePanel.add(stepBackOnRouteButton);
         sidePanel.add(stepForwardOnRouteButton);

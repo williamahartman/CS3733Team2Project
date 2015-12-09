@@ -43,7 +43,8 @@ public class MainAppUI extends JFrame{
     private Location startPoint;
     private Location endPoint;
     private List<Location> route;
-    HashSet<Location> namedLocations;
+
+    private HashSet<Location> namedLocations;
 
     private JLabel startInfo;
     private JLabel endPointInfo;
@@ -517,6 +518,8 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 resetMap(this.mapView);
+                clearState(mapView);
+                route.clear();
 
                 //changed makeAStarRoute to makeMultipleRoute
                 route = graph.makeMultipleRoute(attributeManager, multiLoc);
@@ -648,6 +651,8 @@ public class MainAppUI extends JFrame{
             {
                 gps.setText(mapView.stepByStep(stepCount, true, false));
                 stepCount++;
+                /*TextToVoice tv = new TextToVoice(gps.getText());
+                tv.start();*/
             }
         });
         JButton stepBackOnRouteButton = new JButton("Previous Step");

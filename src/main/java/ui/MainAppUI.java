@@ -43,6 +43,7 @@ public class MainAppUI extends JFrame{
     private Location startPoint;
     private Location endPoint;
     private java.util.List<Location> route;
+    HashSet<Location> namedLocations;
 
     private JLabel startInfo;
     private JLabel endPointInfo;
@@ -560,7 +561,8 @@ public class MainAppUI extends JFrame{
         });
 
         desNum = 0;
-        searchDropDownList = new SearchComboBox(graph);
+        namedLocations = graph.getNamedLocations();
+        searchDropDownList = new SearchComboBox(namedLocations);
         searchDropDownList.setEditable(true);
         searchDropDownList.setPreferredSize(new Dimension(180, 30));
         searchDropDownList.setMaximumSize(new Dimension(180, 30));

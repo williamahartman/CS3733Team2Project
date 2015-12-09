@@ -325,7 +325,9 @@ public class MapView extends JPanel {
      */
     public void addToSearchList(List<Location> locToAdd){
         for (Location loc: locToAdd){
-            searchList.add(loc);
+            if (loc.getFloorNumber() == currentFloorNumber) {
+                searchList.add(loc);
+            }
             locationButtonList.forEach(locationButton -> {
                 if (loc.equals(locationButton.getAssociatedLocation())){
                     locationButton.setBgColor(style.getSearchResultColor());

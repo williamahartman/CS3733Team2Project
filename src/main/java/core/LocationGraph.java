@@ -153,6 +153,19 @@ public class LocationGraph {
     }
 
     /**
+     * Return a list of locations that have names associated with them
+     *
+     * @return The list of all locations that have names
+     */
+    public HashSet<Location> getNamedLocations() {
+        HashSet<Location> result = new HashSet<>();
+
+        locationList.stream().filter(loc -> (loc.getNameList().length > 0)).forEach(result::add);
+
+        return result;
+    }
+
+    /**
      * Return a list of locations whose names contain or are equal to the passed String.
      *
      * @param searchString The String that will be searched for.

@@ -42,7 +42,7 @@ public class MainAppUI extends JFrame{
 
     private Location startPoint;
     private Location endPoint;
-    private java.util.List<Location> route;
+    private List<Location> route;
     HashSet<Location> namedLocations;
 
     private JLabel startInfo;
@@ -520,7 +520,7 @@ public class MainAppUI extends JFrame{
 
                 //changed makeAStarRoute to makeMultipleRoute
                 route = graph.makeMultipleRoute(attributeManager, multiLoc);
-                java.util.List<Location> routeTime = graph.makeMultipleRoute(attributeManager, multiLoc);
+                List<Location> routeTime = graph.makeMultipleRoute(attributeManager, multiLoc);
                 if (route.size() > 0) {
                     stepCount = 0;
                     mapView.addRoute(routeTime);
@@ -713,11 +713,12 @@ public class MainAppUI extends JFrame{
                     if (emailToSend.length() > 0) {
 
                         Instruction instruct = new Instruction();
-                        java.util.List<String> instructions =
+                        List<String> instructions =
                                 instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
                         Email email = new Email(emailToSend, instructions);
                         for (int i = 0; i < route.size(); i++) {
                             mapView.stepByStep(i, true, true);
+                            mapView.clearFromSearchList();
                             try {
                                 Thread.sleep(1);
                             } catch (InterruptedException ex){

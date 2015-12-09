@@ -74,20 +74,24 @@ public class Instruction {
                     System.out.println("if statement 1");
                     for (Edge e: locCurrent.getEdges()) {
                         System.out.println("for loop");
-                        if(e.getNode1().equals(locCurrent) && e.getNode2().equals(locPrev) ||
+                        if (e.getNode1().equals(locCurrent) && e.getNode2().equals(locPrev) ||
                                 e.getNode1().equals(locPrev) && e.getNode2().equals(locCurrent)) {
                             System.out.println("if statement 2");
-                            if (e.hasAttribute(EdgeAttribute.STAIRS) && locCurrent.getFloorNumber() == locPrev.getFloorNumber() + 1) {
-                                instruction.add("Go down the stairs");
+                            if (e.hasAttribute(EdgeAttribute.STAIRS)
+                                    && locCurrent.getFloorNumber() == locPrev.getFloorNumber() + 1) {
+                                instruction.add("Go down the stairs\n");
                                 instruction.add("");
-                            } else if (e.hasAttribute(EdgeAttribute.STAIRS) && locCurrent.getFloorNumber() == locPrev.getFloorNumber() - 1) {
-                                instruction.add("Go up the stairs");
+                            } else if (e.hasAttribute(EdgeAttribute.STAIRS)
+                                    && locCurrent.getFloorNumber() == locPrev.getFloorNumber() - 1) {
+                                instruction.add("Go up the stairs\n");
                                 instruction.add("");
-                            } else if (e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE) && locCurrent.getFloorNumber() < locPrev.getFloorNumber()) {
-                                instruction.add("Go down the elevator to " + locCurrent.getFloorNumber());
+                            } else if (e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)
+                                    && locCurrent.getFloorNumber() < locPrev.getFloorNumber()) {
+                                instruction.add("Go down the elevator to " + locCurrent.getFloorNumber() + "\n");
                                 instruction.add("");
-                            } else if (e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE) && locCurrent.getFloorNumber() > locPrev.getFloorNumber()){
-                                instruction.add("Go up the elevator to " + locCurrent.getFloorNumber());
+                            } else if (e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)
+                                    && locCurrent.getFloorNumber() > locPrev.getFloorNumber()){
+                                instruction.add("Go up the elevator to " + locCurrent.getFloorNumber() + "\n");
                                 instruction.add("");
                             }
                             else

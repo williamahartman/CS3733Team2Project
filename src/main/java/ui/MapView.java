@@ -210,7 +210,7 @@ public class MapView extends JPanel {
     }
 
     /**
-     * Sets the postion and zoom of the scroll panel
+     * Sets the postion and zoom of the scroll panel.
      */
     public void setPosAndZoom(){
         Iterator<List<Location>> routes = routeLists.iterator();
@@ -265,8 +265,6 @@ public class MapView extends JPanel {
         } else {
             zoom = zoomh;
         }
-
-        System.out.println("Zoom factor: " + zoom + "\npixelWidth: " + paneWidth);
         Point newViewportPos = new Point();
         zoomFactor = zoom;
         validate();
@@ -402,6 +400,10 @@ public class MapView extends JPanel {
                 }
             });
         }
+    }
+    public void clearFromSearchList()
+    {
+        searchList.clear();
     }
 
     public void addToHighlightList(Edge e) {
@@ -581,7 +583,7 @@ public class MapView extends JPanel {
                    updateButtonAttributes();
                    repaint();
                    setPosAndZoom();
-                   if(emailMode) {
+                   if (emailMode) {
                        ImageFromMap img = new ImageFromMap();
                        img.saveComponentAsJPEG(this, "image" + step + ".jpeg");
                    }

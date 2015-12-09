@@ -85,13 +85,8 @@ public class Instruction {
                                     && locCurrent.getFloorNumber() == locPrev.getFloorNumber() - 1) {
                                 instruction.add("Go up the stairs\n");
                                 instruction.add("");
-                            } else if (e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)
-                                    && locCurrent.getFloorNumber() < locPrev.getFloorNumber()) {
-                                instruction.add("Go down the elevator to " + locCurrent.getFloorNumber() + "\n");
-                                instruction.add("");
-                            } else if (e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)
-                                    && locCurrent.getFloorNumber() > locPrev.getFloorNumber()){
-                                instruction.add("Go up the elevator to " + locCurrent.getFloorNumber() + "\n");
+                            } else if (e.hasAttribute(EdgeAttribute.ELEVATOR)) {
+                                instruction.add("Take the elevator to floor  " + locCurrent.getFloorNumber() + "\n");
                                 instruction.add("");
                             }
                             else

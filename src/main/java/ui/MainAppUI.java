@@ -513,7 +513,8 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 resetMap(this.mapView);
-                route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
+                //changed makeAStarRoute to makeMultipleRoute
+                route = graph.makeMultipleRoute(attributeManager, multiLoc);
 //                searchDropDownList.removeAllItems();
 //                searchDropDownList.hidePopup();
                 if (route.size() > 0) {

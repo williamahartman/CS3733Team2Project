@@ -10,6 +10,7 @@ import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -80,6 +81,7 @@ public class MainAppUI extends JFrame{
 
     private boolean drawEdges = false;
     private boolean drawAllLocations = false;
+    private boolean voiceDirections = false;
 
     //Save start and end colors as class data to help allow restoring when changing
     //in and out of devmode
@@ -576,7 +578,7 @@ public class MainAppUI extends JFrame{
 
 
         searchInfo = new JLabel("Search: ");
-        endLocInfo = new JLabel("Destination: ");
+        endLocInfo = new JLabel("Destinations: ");
         multipleDestination = new JComboBox();
         multipleDestination.setPreferredSize(new Dimension(160, 30));
         multipleDestination.setMaximumSize(new Dimension(160, 30));
@@ -635,7 +637,7 @@ public class MainAppUI extends JFrame{
                     multipleDestination.setSelectedIndex(desNum - 1);
 
                 } else if (size > 0 && (multiLoc.get(size - 1).equals(endPoint))){
-                    JOptionPane.showMessageDialog(this, "You already add this location.");
+                    JOptionPane.showMessageDialog(this, "You've already added this location.");
                 }
             }
             if (multiLoc.size() > 1){
@@ -655,7 +657,9 @@ public class MainAppUI extends JFrame{
                 gps.setText(mapView.stepByStep(stepCount, true, false));
                 stepCount++;
                 TextToVoice tv = new TextToVoice(gps.getText());
-                tv.start();
+                if(voiceDirections) {
+                    tv.start();
+                }
             }
         });
         JButton stepBackOnRouteButton = new JButton("Previous Step");
@@ -746,16 +750,31 @@ public class MainAppUI extends JFrame{
 
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         JScrollPane text = new JScrollPane(gps);
-        text.setPreferredSize(new Dimension(300, 300));
-        text.setMaximumSize(new Dimension(300, 300));
+        text.setPreferredSize(new Dimension(300, 200));
+        text.setMaximumSize(new Dimension(300, 200));
+
+
+        JCheckBox textToVoice = new JCheckBox("Audio: Read step-by-step directions");
+        textToVoice.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (textToVoice.isSelected()){
+                    voiceDirections = true;
+                } else{
+                    voiceDirections = false;
+                }
+            }
+        });
 
         //Add elements to the search panel
         sidePanel.add(searchInfo);
         sidePanel.add(searchDropDownList);
+        sidePanel.add(new JLabel(""), FlowLayout.RIGHT);
         sidePanel.add(addToStart);
         sidePanel.add(addToDestination);
         sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(startInfo);
+        sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(endLocInfo);
         sidePanel.add(multipleDestination);
         sidePanel.add(Box.createHorizontalStrut(10));
@@ -766,6 +785,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(stepForwardOnRouteButton);
         sidePanel.add(emailText);
         sidePanel.add(emailButton);
+        sidePanel.add(textToVoice);
         //sidePanel.add(edgeWeightPanel);
 
         sidePanel.add(handicapCheckbox);

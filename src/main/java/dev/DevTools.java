@@ -212,6 +212,8 @@ public class DevTools extends JPanel {
                     }
                     dblist.updatedLocation(lastButtonClicked.getAssociatedLocation());
                 }
+
+                refreshGraph();
             }
         });
 
@@ -428,6 +430,16 @@ public class DevTools extends JPanel {
                     graph.addLocation(newLoc, new HashMap<>());
 
                     refreshGraph();
+                    //Make the dragged button get selected
+                    List<LocationButton> newButtons = mapView.getLocationButtonList();
+                    for (int i = 0; i < newButtons.size(); i++) {
+                        if (newButtons.get(i).getAssociatedLocation() == newLoc) {
+                            lastButtonClicked = newButtons.get(i);
+                            break;
+                        }
+                    }
+                    refreshGraph();
+
                     mapView.repaint();
                     pointIsBeingDragged = false;
                 }

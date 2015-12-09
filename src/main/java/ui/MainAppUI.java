@@ -51,10 +51,14 @@ public class MainAppUI extends JFrame{
 
     private JTextArea gps;
     private JTextField searchText;
+    private JTextField emailText;
     private String locToSearch;
+    private String emailToSend;
 
     //private JButton clearButton;
     private JButton makeAStarRoute;
+    private JButton searchButton;
+    private JButton emailButton;
 
 
     private JComboBox searchDropDownList;
@@ -543,6 +547,7 @@ public class MainAppUI extends JFrame{
                     endPointInfo.setText("End Point: Not selected");
 
                     makeAStarRoute.setEnabled(false);
+                    emailButton.setEnabled(true);
                     //clearButton.setEnabled(false);
                     multipleDestination.removeAllItems();
                     desNum = 0;
@@ -655,7 +660,7 @@ public class MainAppUI extends JFrame{
         {
             if (stepCount < route.size())
             {
-                gps.setText(mapView.stepByStep(stepCount, true));
+                gps.setText(mapView.stepByStep(stepCount, true, false));
                 stepCount++;
             }
         });
@@ -668,7 +673,7 @@ public class MainAppUI extends JFrame{
             if (stepCount > 0)
             {
                 stepCount--;
-                gps.setText(mapView.stepByStep(stepCount, false));
+                mapView.stepByStep(stepCount, false, false);
             }
 
         });
@@ -698,6 +703,49 @@ public class MainAppUI extends JFrame{
             editWindow.setVisible(true);
         });
 
+        emailText = new JTextField(20);
+        emailText.setVisible(true);
+        emailText.setPreferredSize(new Dimension(170, 30));
+        emailText.setMaximumSize(new Dimension(170, 30));
+
+        emailButton = new JButton("Send Email");
+        emailButton.setPreferredSize(new Dimension(90, 30));
+        emailButton.setMaximumSize(new Dimension(90, 30));
+        emailButton.setToolTipText("Send an email.");
+        emailButton.addActionListener(e -> {
+            emailToSend = null;
+            try {
+                emailToSend = emailText.getText(); //gets the name from text field
+                if (emailToSend.length() == 0) {
+                    //if no location is entered
+                    JOptionPane.showMessageDialog(this, "Please Enter an Email.");
+                } else {
+                    //search the name in nameLList for all locations in the graph
+                    if (emailToSend.length() > 0) {
+
+                        Instruction instruct = new Instruction();
+                        java.util.List<String> instructions =
+                                instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
+                        Email email = new Email(emailToSend, instructions);
+                        for (int i = 0; i < route.size(); i++) {
+                            mapView.stepByStep(i, true, true);
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException ex){
+                                ex.printStackTrace();
+                            }
+                        }
+                        email.sendEmail();
+                    }
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Error: Invalid Email!",
+                        "Incorrect!", JOptionPane.ERROR_MESSAGE);
+            }
+
+        });
+
+        EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         JScrollPane text = new JScrollPane(gps);
         text.setPreferredSize(new Dimension(300, 300));
         text.setMaximumSize(new Dimension(300, 300));
@@ -714,6 +762,9 @@ public class MainAppUI extends JFrame{
         sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(makeAStarRoute);
         sidePanel.add(text);
+        sidePanel.add(emailText);
+        sidePanel.add(emailButton);
+        sidePanel.add(edgeWeightPanel);
         sidePanel.add(stepBackOnRouteButton);
         sidePanel.add(stepForwardOnRouteButton);
         sidePanel.add(checkBox);
@@ -740,6 +791,8 @@ public class MainAppUI extends JFrame{
         endPointInfo.setText("End Point: Not selected");
 
         makeAStarRoute.setEnabled(false);
+        emailButton.setEnabled(false);
+
        // clearButton.setEnabled(false);
 
         gps.setText("");
@@ -823,6 +876,8 @@ public class MainAppUI extends JFrame{
             }
         }
     }
+
+    public MapView getMapView(){ return mapView;  }
 
     private Location searchSelectedName(String selectedName){
         Location result = null;

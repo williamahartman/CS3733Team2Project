@@ -1,7 +1,7 @@
 import database.Database;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import ui.MainAppUI;
-import ui.VoiceThread;
+import ui.TextToVoice;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,6 @@ public class AppLauncher{
     public static void main(String[] args) {
         try {
             Database graphData = new Database();
-
             //Make a frame
             MainAppUI app = new MainAppUI(graphData.createGraph());
             graphData.closeConnection();

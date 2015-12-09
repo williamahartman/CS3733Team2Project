@@ -892,7 +892,7 @@ public class MainAppUI extends JFrame{
      */
     private void resetMap(MapView toReset) {
         gps.setText("");
-        //toReset.updateGraph(graph);
+        toReset.updateGraph(graph);
 
         updateStartEndColors();
     }

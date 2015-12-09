@@ -44,7 +44,7 @@ public class Instruction {
         }
         //if there is only one location in location list
         else if (listSize == 1 || (locList.get(listSize - 1) == locList.get(0))) {
-            instruction.add("You arrive at your destination.");
+            instruction.add("You have arrived at your destination.");
             return instruction;
         }
         //if there are more than one location in location list

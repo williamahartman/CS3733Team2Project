@@ -159,7 +159,7 @@ public class MainAppUI extends JFrame{
                         "<html>Refreshing the map will pull a new version from the database.<br>" +
                         "Any local changes will be lost." +
                         "<br><br>Is that ok?</html>"),
-                        "Are You a Developer?", JOptionPane.OK_CANCEL_OPTION);
+                        "All Changes Will Be Lost!", JOptionPane.OK_CANCEL_OPTION);
                 System.out.println(result);
             }
 
@@ -167,6 +167,9 @@ public class MainAppUI extends JFrame{
                 try {
                     Database graphData = new Database();
                     graph = graphData.createGraph();
+                    devToolsPanel.setLocationGraph(graph);
+                    devToolsPanel.wipeChangeList();
+                    devToolsPanel.refreshGraph();
                 } catch (SQLException exception) {
                     JOptionPane.showMessageDialog(mapView.getParent(),
                             "Failed to connect to the online database (be on the internet!)",

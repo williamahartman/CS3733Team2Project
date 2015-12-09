@@ -484,7 +484,8 @@ public class DevTools extends JPanel {
                     }
                     refreshGraph();
                     //A* the edge
-                    if (originalButton.getAssociatedLocation().getFloorNumber() ==
+                    if (originalButton != null && lastButtonClicked != null &&
+                            originalButton.getAssociatedLocation().getFloorNumber() ==
                             lastButtonClicked.getAssociatedLocation().getFloorNumber() &&
                             originalButton.getAssociatedLocation().getConnectingEdgeFromNeighbor
                                     (lastButtonClicked.getAssociatedLocation()) != null){

@@ -20,13 +20,12 @@ import java.util.List;
  * Created by hollyn on 12/7/15.
  */
 public class SearchComboBox extends JComboBox {
-    //LocationGraph graph;
+    LocationGraph graph;
     HashSet<Location> nameLoc;
-    private String lastTyped;
 
     public SearchComboBox(HashSet<Location> nameLoc) {
         super();
-        // this.graph = graph;
+        //this.graph = graph;
         this.nameLoc = nameLoc;
         setEditable(true);
         Component c = this.getEditor().getEditorComponent(); // Get editable component
@@ -37,15 +36,7 @@ public class SearchComboBox extends JComboBox {
         //List<Location> locationList = graph.getAllLocations();
         ArrayList<String> nameList = new ArrayList<>();
 
-        /*for (Location loc: locationList){
-            for (String name: loc.getNameList()){
-                nameList.add(name);
-            }
-        }
-        Collections.sort(nameList);
-        for (String name: nameList){
-            this.addItem(name);
-        }*/
+        List<Location> nameLocs = new ArrayList<Location>(nameLoc);
 
         for (Location loc: nameLoc){
             for (String name: loc.getNameList()){
@@ -56,6 +47,16 @@ public class SearchComboBox extends JComboBox {
         for (String name: nameList){
             this.addItem(name);
         }
+
+        /*for (Location loc: nameLoc){
+            for (String name: loc.getNameList()){
+                nameList.add(name);
+            }
+        }
+        Collections.sort(nameList);
+        for (String name: nameList){
+            this.addItem(name);
+        }*/
 
         tc.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -89,7 +90,7 @@ public class SearchComboBox extends JComboBox {
                         //System.out.println("1) get text/" + tc.getText() + "/end");
 
                         // List of locations that have at least one name matching
-                        // List<Location> loc = graph.searchLocationByName(tc.getText());
+                        //List<Location> loc = graph.searchLocationByName(tc.getText());
 
                         List<Location> loc = searchNamesInList(nameLoc, tc.getText());
 

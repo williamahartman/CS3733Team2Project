@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.List;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -53,7 +54,18 @@ public class MainAppUI extends JFrame{
 
     //private JButton clearButton;
     private JButton makeAStarRoute;
-    private JButton searchButton;
+
+
+    private JComboBox searchDropDownList;
+    private JLabel searchInfo;
+    private JLabel endLocInfo;
+    private JButton addToStart;
+    private JButton addToDestination;
+    private JComboBox multipleDestination;
+    private Location tempLoc;
+    private List<Location> multiLoc;
+    private int desNum;
+
 
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
@@ -525,6 +537,9 @@ public class MainAppUI extends JFrame{
 
                     makeAStarRoute.setEnabled(false);
                     //clearButton.setEnabled(false);
+                    multipleDestination.removeAllItems();
+                    desNum = 0;
+                    multiLoc.clear();
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "There is no path between the selected points!",
@@ -541,44 +556,86 @@ public class MainAppUI extends JFrame{
             }
         });
 
-        searchText = new JTextField(20);
-        searchText.setVisible(true);
-        searchText.setPreferredSize(new Dimension(170, 30));
-        searchText.setMaximumSize(new Dimension(170, 30));
+        desNum = 0;
+        searchDropDownList = new SearchComboBox(graph);
+        searchDropDownList.setEditable(true);
+        searchDropDownList.setPreferredSize(new Dimension(180, 30));
+        searchDropDownList.setMaximumSize(new Dimension(180, 30));
 
-        searchButton = new JButton("Search");
-        searchButton.setPreferredSize(new Dimension(90, 30));
-        searchButton.setMaximumSize(new Dimension(90, 30));
-        searchButton.setToolTipText("Search the location on map.");
-        searchButton.addActionListener(e -> {
-            locToSearch = null; //the location user want to search
-            try {
-                clearState(mapView);
-                locToSearch = searchText.getText(); //gets the name from text field
-                //if there is no entering
-                if (locToSearch.length() == 0) {
-                    //if no location is entered
-                    JOptionPane.showMessageDialog(this, "Please Enter a Location.");
-                } else {
-                    //search the name in nameLList for all locations in the graph
-                    java.util.List<Location> loc = graph.searchLocationByName(locToSearch);
-                    if (loc.size() > 0) {
-                        //if locations are found
-                        JFrame frameSearch = new JFrame("Search");
-                        frameSearch.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-                        frameSearch.setMinimumSize(new Dimension(1024, 768));
-                        mapView.addToSearchList(loc);
-                        repaint();
-                        //clearButton.setEnabled(true);
-                    } else {
-                        //if no location is found
-                        JOptionPane.showMessageDialog(this, "Location is not found.");
-                    }
-                }
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
+
+        searchInfo = new JLabel("Search: ");
+        endLocInfo = new JLabel("Destination: ");
+        multipleDestination = new JComboBox();
+        multipleDestination.setPreferredSize(new Dimension(160, 30));
+        multipleDestination.setMaximumSize(new Dimension(160, 30));
+        tempLoc = null;
+        multiLoc = new ArrayList<>();
+
+        addToStart = new JButton("Add");
+        addToDestination = new JButton("Add");
+        addToStart.addActionListener(e -> {
+            if (tempLoc != null){
+                startPoint = tempLoc;
+                startInfo.setText("Start Point: " + locToSearch);
+                multiLoc.add(0, startPoint);
             }
+            if (multiLoc.size() > 1){
+                makeAStarRoute.setEnabled(true);
+            }
+        });
 
+        searchDropDownList.addActionListener(e -> {
+            resetMap(mapView);
+            String selectedName = (String) searchDropDownList.getSelectedItem();
+            //System.out.println(selectedName);
+            if (searchExactName(selectedName) != null) {
+                searchDropDownList.removeAllItems();
+                searchDropDownList.addItem(selectedName);
+                tempLoc = searchExactName(selectedName);
+                locToSearch = selectedName;
+            }
+            /*
+            if (tempLoc != null || startPoint != null) {
+                System.out.println("Transfer focus\n");
+                searchDropDownList.transferFocus();
+                searchDropDownList.hidePopup();
+                addToStart.requestFocus();
+                }
+            */
+            if (searchSelectedName(selectedName) != null) {
+                searchDropDownList.removeAllItems();
+                searchDropDownList.addItem(selectedName);
+            }
+            if (startPoint != null && endPoint != null && startPoint != endPoint) {
+                makeAStarRoute.setEnabled(true);
+            }
+        });
+
+
+        addToDestination.addActionListener(e -> {
+            if (tempLoc != null){
+                endPoint = tempLoc;
+                int size = multiLoc.size();
+                if (size == 0) {
+                    multipleDestination.addItem(locToSearch);
+                    multiLoc.add(endPoint);
+                    desNum += 1;
+                    multipleDestination.setSelectedIndex(desNum - 1);
+                } else if (size > 0 && (!multiLoc.get(size - 1).equals(endPoint))){
+                    multipleDestination.addItem(locToSearch);
+                    multiLoc.add(endPoint);
+                    desNum += 1;
+                    multipleDestination.setSelectedIndex(desNum - 1);
+
+                } else if (size > 0 && (multiLoc.get(size - 1).equals(endPoint))){
+                    JOptionPane.showMessageDialog(this, "You already add this location.");
+                }
+            }
+            if (multiLoc.size() > 1){
+                //multipleDestination.transferFocus();
+                //addToDestination.requestFocus();
+                makeAStarRoute.setEnabled(true);
+            }
         });
 
         //Back and forward buttons
@@ -639,12 +696,17 @@ public class MainAppUI extends JFrame{
         routePane.setMaximumSize(new Dimension(300, 50));
         text.setPreferredSize(new Dimension(300, 300));
         text.setMaximumSize(new Dimension(300, 300));
-
-        //Add elements to the side panel
-        sidePanel.add(searchText);
-        sidePanel.add(searchButton);
+        //Add elements to the search panel
+        sidePanel.add(searchInfo);
+        sidePanel.add(searchDropDownList);
+        sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(startInfo);
-        sidePanel.add(endPointInfo);
+        sidePanel.add(addToStart);
+        sidePanel.add(endLocInfo);
+        sidePanel.add(multipleDestination);
+        sidePanel.add(Box.createHorizontalStrut(10));
+        sidePanel.add(addToDestination);
+
         sidePanel.add(routePane);
         sidePanel.add(makeAStarRoute);
         sidePanel.add(stepBackOnRouteButton);
@@ -688,6 +750,7 @@ public class MainAppUI extends JFrame{
                 Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
 
                 if (startPoint == null) {
+                    multiLoc.add(clickedLocation);
                     startPoint = clickedLocation;
                     route.add(clickedLocation);
                     ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getStartPointColor());
@@ -696,13 +759,21 @@ public class MainAppUI extends JFrame{
                     } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
 
                     //clearButton.setEnabled(true);
-                } else if (endPoint == null && clickedLocation != startPoint) {
+                } else if (startPoint != null && clickedLocation != endPoint) {
                     endPoint = clickedLocation;
                     route.add(clickedLocation);
+                    multiLoc.add(clickedLocation);
                     ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getEndPointColor());
                     if (clickedLocation.getNameList().length == 0){
-                        endPointInfo.setText("End Point:  Unnamed Location");
-                    } else { endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]); }
+                        multipleDestination.addItem("Unnamed Location");
+                        desNum += 1;
+                        multipleDestination.setSelectedIndex(desNum - 1);
+                    } else {
+                        //endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]);
+                        multipleDestination.addItem(clickedLocation.getNameList()[0]);
+                        desNum += 1;
+                        multipleDestination.setSelectedIndex(desNum - 1);
+                    }
 
                     //clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);
@@ -748,4 +819,51 @@ public class MainAppUI extends JFrame{
             }
         }
     }
+
+    private Location searchSelectedName(String selectedName){
+        Location result = null;
+        try {
+            //if there is no entering
+            if (selectedName.length() > 0) {
+                //search the name in nameLList for all locations in the graph
+                List<Location> loc = graph.searchLocationByName(selectedName);
+                result = addSearchToView(loc);
+            }
+        } catch (Exception ex) {
+            //JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
+        }
+        return result;
+    }
+
+
+    private Location searchExactName(String selectedName){
+        Location result = null;
+        try {
+            //if there is no entering
+            if (selectedName.length() > 0) {
+                //search the name in nameLList for all locations in the graph
+                List<Location> loc = graph.searchLocationByExacName(selectedName);
+                result = addSearchToView(loc);
+            }
+        } catch (Exception ex) {
+            //JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
+        }
+        return result;
+    }
+
+    private Location addSearchToView(List<Location> loc){
+        Location result = null;
+        if (loc.size() > 0) {
+            result = loc.get(0);
+            //if locations are found
+            JFrame frameSearch = new JFrame("Search");
+            frameSearch.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            frameSearch.setMinimumSize(new Dimension(1024, 768));
+            mapView.addToSearchList(loc);
+            repaint();
+            //clearButton.setEnabled(true);
+        }
+        return result;
+    }
+
 }

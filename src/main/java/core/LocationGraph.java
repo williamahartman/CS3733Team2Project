@@ -165,6 +165,18 @@ public class LocationGraph {
         return result;
     }
     /**
+     * Return a list of locations whose names are equal to the passed String.
+     *
+     * @param searchString The String that will be searched for.
+     * @return The list of Locations whose names exactly same as the search string
+     */
+    public List<Location> searchLocationByExacName(String searchString) {
+        ArrayList<Location> result = new ArrayList<>();
+        locationList.stream().filter(loc -> loc.nameEqual(searchString)).forEach(result::add);
+        return result;
+    }
+
+    /**
      * Return a list of locations whose are on a certain floor.
      *
      * @param floorNum The int of the floor number
@@ -270,5 +282,36 @@ public class LocationGraph {
         getAllLocations().forEach(loc -> loc.getEdges().forEach(edgeSet::add));
 
         return new ArrayList<>(edgeSet);
+    }
+
+    /**
+     * Returns a list of locations in order. This list describes the optimal route passing a list of locations.
+     *
+     * @param attributeManager The attribute manager used to calculate the cost of moving
+     *                         across an edge
+     * @param multiLoc The list of location want to walk through
+     * @return The list of Locations that comprise an optimal route
+     */
+
+    public List<Location> makeMultipleRoute(EdgeAttributeManager attributeManager, List<Location> multiLoc){
+        List<Location> route = new ArrayList<>();
+        List<Location> subRoute;
+        int size = multiLoc.size();
+        if (size > 1) {
+            for (int i = 0; i < (size - 1); i++) {
+                Location start = multiLoc.get(i);
+                Location end = multiLoc.get(i + 1);
+                subRoute = this.makeAStarRoute(attributeManager, start, end);
+                for (Location l: subRoute){
+                    int sizeRoute = route.size();
+                    if (sizeRoute == 0) {
+                        route.add(l);
+                    } else if (!route.get(sizeRoute - 1).equals(l)){
+                        route.add(l);
+                    }
+                }
+            }
+        }
+        return route;
     }
 }

@@ -63,6 +63,23 @@ public class Location {
     }
 
     /**
+     * Returns whether or not any of the associated names for the location is exactly same to the search
+     * string (as a substring or an equivalent String). Case insensitive.
+     *
+     * @param searchName The string that is searched for
+     * @return Whether or not the searched name is exactly in the associated names.
+     */
+
+    public boolean nameEqual(String searchName){
+        for (String s: nameList) {
+            if (s.toLowerCase().equals(searchName.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Make the current Location adjacent to the passed location on the graph. This method will
      * build an edge between the two points.
      *

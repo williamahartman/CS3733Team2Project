@@ -42,6 +42,7 @@ public class Email extends Thread{
         // Assuming you are sending email through smtp.gmail.com
         String host = "smtp.gmail.com";
 
+        //set properties of the email
         Properties props = new Properties();
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");

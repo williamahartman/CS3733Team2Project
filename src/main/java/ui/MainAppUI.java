@@ -514,6 +514,8 @@ public class MainAppUI extends JFrame{
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 resetMap(this.mapView);
                 route = graph.makeAStarRoute(attributeManager, startPoint, endPoint);
+//                searchDropDownList.removeAllItems();
+//                searchDropDownList.hidePopup();
                 if (route.size() > 0) {
                     stepCount = 0;
                     mapView.addRoute(route);
@@ -571,8 +573,8 @@ public class MainAppUI extends JFrame{
         tempLoc = null;
         multiLoc = new ArrayList<>();
 
-        addToStart = new JButton("Add");
-        addToDestination = new JButton("Add");
+        addToStart = new JButton("Add as Start");
+        addToDestination = new JButton("Add as Destination");
         addToStart.addActionListener(e -> {
             if (tempLoc != null){
                 startPoint = tempLoc;
@@ -697,17 +699,17 @@ public class MainAppUI extends JFrame{
         //Add elements to the search panel
         sidePanel.add(searchInfo);
         sidePanel.add(searchDropDownList);
+        sidePanel.add(addToStart);
+        sidePanel.add(addToDestination);
         sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(startInfo);
-        sidePanel.add(addToStart);
         sidePanel.add(endLocInfo);
         sidePanel.add(multipleDestination);
         sidePanel.add(Box.createHorizontalStrut(10));
-        sidePanel.add(addToDestination);
         sidePanel.add(makeAStarRoute);
+        sidePanel.add(text);
         sidePanel.add(stepBackOnRouteButton);
         sidePanel.add(stepForwardOnRouteButton);
-        sidePanel.add(text);
         sidePanel.add(checkBox);
         sidePanel.add(editRoutePrefs);
         //sidePanel.add(clearButton, BorderLayout.SOUTH);

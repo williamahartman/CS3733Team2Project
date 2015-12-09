@@ -575,8 +575,15 @@ public class MapView extends JPanel {
                    setCurrentImage();
                    updateGraph(graph);
                    routeLists = backUpList;
+
                    updateButtonAttributes();
                    repaint();
+                   setPosAndZoom();
+                   ImageFromMap img = new ImageFromMap();
+                   img.saveComponentAsJPEG(this, "image" + step + ".jpeg");
+               }
+               if (step == 0) {
+                   setPosAndZoom();
                    ImageFromMap img = new ImageFromMap();
                    img.saveComponentAsJPEG(this, "image" + step + ".jpeg");
                }

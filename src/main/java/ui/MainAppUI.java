@@ -46,11 +46,14 @@ public class MainAppUI extends JFrame{
 
     private JTextArea gps;
     private JTextField searchText;
+    private JTextField emailText;
     private String locToSearch;
+    private String emailToSend;
 
     //private JButton clearButton;
     private JButton makeAStarRoute;
     private JButton searchButton;
+    private JButton emailButton;
 
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
@@ -493,7 +496,6 @@ public class MainAppUI extends JFrame{
 
                     startInfo.setText("Start Point: Not selected");
                     endPointInfo.setText("End Point: Not selected");
-
                     makeAStarRoute.setEnabled(false);
                     //clearButton.setEnabled(false);
                 } else {
@@ -577,6 +579,45 @@ public class MainAppUI extends JFrame{
 
         });
 
+        emailText = new JTextField(20);
+        emailText.setVisible(true);
+        emailText.setPreferredSize(new Dimension(170, 30));
+        emailText.setMaximumSize(new Dimension(170, 30));
+
+        emailButton = new JButton("Send Email");
+        emailButton.setPreferredSize(new Dimension(90, 30));
+        emailButton.setMaximumSize(new Dimension(90, 30));
+        emailButton.setToolTipText("Send an email.");
+        emailButton.addActionListener(e -> {
+            emailToSend = null;
+            try {
+                emailToSend = emailText.getText(); //gets the name from text field
+                if (emailToSend.length() == 0) {
+                    //if no location is entered
+                    JOptionPane.showMessageDialog(this, "Please Enter an Email.");
+                } else {
+                    //search the name in nameLList for all locations in the graph
+                    if (emailToSend.length() > 0) {
+
+                        Instruction instruct = new Instruction();
+                        for (int i = 0; i < route.size(); i++) {
+                            mapView.stepByStep(i, true);
+                        }
+                        java.util.List<String> instructions =
+                                instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
+                        Email email = new Email(emailToSend, instructions);
+                        email.sendEmail();
+                    } else {
+                        //if no location is found
+                        JOptionPane.showMessageDialog(this, "Location is not found.");
+                    }
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
+            }
+
+        });
+
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         JScrollPane text = new JScrollPane(gps);
         JScrollPane routePane = new JScrollPane(routeInfo);
@@ -592,7 +633,9 @@ public class MainAppUI extends JFrame{
         sidePanel.add(routePane);
         sidePanel.add(makeAStarRoute);
         sidePanel.add(text);
-        sidePanel.add(edgeWeightPanel);
+        sidePanel.add(emailText);
+        sidePanel.add(emailButton);
+        //sidePanel.add(edgeWeightPanel);
         sidePanel.add(stepBackOnRouteButton);
         sidePanel.add(stepForwardOnRouteButton);
         //sidePanel.add(clearButton, BorderLayout.SOUTH);

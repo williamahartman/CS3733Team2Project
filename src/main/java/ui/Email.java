@@ -6,6 +6,9 @@ import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.awt.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -14,42 +17,33 @@ import java.util.Properties;
  */
 public class Email extends Thread{
     private String recvEmail;
-    private String directions;
+    private List<String> directions;
 
-    public Email(String addr) throws AddressException{
+    public Email(String addr, List<String> instructions) throws AddressException{
         InternetAddress emailAddr = new InternetAddress(addr);
         emailAddr.validate();
         recvEmail = addr;
-    }
-
-    public Email(String addr, String instructions) throws AddressException{
-        InternetAddress emailAddr = new InternetAddress(addr);
-        emailAddr.validate();
-        recvEmail = addr;
-        directions = instructions;
-    }
-
-    public void setDirections(String instructions){
         directions = instructions;
     }
 
     public void run(){
-        this.sendEmail(directions, null);
+        this.sendEmail();
     }
 
-    public void sendEmail(String instructions, List<String> images) {
+    public void sendEmail() {
         // Recipient's email ID needs to be mentioned.
         String to = recvEmail;
-
+        String directory = System.getProperty("java.io.tmpdir") + "aztecWash/";
         // Sender's email ID needs to be mentioned
         String from = "aztec.wash.3733@gmail.com";
         final String username = "aztec.wash.3733";
         final String password = "aztecwash123";
-
-        // Assuming you are sending email through relay.jangosmtp.net
+        System.setProperty("java.net.preferIPv4Stack" , "true");
+        // Assuming you are sending email through smtp.gmail.com
         String host = "smtp.gmail.com";
 
         Properties props = new Properties();
+        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.host", host);
@@ -61,6 +55,29 @@ public class Email extends Thread{
                         return new PasswordAuthentication(username, password);
                     }
                 });
+        Iterator<String> iter = directions.iterator();
+        int stepNum = 0;
+        int imageNum = 0;
+        List<String> imagePaths = new ArrayList<>();
+        String instructions = "";
+        while (iter.hasNext()){
+            String direction = iter.next();
+            if (!direction.equals("Continue straight\n") && !direction.equals("")) {
+                instructions += "<p>" + direction + "</p>";
+
+
+                File image = new File(directory + "image" + stepNum + ".jpeg");
+                if (image.exists() && !image.isDirectory()) {
+                    instructions += "<img src=\"cid:image" + imageNum + "\">";
+                    System.out.println("<img src=\"cid:image" + imageNum + "\">");
+                    imagePaths.add(directory + "image" + stepNum + ".jpeg");
+                    System.out.println(directory + "image" + stepNum + ".jpeg");
+                    imageNum++;
+                }
+                stepNum++;
+            }
+
+        }
         // Create a default MimeMessage object.
         Message message = new MimeMessage(session);
         try {
@@ -72,15 +89,14 @@ public class Email extends Thread{
                     InternetAddress.parse(to));
 
             // Set Subject: header field
-            message.setSubject("Test Email");
+            message.setSubject("WPI Directions");
         } catch (MessagingException e){
             e.printStackTrace();
         }
         MimeMultipart multipart = new MimeMultipart("related");
         // first part (the html)
         BodyPart messageBodyPart = new MimeBodyPart();
-        String htmlText = "<H1>Hello Team!!</H1><p>" + instructions +
-                "</p><img src=\"cid:image\">" + "<p> test</p>" + "<img src=\"cid:test2\">";
+        String htmlText = "<H1>WPI Directions</H1><p></p>" + instructions;
         try {
             messageBodyPart.setContent(htmlText, "text/html");
             // add it
@@ -91,25 +107,50 @@ public class Email extends Thread{
 
 
         // second part (the image)
-        messageBodyPart = new MimeBodyPart();
-        String path = System.getProperty("user.dir");
-        DataSource fds = new FileDataSource(
-                path + "\\picture.jpeg");
-        try {
-            messageBodyPart.setDataHandler(new DataHandler(fds));
-            messageBodyPart.setHeader("Content-ID", "<image>");
-            multipart.addBodyPart(messageBodyPart);
-        } catch (MessagingException e) {
-            e.printStackTrace();
+        //reset the imageNumber to be used in the getting images
+        imageNum = 0;
+        Iterator<String> imgIter = imagePaths.iterator();
+        while (imgIter.hasNext()){
+            String imagePath = imgIter.next();
+            messageBodyPart = new MimeBodyPart();
+            DataSource fds = new FileDataSource(imagePath);
+            System.out.println("Image Path: " + imagePath + "\n" +  "<image" + imageNum + ">");
+            try {
+                messageBodyPart.setDataHandler(new DataHandler(fds));
+                messageBodyPart.setHeader("Content-ID", "<image" + imageNum + ">");
+                multipart.addBodyPart(messageBodyPart);
+                imageNum++;
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
+
         }
+
         try {
             // put everything together
             message.setContent(multipart);
-            // Send message
-            Transport.send(message);
         } catch (MessagingException e) {
             e.printStackTrace();
         }
+
+        try {
+            Transport t = session.getTransport("smtps");
+            t.connect(host, username, password);
+            t.sendMessage(message, message.getAllRecipients());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        File index = new File(directory);
+        if (index.exists()) {
+            String[]entries = index.list();
+            for (String s: entries) {
+                File currentFile = new File(index.getPath(), s);
+                currentFile.delete();
+            }
+            index.delete();
+        }
+
+
     }
 
 }

@@ -514,16 +514,17 @@ public class MainAppUI extends JFrame{
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 resetMap(this.mapView);
                 //changed makeAStarRoute to makeMultipleRoute
-                route = graph.makeMultipleRoute(attributeManager, multiLoc);
+                 route = graph.makeMultipleRoute(attributeManager, multiLoc);
+                 java.util.List<Location>routeTime = graph.makeMultipleRoute(attributeManager, multiLoc);
 //                searchDropDownList.removeAllItems();
 //                searchDropDownList.hidePopup();
-                if (route.size() > 0) {
+                if (routeTime.size() > 0) {
                     stepCount = 0;
-                    mapView.addRoute(route);
+                    mapView.addRoute(routeTime);
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
-                    for (String str : instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y)) {
+                    for (String str : instruct.stepByStepInstruction(routeTime, MAP_SCALE_X, MAP_SCALE_Y)) {
                         if (!str.equals("Continue straight\n") && !str.equals(""))
                         {
                             count++;
@@ -673,6 +674,8 @@ public class MainAppUI extends JFrame{
         checkBox.addActionListener(e -> {
             JCheckBox source = (JCheckBox) e.getSource();
             attributeManager.addModifierForAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE,
+                    source.isSelected() ? 0 : 1);
+            attributeManager.addModifierForAttribute(EdgeAttribute.STAIRS,
                     source.isSelected() ? 0 : 1);
         });
         JButton editRoutePrefs = new JButton("Change Route Settings");

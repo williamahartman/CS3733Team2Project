@@ -144,7 +144,7 @@ public class MainAppUI extends JFrame{
                 3, defaultMapViewStyle);
         this.mapView.setButtonListener(buildRouteSelectListener());
         this.mapView.getScrollPane().addMouseWheelListener(e -> {
-            resetMap(mapView);
+            updateStartEndColors();
         });
         this.attributeManager = new EdgeAttributeManager();
 

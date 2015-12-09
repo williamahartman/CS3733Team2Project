@@ -673,8 +673,8 @@ public class MainAppUI extends JFrame{
         });
 
         //Edge Prefs Panel
-        JCheckBox checkBox = new JCheckBox("Only Make Handicap Accessible Routes");
-        checkBox.addActionListener(e -> {
+        JCheckBox handicapCheckbox = new JCheckBox("Only Make Handicap Accessible Routes");
+        handicapCheckbox.addActionListener(e -> {
             JCheckBox source = (JCheckBox) e.getSource();
             attributeManager.addModifierForAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE,
                     source.isSelected() ? 0 : 1);
@@ -768,7 +768,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(emailButton);
         //sidePanel.add(edgeWeightPanel);
 
-        sidePanel.add(checkBox);
+        sidePanel.add(handicapCheckbox);
         sidePanel.add(editRoutePrefs);
 
 

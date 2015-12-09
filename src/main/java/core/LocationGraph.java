@@ -153,7 +153,7 @@ public class LocationGraph {
     }
 
     /**
-     * Return a list of locations that have names associated with them
+     * Return a list of locations that have names associated with them.
      *
      * @return The list of all locations that have names
      */

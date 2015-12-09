@@ -50,12 +50,11 @@ public class MainAppUI extends JFrame{
     private JTextArea routeInfo;
 
     private JTextArea gps;
-    private JTextField searchText;
     private JTextField emailText;
     private String locToSearch;
     private String emailToSend;
 
-    //private JButton clearButton;
+    private JButton clearButton;
     private JButton makeAStarRoute;
     private JButton searchButton;
     private JButton emailButton;
@@ -163,7 +162,7 @@ public class MainAppUI extends JFrame{
                         "<html>Refreshing the map will pull a new version from the database.<br>" +
                         "Any local changes will be lost." +
                         "<br><br>Is that ok?</html>"),
-                        "All Changes Will Be Lost!", JOptionPane.OK_CANCEL_OPTION);
+                        "Are You a Developer?", JOptionPane.OK_CANCEL_OPTION);
                 System.out.println(result);
             }
 
@@ -171,9 +170,6 @@ public class MainAppUI extends JFrame{
                 try {
                     Database graphData = new Database();
                     graph = graphData.createGraph();
-                    devToolsPanel.setLocationGraph(graph);
-                    devToolsPanel.wipeChangeList();
-                    devToolsPanel.refreshGraph();
                 } catch (SQLException exception) {
                     JOptionPane.showMessageDialog(mapView.getParent(),
                             "Failed to connect to the online database (be on the internet!)",
@@ -508,11 +504,11 @@ public class MainAppUI extends JFrame{
         gps.setVisible(true);
         gps.setEditable(false);
 
-//        clearButton = new JButton("Clear Selections");
-//        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
-//        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
-//        clearButton.setToolTipText("Remove the previously selected start and end points");
-//        clearButton.addActionListener(e -> clearState(mapView));
+        clearButton = new JButton("Clear Selections");
+        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        clearButton.setToolTipText("Remove the previously selected start and end points");
+        clearButton.addActionListener(e -> clearState(mapView));
 
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -521,10 +517,10 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 resetMap(this.mapView);
+
                 //changed makeAStarRoute to makeMultipleRoute
                 route = graph.makeMultipleRoute(attributeManager, multiLoc);
-//                searchDropDownList.removeAllItems();
-//                searchDropDownList.hidePopup();
+
                 if (route.size() > 0) {
                     stepCount = 0;
                     mapView.addRoute(route);
@@ -548,7 +544,7 @@ public class MainAppUI extends JFrame{
 
                     makeAStarRoute.setEnabled(false);
                     emailButton.setEnabled(true);
-                    //clearButton.setEnabled(false);
+                    clearButton.setEnabled(true);
                     multipleDestination.removeAllItems();
                     desNum = 0;
                     multiLoc.clear();
@@ -607,14 +603,6 @@ public class MainAppUI extends JFrame{
                 tempLoc = searchExactName(selectedName);
                 locToSearch = selectedName;
             }
-            /*
-            if (tempLoc != null || startPoint != null) {
-                System.out.println("Transfer focus\n");
-                searchDropDownList.transferFocus();
-                searchDropDownList.hidePopup();
-                addToStart.requestFocus();
-                }
-            */
             if (searchSelectedName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
@@ -645,8 +633,6 @@ public class MainAppUI extends JFrame{
                 }
             }
             if (multiLoc.size() > 1){
-                //multipleDestination.transferFocus();
-                //addToDestination.requestFocus();
                 makeAStarRoute.setEnabled(true);
             }
         });
@@ -763,6 +749,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(multipleDestination);
         sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(makeAStarRoute);
+        sidePanel.add(clearButton, BorderLayout.SOUTH);
         sidePanel.add(text);
         sidePanel.add(emailText);
         sidePanel.add(emailButton);
@@ -771,7 +758,6 @@ public class MainAppUI extends JFrame{
         sidePanel.add(stepForwardOnRouteButton);
         sidePanel.add(checkBox);
         sidePanel.add(editRoutePrefs);
-        //sidePanel.add(clearButton, BorderLayout.SOUTH);
 
 
         //Set layout and add
@@ -795,7 +781,9 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setEnabled(false);
         emailButton.setEnabled(false);
 
-       // clearButton.setEnabled(false);
+        clearButton.setEnabled(false);
+
+        multipleDestination.removeAllItems();
 
         gps.setText("");
 
@@ -817,7 +805,7 @@ public class MainAppUI extends JFrame{
                         startInfo.setText("Start Point:  Unnamed Location");
                     } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
 
-                    //clearButton.setEnabled(true);
+                    clearButton.setEnabled(true);
                 } else if (startPoint != null && clickedLocation != endPoint) {
                     endPoint = clickedLocation;
                     route.add(clickedLocation);
@@ -828,13 +816,12 @@ public class MainAppUI extends JFrame{
                         desNum += 1;
                         multipleDestination.setSelectedIndex(desNum - 1);
                     } else {
-                        //endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]);
                         multipleDestination.addItem(clickedLocation.getNameList()[0]);
                         desNum += 1;
                         multipleDestination.setSelectedIndex(desNum - 1);
                     }
 
-                    //clearButton.setEnabled(true);
+                    clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);
                 }
                 routeInfo.setText("");
@@ -922,7 +909,7 @@ public class MainAppUI extends JFrame{
             frameSearch.setMinimumSize(new Dimension(1024, 768));
             mapView.addToSearchList(loc);
             repaint();
-            //clearButton.setEnabled(true);
+            clearButton.setEnabled(true);
         }
         return result;
     }

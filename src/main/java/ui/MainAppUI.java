@@ -11,6 +11,8 @@ import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -156,6 +158,9 @@ public class MainAppUI extends JFrame{
         JPanel sidePanel = new JPanel();
         JMenuBar menuBar = new JMenuBar();
         JMenu editMenu = new JMenu("Edit");
+        editMenu.addChangeListener(e -> {
+            ((JComponent) e.getSource()).repaint();
+        });
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
         refreshMap.addActionListener(e -> {
@@ -195,6 +200,9 @@ public class MainAppUI extends JFrame{
 
         //Sets up the 'view' menu bar
         JMenu view = new JMenu("View");
+        view.addChangeListener(e -> {
+            ((JComponent) e.getSource()).repaint();
+        });
 
         //'View' contains toggleEdges, showNodes, and changeStyle
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");

@@ -647,7 +647,7 @@ public class MainAppUI extends JFrame{
         JButton stepForwardOnRouteButton = new JButton("Next Step");
         stepForwardOnRouteButton.setPreferredSize(new Dimension(150, 30));
         stepForwardOnRouteButton.setMaximumSize(new Dimension(150, 30));
-        stepForwardOnRouteButton.setToolTipText("TEST");
+        stepForwardOnRouteButton.setToolTipText("Go Forward One Step");
         stepForwardOnRouteButton.addActionListener(e ->
         {
             if (stepCount < route.size())
@@ -661,7 +661,7 @@ public class MainAppUI extends JFrame{
         JButton stepBackOnRouteButton = new JButton("Previous Step");
         stepBackOnRouteButton.setPreferredSize(new Dimension(150, 30));
         stepBackOnRouteButton.setMaximumSize(new Dimension(150, 30));
-        stepBackOnRouteButton.setToolTipText("TEST");
+        stepBackOnRouteButton.setToolTipText("Go Back One Step");
         stepBackOnRouteButton.addActionListener(e ->
         {
             if (stepCount > 0)

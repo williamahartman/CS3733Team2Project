@@ -660,7 +660,7 @@ public class MainAppUI extends JFrame{
             if (stepCount > 0)
             {
                 stepCount--;
-                mapView.stepByStep(stepCount, false);
+                gps.setText(mapView.stepByStep(stepCount, false));
             }
 
         });

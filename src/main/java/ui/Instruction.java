@@ -158,6 +158,12 @@ public class Instruction {
                     if (i == listSize - 2){
                         temp = this.make2Decimal(l2);
                         instruction.add("Go " + temp + " feet.\n");
+                        for (int j = 0; j < count; j++) {
+                            if (i != 0) {
+                                instruction.add("Continue straight\n");
+                                instruction.add("");
+                            }
+                        }
                         totalDistance += temp;
 
                     }

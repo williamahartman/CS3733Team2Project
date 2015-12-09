@@ -523,6 +523,10 @@ public class MapView extends JPanel {
                    {
                        previous = ll.get(step);
                        current = ll.get(step - 1);
+                       textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y)
+                               .get((step - 1) * 2)
+                               + instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y)
+                               .get((step - 1) * 2 + 1);
                    }
                    if (current.getFloorNumber() != previous.getFloorNumber())
                    {

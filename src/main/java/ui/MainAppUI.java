@@ -497,6 +497,7 @@ public class MainAppUI extends JFrame{
                     startInfo.setText("Start Point: Not selected");
                     endPointInfo.setText("End Point: Not selected");
                     makeAStarRoute.setEnabled(false);
+                    emailButton.setEnabled(true);
                     //clearButton.setEnabled(false);
                 } else {
                     JOptionPane.showMessageDialog(this,
@@ -600,20 +601,23 @@ public class MainAppUI extends JFrame{
                     if (emailToSend.length() > 0) {
 
                         Instruction instruct = new Instruction();
-                        for (int i = 0; i < route.size(); i++) {
-                            mapView.stepByStep(i, true, true);
-                        }
                         java.util.List<String> instructions =
                                 instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
                         Email email = new Email(emailToSend, instructions);
+                        for (int i = 0; i < route.size(); i++) {
+                            mapView.stepByStep(i, true, true);
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException ex){
+                                ex.printStackTrace();
+                            }
+                        }
                         email.sendEmail();
-                    } else {
-                        //if no location is found
-                        JOptionPane.showMessageDialog(this, "Location is not found.");
                     }
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
+                JOptionPane.showMessageDialog(null, "Error: Invalid Email!",
+                        "Incorrect!", JOptionPane.ERROR_MESSAGE);
             }
 
         });
@@ -660,6 +664,8 @@ public class MainAppUI extends JFrame{
         endPointInfo.setText("End Point: Not selected");
 
         makeAStarRoute.setEnabled(false);
+        emailButton.setEnabled(false);
+
        // clearButton.setEnabled(false);
 
         gps.setText("");

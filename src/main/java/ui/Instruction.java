@@ -86,7 +86,17 @@ public class Instruction {
                                 instruction.add("Go down the stairs\n");
                                 instruction.add("");
                             } else if (e.hasAttribute(EdgeAttribute.ELEVATOR)) {
-                                instruction.add("Take the elevator to floor  " + locCurrent.getFloorNumber() + "\n");
+                                String elevatorFloorText = "";
+                                int floorDif = locCurrent.getFloorNumber() - locPrev.getFloorNumber();
+                                if (floorDif > 0) {
+                                    elevatorFloorText = "Take the elevator up " + floorDif + " floor";
+                                    elevatorFloorText += floorDif == 1 ? "" : "s";
+                                } else {
+                                    elevatorFloorText = "Take the elevator down " + -floorDif + " floor";
+                                    elevatorFloorText += floorDif == 1 ? "" : "s";
+                                }
+
+                                instruction.add(elevatorFloorText + "\n");
                                 instruction.add("");
                             }
                             else

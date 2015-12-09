@@ -43,17 +43,21 @@ public class MainAppUI extends JFrame{
     private Location startPoint;
     private Location endPoint;
     private java.util.List<Location> route;
+    HashSet<Location> namedLocations;
 
     private JLabel startInfo;
     private JLabel endPointInfo;
     private JTextArea routeInfo;
 
     private JTextArea gps;
-    private JTextField searchText;
+    private JTextField emailText;
     private String locToSearch;
+    private String emailToSend;
 
-    //private JButton clearButton;
+    private JButton clearButton;
     private JButton makeAStarRoute;
+    private JButton searchButton;
+    private JButton emailButton;
 
 
     private JComboBox searchDropDownList;
@@ -500,11 +504,11 @@ public class MainAppUI extends JFrame{
         gps.setVisible(true);
         gps.setEditable(false);
 
-//        clearButton = new JButton("Clear Selections");
-//        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
-//        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
-//        clearButton.setToolTipText("Remove the previously selected start and end points");
-//        clearButton.addActionListener(e -> clearState(mapView));
+        clearButton = new JButton("Clear Selections");
+        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        clearButton.setToolTipText("Remove the previously selected start and end points");
+        clearButton.addActionListener(e -> clearState(mapView));
 
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -513,12 +517,11 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 resetMap(this.mapView);
+
                 //changed makeAStarRoute to makeMultipleRoute
-                 route = graph.makeMultipleRoute(attributeManager, multiLoc);
-                 java.util.List<Location>routeTime = graph.makeMultipleRoute(attributeManager, multiLoc);
-//                searchDropDownList.removeAllItems();
-//                searchDropDownList.hidePopup();
-                if (routeTime.size() > 0) {
+                route = graph.makeMultipleRoute(attributeManager, multiLoc);
+
+                if (route.size() > 0) {
                     stepCount = 0;
                     mapView.addRoute(routeTime);
                     gps.setText("");
@@ -540,7 +543,8 @@ public class MainAppUI extends JFrame{
                     endPointInfo.setText("End Point: Not selected");
 
                     makeAStarRoute.setEnabled(false);
-                    //clearButton.setEnabled(false);
+                    emailButton.setEnabled(true);
+                    clearButton.setEnabled(true);
                     multipleDestination.removeAllItems();
                     desNum = 0;
                     multiLoc.clear();
@@ -561,7 +565,8 @@ public class MainAppUI extends JFrame{
         });
 
         desNum = 0;
-        searchDropDownList = new SearchComboBox(graph);
+        namedLocations = graph.getNamedLocations();
+        searchDropDownList = new SearchComboBox(namedLocations);
         searchDropDownList.setEditable(true);
         searchDropDownList.setPreferredSize(new Dimension(180, 30));
         searchDropDownList.setMaximumSize(new Dimension(180, 30));
@@ -598,14 +603,6 @@ public class MainAppUI extends JFrame{
                 tempLoc = searchExactName(selectedName);
                 locToSearch = selectedName;
             }
-            /*
-            if (tempLoc != null || startPoint != null) {
-                System.out.println("Transfer focus\n");
-                searchDropDownList.transferFocus();
-                searchDropDownList.hidePopup();
-                addToStart.requestFocus();
-                }
-            */
             if (searchSelectedName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
@@ -636,8 +633,6 @@ public class MainAppUI extends JFrame{
                 }
             }
             if (multiLoc.size() > 1){
-                //multipleDestination.transferFocus();
-                //addToDestination.requestFocus();
                 makeAStarRoute.setEnabled(true);
             }
         });
@@ -651,7 +646,7 @@ public class MainAppUI extends JFrame{
         {
             if (stepCount < route.size())
             {
-                gps.setText(mapView.stepByStep(stepCount, true));
+                gps.setText(mapView.stepByStep(stepCount, true, false));
                 stepCount++;
             }
         });
@@ -664,7 +659,7 @@ public class MainAppUI extends JFrame{
             if (stepCount > 0)
             {
                 stepCount--;
-                gps.setText(mapView.stepByStep(stepCount, false));
+                mapView.stepByStep(stepCount, false, false);
             }
 
         });
@@ -696,6 +691,51 @@ public class MainAppUI extends JFrame{
             editWindow.setVisible(true);
         });
 
+        emailText = new JTextField(20);
+        emailText.setVisible(true);
+        emailText.setPreferredSize(new Dimension(170, 30));
+        emailText.setMaximumSize(new Dimension(170, 30));
+
+        emailButton = new JButton("Send Email");
+        emailButton.setPreferredSize(new Dimension(90, 30));
+        emailButton.setMaximumSize(new Dimension(90, 30));
+        emailButton.setToolTipText("Send an email.");
+        emailButton.addActionListener(e -> {
+            emailButton.setEnabled(false);
+            emailToSend = null;
+            try {
+                emailToSend = emailText.getText(); //gets the name from text field
+                if (emailToSend.length() == 0) {
+                    //if no location is entered
+                    JOptionPane.showMessageDialog(this, "Please Enter an Email.");
+                } else {
+                    //search the name in nameLList for all locations in the graph
+                    if (emailToSend.length() > 0) {
+
+                        Instruction instruct = new Instruction();
+                        java.util.List<String> instructions =
+                                instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
+                        Email email = new Email(emailToSend, instructions);
+                        for (int i = 0; i < route.size(); i++) {
+                            mapView.stepByStep(i, true, true);
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException ex){
+                                ex.printStackTrace();
+                            }
+                        }
+                        email.sendEmail();
+                    }
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Error: Invalid Email!",
+                        "Incorrect!", JOptionPane.ERROR_MESSAGE);
+            }
+            emailButton.setEnabled(true);
+
+        });
+
+        EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         JScrollPane text = new JScrollPane(gps);
         text.setPreferredSize(new Dimension(300, 300));
         text.setMaximumSize(new Dimension(300, 300));
@@ -711,12 +751,15 @@ public class MainAppUI extends JFrame{
         sidePanel.add(multipleDestination);
         sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(makeAStarRoute);
+        sidePanel.add(clearButton, BorderLayout.SOUTH);
         sidePanel.add(text);
+        sidePanel.add(emailText);
+        sidePanel.add(emailButton);
+        sidePanel.add(edgeWeightPanel);
         sidePanel.add(stepBackOnRouteButton);
         sidePanel.add(stepForwardOnRouteButton);
         sidePanel.add(checkBox);
         sidePanel.add(editRoutePrefs);
-        //sidePanel.add(clearButton, BorderLayout.SOUTH);
 
 
         //Set layout and add
@@ -738,7 +781,11 @@ public class MainAppUI extends JFrame{
         endPointInfo.setText("End Point: Not selected");
 
         makeAStarRoute.setEnabled(false);
-       // clearButton.setEnabled(false);
+        emailButton.setEnabled(false);
+
+        clearButton.setEnabled(false);
+
+        multipleDestination.removeAllItems();
 
         gps.setText("");
 
@@ -760,7 +807,7 @@ public class MainAppUI extends JFrame{
                         startInfo.setText("Start Point:  Unnamed Location");
                     } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
 
-                    //clearButton.setEnabled(true);
+                    clearButton.setEnabled(true);
                 } else if (startPoint != null && clickedLocation != endPoint) {
                     endPoint = clickedLocation;
                     route.add(clickedLocation);
@@ -771,13 +818,12 @@ public class MainAppUI extends JFrame{
                         desNum += 1;
                         multipleDestination.setSelectedIndex(desNum - 1);
                     } else {
-                        //endPointInfo.setText("End Point:  " + clickedLocation.getNameList()[0]);
                         multipleDestination.addItem(clickedLocation.getNameList()[0]);
                         desNum += 1;
                         multipleDestination.setSelectedIndex(desNum - 1);
                     }
 
-                    //clearButton.setEnabled(true);
+                    clearButton.setEnabled(true);
                     makeAStarRoute.setEnabled(true);
                 }
                 routeInfo.setText("");
@@ -822,6 +868,8 @@ public class MainAppUI extends JFrame{
         }
     }
 
+    public MapView getMapView(){ return mapView;  }
+
     private Location searchSelectedName(String selectedName){
         Location result = null;
         try {
@@ -863,7 +911,7 @@ public class MainAppUI extends JFrame{
             frameSearch.setMinimumSize(new Dimension(1024, 768));
             mapView.addToSearchList(loc);
             repaint();
-            //clearButton.setEnabled(true);
+            clearButton.setEnabled(true);
         }
         return result;
     }

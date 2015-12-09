@@ -20,21 +20,34 @@ import java.util.List;
  * Created by hollyn on 12/7/15.
  */
 public class SearchComboBox extends JComboBox {
-    LocationGraph graph;
+    //LocationGraph graph;
+    HashSet<Location> nameLoc;
     private String lastTyped;
 
-    public SearchComboBox(LocationGraph graph) {
+    public SearchComboBox(HashSet<Location> nameLoc) {
         super();
-        this.graph = graph;
+        // this.graph = graph;
+        this.nameLoc = nameLoc;
         setEditable(true);
         Component c = this.getEditor().getEditorComponent(); // Get editable component
         JTextComponent tc = (JTextComponent) c;
         this.removeAllItems();
         this.addItem("");
         this.setPopupVisible(false);
-        List<Location> locationList = graph.getAllLocations();
+        //List<Location> locationList = graph.getAllLocations();
         ArrayList<String> nameList = new ArrayList<>();
-        for (Location loc: locationList){
+
+        /*for (Location loc: locationList){
+            for (String name: loc.getNameList()){
+                nameList.add(name);
+            }
+        }
+        Collections.sort(nameList);
+        for (String name: nameList){
+            this.addItem(name);
+        }*/
+
+        for (Location loc: nameLoc){
             for (String name: loc.getNameList()){
                 nameList.add(name);
             }
@@ -76,7 +89,9 @@ public class SearchComboBox extends JComboBox {
                         //System.out.println("1) get text/" + tc.getText() + "/end");
 
                         // List of locations that have at least one name matching
-                        List<Location> loc = graph.searchLocationByName(tc.getText());
+                        // List<Location> loc = graph.searchLocationByName(tc.getText());
+
+                        List<Location> loc = searchNamesInList(nameLoc, tc.getText());
 
                         for (Location l : loc) {
                             for (String name : l.getNameList()) {
@@ -134,6 +149,14 @@ public class SearchComboBox extends JComboBox {
             }
         });
 
+    }
+
+    public List<Location> searchNamesInList(HashSet<Location> locationList, String searchString) {
+        ArrayList<Location> result = new ArrayList<>();
+
+        locationList.stream().filter(loc -> loc.namesInclude(searchString)).forEach(result::add);
+
+        return result;
     }
 
    /* public ItemListener checkItem() {

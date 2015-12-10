@@ -35,7 +35,7 @@ public class Instruction {
         double distance = 0; //records the sum of distance after previous turning
         //double distance2 = 0; //stores the distance between previous location and current location
         int listSize = locList.size();
-        double temp; //used to add appropriate distance to the instruction
+        int temp; //used to add appropriate distance to the instruction
 
         //if there is no location in location list
         if (listSize == 0) {
@@ -228,7 +228,7 @@ public class Instruction {
 
             instruction.add("You arrive at your destination.\n");
             totalDistance = this.make2Decimal(totalDistance);
-            instruction.add("The total distance is " + totalDistance + " feet.\n");
+            instruction.add("The total distance is " + (int) totalDistance + " feet.\n");
             //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
             int timeNeed = (int) (totalDistance / 237);
             instruction.add("On average it takes " + timeNeed + " minutes to arrive at your destination.\n");
@@ -241,9 +241,10 @@ public class Instruction {
      * @param distance distance wanted to save two decimal
      * @return the distance
      */
-    private double make2Decimal(double distance){
+    private int make2Decimal(double distance){
         String temp = String.format(("%.2f"), distance);
-        return Double.parseDouble(temp);
+        double math = Double.parseDouble(temp);
+        return (int) math;
     }
 
     private double makeScaledDistance(Point2D.Double pos1, Point2D.Double pos2, int scaleX, int scaleY) {

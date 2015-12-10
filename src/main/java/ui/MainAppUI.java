@@ -32,8 +32,8 @@ public class MainAppUI extends JFrame{
     public static final int MAP_SCALE_Y = 1780; // Map height in feet
 
     //Button sized
-    private static final int UNNAMED_SIZE = 7;
-    private static final int NAMED_SIZE = 12;
+    private static final int UNNAMED_SIZE = 5;
+    private static final int NAMED_SIZE = 10;
     private static final int START_SIZE = 15;
     private static final int DEV_UNNAMED_SIZE = 10;
     private static final int DEV_NAMED_SIZE = 15;
@@ -128,7 +128,7 @@ public class MainAppUI extends JFrame{
                 Color.CYAN,     //Selected Point color
                 Color.BLUE,     //Previously Selected Point color
                 Color.CYAN,     //Edge highlight color
-                Color.GRAY      //Search Result Color
+                Color.BLACK      //Search Result Color
         );
 
         this.mapView = new MapView(graph,
@@ -359,7 +359,7 @@ public class MainAppUI extends JFrame{
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
                     Color.CYAN,  //Edge highlight color
-                    Color.GRAY      //Search Result Color
+                    Color.BLACK      //Search Result Color
             );
 
             mapView.setStyle(defaultMapViewStyle);
@@ -385,7 +385,7 @@ public class MainAppUI extends JFrame{
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
                     Color.MAGENTA,  //Edge highlight color
-                    Color.GRAY      //Search Result Color
+                    Color.BLACK      //Search Result Color
             );
 
             mapView.setStyle(wpiMapViewStyle);
@@ -411,7 +411,7 @@ public class MainAppUI extends JFrame{
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
                     Color.MAGENTA,  //Edge highlight color
-                    Color.GRAY      //Search Result Color
+                    Color.BLACK     //Search Result Color
             );
 
             mapView.setStyle(blueMapViewStyle);
@@ -437,7 +437,7 @@ public class MainAppUI extends JFrame{
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
                     Color.MAGENTA,  //Edge highlight color
-                    Color.GRAY      //Search Result Color
+                    Color.BLACK      //Search Result Color
             );
 
             mapView.setStyle(neonFunkMapViewStyle);
@@ -463,7 +463,7 @@ public class MainAppUI extends JFrame{
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
                     Color.CYAN,     //Edge highlight color
-                    Color.GRAY      //Search Result Color
+                    Color.BLACK     //Search Result Color
             );
 
             mapView.setStyle(vintageMapViewStyle);
@@ -489,7 +489,7 @@ public class MainAppUI extends JFrame{
                     Color.CYAN,     //Selected Point color
                     Color.BLUE,     //Previously Selected Point color
                     Color.PINK,     //Edge highlight color
-                    Color.GRAY      //Search Result Color
+                    Color.BLACK      //Search Result Color
             );
 
             mapView.setStyle(colorblindMapViewStyle);

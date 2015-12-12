@@ -603,6 +603,8 @@ public class MainAppUI extends JFrame{
 
         searchDropDownList.addActionListener(e -> {
             refreshMap(mapView);
+            mapView.clearSearchList();
+
             String selectedName = (String) searchDropDownList.getSelectedItem();
             //System.out.println(selectedName);
             if (searchExactName(selectedName) != null) {
@@ -781,7 +783,6 @@ public class MainAppUI extends JFrame{
         sidePanel.add(emailText);
         sidePanel.add(emailButton);
         sidePanel.add(textToVoice);
-        //sidePanel.add(edgeWeightPanel);
 
         sidePanel.add(handicapCheckbox);
         sidePanel.add(editRoutePrefs);
@@ -795,6 +796,7 @@ public class MainAppUI extends JFrame{
 
         clearState();
     }
+
     /**
      * Clear the state of the App, returning it to the default state.
      */

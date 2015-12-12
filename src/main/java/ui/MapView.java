@@ -305,8 +305,6 @@ public class MapView extends JPanel {
 
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
-
-                repaint();
             }
             @Override
             public void mousePressed(MouseEvent e) {

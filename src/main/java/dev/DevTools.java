@@ -268,7 +268,7 @@ public class DevTools extends JPanel {
         saveToDatabase.addActionListener(listener -> {
             prevSaves = dbChanges;
             try {
-                if(username != null && password != null) {
+                if (username != null && password != null) {
                     Database graphData = new Database(username, password);
                     graphData.updateDB(dblist);
                     graphData.closeConnection();

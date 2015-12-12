@@ -65,6 +65,8 @@ public class MainAppUI extends JFrame{
 
 
     private JComboBox searchDropDownList;
+    private JComboBox searchBox;
+
     private JLabel searchInfo;
     private JLabel endLocInfo;
     private JButton addToStart;
@@ -582,8 +584,13 @@ public class MainAppUI extends JFrame{
 
         desNum = 0;
         namedLocations = graph.getNamedLocations();
-        searchDropDownList = new SearchComboBox(namedLocations);
+        searchDropDownList = new JComboBox();
         searchDropDownList.setEditable(true);
+        SearchBoxModel model = new SearchBoxModel(searchDropDownList, namedLocations);
+        searchDropDownList.setModel(model);
+        searchDropDownList.addItemListener(model);
+        //searchDropDownList = new SearchBox(searchBox, namedLocations);
+        //searchDropDownList.setEditable(true);
         searchDropDownList.setPreferredSize(new Dimension(180, 30));
         searchDropDownList.setMaximumSize(new Dimension(180, 30));
 
@@ -615,17 +622,23 @@ public class MainAppUI extends JFrame{
         searchDropDownList.addActionListener(e -> {
             resetMap(mapView);
             String selectedName = (String) searchDropDownList.getSelectedItem();
+            if (searchExactName(selectedName) != null){
+                tempLoc = searchExactName(selectedName);
+                locToSearch = selectedName;
+            }
             //System.out.println(selectedName);
-            if (searchExactName(selectedName) != null) {
+
+            /*if (searchExactName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
                 tempLoc = searchExactName(selectedName);
                 locToSearch = selectedName;
-            }
-            if (searchSelectedName(selectedName) != null) {
+            }*/
+            /*if (searchSelectedName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
-            }
+            }*/
+
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 makeAStarRoute.setEnabled(true);
             }

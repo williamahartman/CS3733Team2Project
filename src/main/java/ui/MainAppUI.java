@@ -974,10 +974,10 @@ public class MainAppUI extends JFrame{
     //Animate the panel
     private void animate(JPanel panel, boolean closing){
         int totalTime = 350;
-        for(int time = 0; time < totalTime; time++) {
+        for (int time = 0; time < totalTime; time++) {
             if (closing) {
                 panel.setBounds(panel.getX(), panel.getY(), panel.getWidth() - 1, panel.getHeight());
-                mapView.setBounds(mapView.getX()-1, mapView.getY(), mapView.getWidth() + 1, mapView.getHeight());
+                mapView.setBounds(mapView.getX() - 1, mapView.getY(), mapView.getWidth() + 1, mapView.getHeight());
                 mapView.validate();
                 panel.validate();
                 mapView.repaint();

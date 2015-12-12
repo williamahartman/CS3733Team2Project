@@ -200,6 +200,17 @@ public class MapView extends JPanel {
         add(scrollPane);
         add(floorSliderPanel, BorderLayout.WEST);
 
+        JButton returnToDefaultFloor = new JButton("<html>Return to<br>" +
+                "default<br>" +
+                "floor");
+        returnToDefaultFloor.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                floorSlider.setValue(defaultFloor);
+            }
+        });
+        floorSliderPanel.add(returnToDefaultFloor, BorderLayout.PAGE_END);
+
         //Scroll to start point
         Point newViewportPos = new Point();
         newViewportPos.x = (int) ((START_XFRAC * getCurrentPixelSize().getWidth()));

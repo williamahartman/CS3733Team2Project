@@ -10,9 +10,6 @@ import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -778,6 +775,16 @@ public class MainAppUI extends JFrame{
             }
         });
 
+        //TODO Make animation work
+        JButton closeWindow = new JButton("Close Window");
+        boolean isClosed = false;
+        closeWindow.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                animate(sidePanel, !isClosed);
+            }
+        });
+
         //Add elements to the search panel
         sidePanel.add(searchInfo);
         sidePanel.add(searchDropDownList);
@@ -802,6 +809,7 @@ public class MainAppUI extends JFrame{
 
         sidePanel.add(handicapCheckbox);
         sidePanel.add(editRoutePrefs);
+        sidePanel.add(closeWindow);
 
 
         //Set layout and add
@@ -961,6 +969,24 @@ public class MainAppUI extends JFrame{
             clearButton.setEnabled(true);
         }
         return result;
+    }
+
+    //Animate the panel
+    private void animate(JPanel panel, boolean closing){
+        int totalTime = 350;
+        for(int time = 0; time < totalTime; time++) {
+            if (closing) {
+                panel.setBounds(panel.getX(), panel.getY(), panel.getWidth() - 1, panel.getHeight());
+                mapView.setBounds(mapView.getX()-1, mapView.getY(), mapView.getWidth() + 1, mapView.getHeight());
+                mapView.validate();
+                panel.validate();
+                mapView.repaint();
+                panel.repaint();
+                try {
+                    Thread.sleep(10);
+                } catch (Exception exc){}
+            }
+        }
     }
 
 }

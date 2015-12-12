@@ -8,9 +8,7 @@ import ui.TextToVoice;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.*;
-import java.net.URL;
+
 import java.sql.SQLException;
 
 /**

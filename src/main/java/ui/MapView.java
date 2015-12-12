@@ -6,18 +6,10 @@ import core.Edge;
 import core.Location;
 import core.LocationGraph;
 import core.MapImage;
-import database.Database;
-import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
-import org.jb2011.lnf.beautyeye.BeautyEyeLookAndFeelCross;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 

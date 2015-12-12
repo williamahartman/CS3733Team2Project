@@ -35,7 +35,7 @@ public class Email extends Thread{
         String to = recvEmail;
 
         String additionalChar = "";
-        if(!System.getProperty("os.name").toLowerCase().contains("windows")) {
+        if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
             additionalChar = "/";
         }
         String directory = System.getProperty("java.io.tmpdir") + additionalChar + "aztecWash/";

@@ -521,8 +521,7 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
-                resetMap(this.mapView);
-                //clearState(mapView);
+                refreshMap(mapView);
                 route.clear();
 
                 //changed makeAStarRoute to makeMultipleRoute
@@ -598,8 +597,7 @@ public class MainAppUI extends JFrame{
                 startPoint = tempLoc;
                 startInfo.setText("Start Point: " + locToSearch);
                 multiLoc.add(0, startPoint);
-                mapView.clearFromSearchList();
-                mapView.clearFromSearchList();
+                mapView.clearSearchList();
                 repaint();
                 updateStartEndColors();
                 //searchDropDownList.removeAllItems();
@@ -657,7 +655,7 @@ public class MainAppUI extends JFrame{
                 } else if (size > 0 && (multiLoc.get(size - 1).equals(endPoint))){
                     JOptionPane.showMessageDialog(this, "You've already added this location.");
                 }
-                mapView.clearFromSearchList();
+                mapView.clearSearchList();
                 repaint();
                 updateStartEndColors();
             }

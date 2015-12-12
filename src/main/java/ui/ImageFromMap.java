@@ -26,7 +26,7 @@ public class ImageFromMap {
         myComponent.paint(g2);
         try {
             String additionalChar = "";
-            if(!System.getProperty("os.name").toLowerCase().contains("windows")) {
+            if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
                 additionalChar = "/";
             }
 

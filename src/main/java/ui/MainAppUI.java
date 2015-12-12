@@ -220,10 +220,57 @@ public class MainAppUI extends JFrame{
         JMenuItem vintageStyle = new JMenuItem("Vintage Style");
         JMenuItem colorBlindStyle = new JMenuItem("Colorblind Accessible Style");
 
+        // -- ABOUT MENU STARTS HERE -- //
+
+        JMenu help = new JMenu("Help");
+        help.addChangeListener(e -> {
+            menuBar.repaint();
+        });
+        JMenuItem about = new JMenuItem("About");
+        about.addActionListener(e -> {
+            JDialog aboutFrame = new JDialog();
+            aboutFrame.setTitle("About");
+            aboutFrame.setLayout(new FlowLayout());
+            aboutFrame.setVisible(true);
+            aboutFrame.setMinimumSize(new Dimension(400, 300));
+            JPanel aboutPanel = new JPanel(new FlowLayout());
+            aboutPanel.setMinimumSize(new Dimension(400, 300));
+            JLabel aboutLabel = new JLabel("<html><center>Worcester Polytechnic Institute<br>" +
+                    "CS3733 2015 B-Term<br>" +
+                    "<br>" +
+                    "Developed by Team AZTEC WASH:<br>" +
+                    "Alex Locke [Map Artist / UI Designer]<br>" +
+                    "Zoe Ding [A* Specialist / Search Algorithm Specialist]<br>" +
+                    "Tom Farro [Project Manager / Developer Tools Specialist]<br>" +
+                    "Elizabeth Tomko []<br>" +
+                    "Callum Taylor [A* Specialist / Software Engineer]<br> " +
+                    "Will Hartman [Lead Software Engineer]<br>" +
+                    "Alora Hillman [Developer Tools Specialist / UI Designer]<br>" +
+                    "Scott Iwanicki [Database Specialist / Software Engineer]<br> " +
+                    "Holly Nguyen [Database Specialist / Project Manager]<br>" +
+                    "<br>" +
+                    "Special Thanks to:<br>" +
+                    "Coach Caitlin Malone and Prof. Wilson Wong<br>" +
+                    "</center></html>");
+            aboutPanel.add(aboutLabel);
+            aboutFrame.add(aboutPanel);
+            aboutFrame.pack();
+            about.repaint();
+        });
+        help.add(about);
+        JMenuItem tutorial = new JMenuItem("Tutorial");
+        about.addActionListener(e -> {
+
+        });
+        help.add(tutorial);
+
+        // -- ABOUT MENU ENDS HERE -- //
+
         //Sets up menu hierarchy
         setJMenuBar(menuBar);
         menuBar.add(editMenu);
         menuBar.add(view);
+        menuBar.add(help);
         view.add(toggleEdges);
         view.add(showNodes);
         view.add(changeStyle);

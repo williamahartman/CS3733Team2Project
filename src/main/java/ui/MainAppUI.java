@@ -10,6 +10,7 @@ import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -72,7 +73,7 @@ public class MainAppUI extends JFrame{
     private Location tempLoc;
     private List<Location> multiLoc;
     private int desNum;
-
+    private boolean isClosed = false;
 
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
@@ -91,6 +92,7 @@ public class MainAppUI extends JFrame{
 
     private int stepCount = 0;
     private int time = 0;
+
 
     /**
      * Constructor.
@@ -778,15 +780,18 @@ public class MainAppUI extends JFrame{
             }
         });
 
-        //TODO Make animation work
-        JButton closeWindow = new JButton("Close Window");
-        boolean isClosed = false;
+        JButton closeWindow = new JButton("<<<");
         closeWindow.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
+
                 animate(sidePanel, !isClosed);
+                isClosed = !isClosed;
             }
         });
+        mapView.getFloorSliderPanel().add(closeWindow, BorderLayout.PAGE_START);
+        //mapView.add(closeWindow, BorderLayout.PAGE_START);
+        closeWindow.setPreferredSize(new Dimension(40, 40));
 
         //Add elements to the search panel
         sidePanel.add(searchInfo);
@@ -812,15 +817,16 @@ public class MainAppUI extends JFrame{
 
         sidePanel.add(handicapCheckbox);
         sidePanel.add(editRoutePrefs);
-        sidePanel.add(closeWindow);
+
 
 
         //Set layout and add
         setLayout(new BorderLayout());
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
-        add(devToolsPanel, BorderLayout.EAST);
 
+        add(devToolsPanel, BorderLayout.EAST);
+        //add(closeWindow, BorderLayout.SOUTH);
         clearState(mapView);
     }
     /**
@@ -976,22 +982,30 @@ public class MainAppUI extends JFrame{
 
     //Animate the panel
     private void animate(JPanel panel, boolean closing){
-        int totalTime = 350; //350
+        int totalTime = 350/10; //350
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (closing) {
-                    panel.setBounds(panel.getX() - 1, panel.getY(), panel.getWidth(), panel.getHeight());
-                    mapView.setBounds(mapView.getX() - 1, mapView.getY(), mapView.getWidth() + 1, mapView.getHeight());
+                    panel.setBounds(panel.getX() - 10, panel.getY(), panel.getWidth(), panel.getHeight());
+                    mapView.setBounds(mapView.getX() - 10, mapView.getY(), mapView.getWidth() + 10, mapView.getHeight());
                     mapView.validate();
                     time++;
-                } if (time >= totalTime) {
+                } else {
+                    panel.setBounds(panel.getX() + 10, panel.getY(), panel.getWidth(), panel.getHeight());
+                    mapView.setBounds(mapView.getX() + 10, mapView.getY(), mapView.getWidth() - 10, mapView.getHeight());
+                    mapView.validate();
+                    panel.validate();
+                    time++;
+                }
+
+                if (time >= totalTime) {
                     time = 0;
                     timer.cancel();
                     mapView.validate();
                 }
             }
-        }, 0, 1);
+        }, 0, 5);
 
     }
 

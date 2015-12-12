@@ -54,6 +54,7 @@ public class MapView extends JPanel {
 
     private EventListener buttonListener;
     private LocationGraph graph;
+    private JPanel floorSliderPanel = new JPanel(new BorderLayout());
     /**
      * Constructor.
      *
@@ -191,7 +192,7 @@ public class MapView extends JPanel {
         });
         floorSlider.setToolTipText("Change the displayed floor.");
         floorSlider.setPreferredSize(new Dimension(50, 500));
-        JPanel floorSliderPanel = new JPanel();
+
         floorSliderPanel.add(floorSlider);
         floorSlider.update(getGraphics());
 
@@ -706,4 +707,6 @@ public class MapView extends JPanel {
     public int getFloorNumber() {
         return currentFloorNumber;
     }
+
+    public JPanel getFloorSliderPanel() { return floorSliderPanel; }
 }

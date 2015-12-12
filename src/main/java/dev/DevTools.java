@@ -78,7 +78,7 @@ public class DevTools extends JPanel {
         setLayout(new BorderLayout());
         this.add(createEditor());
 
-        refreshGraph();
+        mapView.refreshGraph();
     }
 
     /**
@@ -110,7 +110,7 @@ public class DevTools extends JPanel {
                     dblist.addedLocation(locAdd);
 
                     //Set last buttonClicked to the location we just added
-                    mapView.updateGraph(graph);
+                    mapView.refreshGraph();
                     mapView.getLocationButtonList().forEach(locationButton -> {
                         if (locationButton.getAssociatedLocation() == locAdd) {
                             lastButtonClicked = locationButton;
@@ -495,23 +495,10 @@ public class DevTools extends JPanel {
      * Redraws the graph with colors and stuff.
      */
     public void refreshGraph() {
-        mapView.updateGraph(graph);
-
+        mapView.clearRoutes();
+        mapView.clearHighlight();
         updateHighlightedEdges();
-
-        //Search for the new button that will be last button clicked
-        mapView.getLocationButtonList().forEach(loc -> {
-            if (lastButtonClicked != null &&
-                    loc.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
-                lastButtonClicked = loc;
-            }
-        });
-        //Now set colors
-        if (lastButtonClicked != null) {
-            lastButtonClicked.setBgColor(mapView.getStyle().getPreviousSelectedColor());
-        }
-
-        mapView.repaint();
+        mapView.refreshGraph();
 
         dbChanges = dblist.getRemoveEdgeList().size() +
                 dblist.getAddEdgeList().size() +

@@ -110,14 +110,13 @@ public class DevTools extends JPanel {
                     dblist.addedLocation(locAdd);
 
                     //Set last buttonClicked to the location we just added
-                    mapView.refreshGraph();
+                    refreshGraph();
                     mapView.getLocationButtonList().forEach(locationButton -> {
                         if (locationButton.getAssociatedLocation() == locAdd) {
                             lastButtonClicked = locationButton;
                         }
                     });
                     refreshGraph();
-                    mapPanel.repaint();
                 }
             }
         };
@@ -390,6 +389,14 @@ public class DevTools extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 pointIsBeingDragged = true;
+                Location clicked = ((LocationButton) e.getSource()).getAssociatedLocation();
+                Point2D mousePos = mapView.getMapPanel().getMousePosition();
+                Point2D.Double doubleMousePos = new Point2D.Double(
+                        mousePos.getX() / mapView.getMapPanel().getWidth(),
+                        mousePos.getY() / mapView.getMapPanel().getHeight());
+
+                clicked.setPosition(doubleMousePos.x, doubleMousePos.y);
+                mapView.refreshGraph();
             }
 
             /**
@@ -429,9 +436,7 @@ public class DevTools extends JPanel {
                             break;
                         }
                     }
-                    refreshGraph();
 
-                    mapView.repaint();
                     pointIsBeingDragged = false;
                 }
             }
@@ -495,10 +500,22 @@ public class DevTools extends JPanel {
      * Redraws the graph with colors and stuff.
      */
     public void refreshGraph() {
-        mapView.clearRoutes();
-        mapView.clearHighlight();
+        mapView.setGraph(graph);
+
         updateHighlightedEdges();
-        mapView.refreshGraph();
+        //Search for the new button that will be last button clicked
+        mapView.getLocationButtonList().forEach(loc -> {
+            if (lastButtonClicked != null &&
+                    loc.getAssociatedLocation() == lastButtonClicked.getAssociatedLocation()) {
+                lastButtonClicked = loc;
+            }
+        });
+        //Now set colors
+        if (lastButtonClicked != null) {
+            lastButtonClicked.setBgColor(mapView.getStyle().getPreviousSelectedColor());
+        }
+
+        mapView.repaint();
 
         dbChanges = dblist.getRemoveEdgeList().size() +
                 dblist.getAddEdgeList().size() +

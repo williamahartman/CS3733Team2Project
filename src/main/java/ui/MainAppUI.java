@@ -531,7 +531,7 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 resetMap(this.mapView);
-                clearState(mapView);
+                //clearState(mapView);
                 route.clear();
 
                 //changed makeAStarRoute to makeMultipleRoute
@@ -563,6 +563,7 @@ public class MainAppUI extends JFrame{
                     clearButton.setEnabled(true);
                     multipleDestination.removeAllItems();
                     desNum = 0;
+
                     multiLoc.clear();
                 } else {
                     JOptionPane.showMessageDialog(this,
@@ -817,6 +818,10 @@ public class MainAppUI extends JFrame{
     private void clearState(MapView toReset) {
         startPoint = null;
         endPoint = null;
+
+        // ADDED
+        multiLoc.clear();
+        desNum = 0;
 
         startInfo.setText("Start Point: Not selected");
         endPointInfo.setText("End Point: Not selected");

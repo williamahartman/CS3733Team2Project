@@ -58,16 +58,15 @@ public class MainAppUI extends JFrame{
 
     private JButton clearButton;
     private JButton makeAStarRoute;
-    private JButton searchButton;
     private JButton emailButton;
 
 
-    private JComboBox searchDropDownList;
+    private JComboBox<String> searchDropDownList;
     private JLabel searchInfo;
     private JLabel endLocInfo;
     private JButton addToStart;
     private JButton addToDestination;
-    private JComboBox multipleDestination;
+    private JComboBox<String> multipleDestination;
     private Location tempLoc;
     private List<Location> multiLoc;
     private int desNum;
@@ -579,7 +578,7 @@ public class MainAppUI extends JFrame{
 
         searchInfo = new JLabel("Search: ");
         endLocInfo = new JLabel("Destinations: ");
-        multipleDestination = new JComboBox();
+        multipleDestination = new JComboBox<>();
         multipleDestination.setPreferredSize(new Dimension(160, 30));
         multipleDestination.setMaximumSize(new Dimension(160, 30));
         tempLoc = null;
@@ -831,7 +830,7 @@ public class MainAppUI extends JFrame{
                 } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
 
                 clearButton.setEnabled(true);
-            } else if (startPoint != null && clickedLocation != endPoint) {
+            } else if (clickedLocation != endPoint) {
                 endPoint = clickedLocation;
                 route.add(clickedLocation);
                 multiLoc.add(clickedLocation);

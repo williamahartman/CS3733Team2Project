@@ -1,13 +1,17 @@
 package database;
 
-import core.Edge;
-import core.EdgeAttribute;
-import core.Location;
-import core.LocationGraph;
+import com.kitfox.svg.SVGUniverse;
+import com.kitfox.svg.app.beans.SVGIcon;
+import core.*;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.*;
 import java.util.*;
 import java.awt.geom.Point2D;
+import java.util.List;
 
 /**
  * Created by Scott on 11/14/2015.
@@ -699,4 +703,104 @@ public class Database {
             e.printStackTrace();
         }
     }
+
+    public HashMap<Integer, MapImage> getMaps(){
+
+        HashMap<Integer, MapImage> svgList = new HashMap<>();
+        SVGUniverse universe = new SVGUniverse();
+
+        try {
+            //get all of the maps in the map table
+            Statement stmt = con.createStatement();
+            String mapQuery = "SELECT * FROM mapData.MAPS";
+            ResultSet rs = stmt.executeQuery(mapQuery);
+
+            while (rs.next()) {
+                try {
+                    //get values of current row
+                    String link = rs.getString("IMAGE");
+                    int scalex = rs.getInt("SCALE_X");
+                    int scaley = rs.getInt("SCALE_Y");
+                    //create url
+                    URL url = new URL(link);
+
+                    //load in the image
+                    universe.loadSVG(url);
+                    SVGIcon svg = new SVGIcon();
+                    svg.setSvgURI(url.toURI());
+
+                    //set image properties
+                    svg.setAntiAlias(true);
+                    svg.setClipToViewbox(false);
+                    svg.setAutosize(SVGIcon.AUTOSIZE_STRETCH);
+                    int svgWidth = svg.getIconWidth();
+                    int svgHeight = svg.getIconHeight();
+                    svg.setPreferredSize(new Dimension(svgWidth, svgHeight));
+
+                    //add the map infor to a Hash map with the floor number as the key
+                    svgList.put(rs.getInt("FLOOR_NUM"), new MapImage(svg, scalex, scaley));
+                } catch (IOException | URISyntaxException e) {
+                    System.err.printf("Failed while creating URL: %s", e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+         return svgList;
+    }
+
+    /**
+     * Adds a map to the database.
+     *
+     * @param floorNum Floor number associated with the map
+     * @param imagePath url to the image
+     * @param scalex x scale for the image
+     * @param scaley y scale for the image
+     */
+    public void addMap(int floorNum, String imagePath, int scalex, int scaley){
+        try {
+            Statement stmt = con.createStatement();
+            String mapQuery = "INSERT INTO mapData.MAPS (FLOOR_NUM, IMAGE, FLOOR_NUM) VALUES " +
+                    "(" + floorNum + "," + '"' + imagePath + '"'
+                    + "," + scalex + "," + scaley + ")";
+            stmt.execute(mapQuery);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Removes a map from the database based on the floor number (and/or) image path.
+     *
+     * @param floorNum floor number of the image to remove (less than 0 if don't care)
+     * @param imagePath url of the image to remove (null if don't care)
+     */
+    public void removeMap(int floorNum, String imagePath){
+        String remMap = "DELETE FROM mapData.MAPS WHERE ";
+
+        //add floor number to query if the floor number is greater than 0
+        if (floorNum > 0){
+            remMap = remMap + "FLOOR_NUM = " + floorNum;
+        }
+        //if both floor number and imagePath are used, add comma and "AND"
+        if (floorNum > 0 && (imagePath != null)){
+            remMap = remMap + ", AND ";
+        }
+        //if the image path isn't null add image to query
+        if (imagePath != null){
+            remMap = remMap + "IMAGE = " +
+                    '"' + imagePath + '"';
+        }
+        try {
+            //execute query
+            Statement stmt = con.createStatement();
+            stmt.execute(remMap);
+
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
+
 }

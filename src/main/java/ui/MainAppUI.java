@@ -1,9 +1,6 @@
 package ui;
 
-import core.EdgeAttribute;
-import core.EdgeAttributeManager;
-import core.Location;
-import core.LocationGraph;
+import core.*;
 import database.Database;
 import dev.DevPassword;
 import dev.DevTools;
@@ -97,7 +94,7 @@ public class MainAppUI extends JFrame{
      *
      * @param graph The graph that will be shown
      */
-    public MainAppUI(LocationGraph graph) {
+    public MainAppUI(LocationGraph graph, HashMap<Integer, MapImage> maps) {
         super(FRAME_TITLE);
 
         //change the look and feel to the BeautyEye style
@@ -132,15 +129,7 @@ public class MainAppUI extends JFrame{
         );
 
         this.mapView = new MapView(graph,
-                new String[]{
-                        "campusmap-3.svg",
-                        "campusmap-2.svg",
-                        "campusmap-1.svg",
-                        "campusmap1.svg",
-                        "campusmap2.svg",
-                        "campusmap3.svg",
-                        "campusmap4.svg",
-                        "campusmap5.svg"},
+                maps,
                 3, defaultMapViewStyle);
         this.mapView.setButtonListener(buildRouteSelectListener());
         this.mapView.getScrollPane().addMouseWheelListener(e -> {

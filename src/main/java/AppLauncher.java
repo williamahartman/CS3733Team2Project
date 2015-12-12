@@ -1,10 +1,16 @@
+import com.kitfox.svg.SVGUniverse;
+import com.kitfox.svg.app.beans.SVGIcon;
 import database.Database;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import ui.MainAppUI;
 import ui.TextToVoice;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URL;
 import java.sql.SQLException;
 
 /**
@@ -17,9 +23,8 @@ public class AppLauncher{
         try {
             Database graphData = new Database();
             //Make a frame
-            MainAppUI app = new MainAppUI(graphData.createGraph());
+            MainAppUI app = new MainAppUI(graphData.createGraph(), graphData.getMaps());
             graphData.closeConnection();
-
 
             //change the look and feel to the Nimbus style
             try {

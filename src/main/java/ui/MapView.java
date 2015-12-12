@@ -5,15 +5,20 @@ import com.kitfox.svg.app.beans.SVGIcon;
 import core.Edge;
 import core.Location;
 import core.LocationGraph;
+import core.MapImage;
+import database.Database;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import org.jb2011.lnf.beautyeye.BeautyEyeLookAndFeelCross;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.Iterator;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -48,6 +53,7 @@ public class MapView extends JPanel {
     private int currentFloorNumber;
 
     private SVGUniverse universe;
+    private HashMap<Integer, MapImage> svgList;
     private SVGIcon svg;
     private int svgWidth;
     private int svgHeight;
@@ -58,13 +64,13 @@ public class MapView extends JPanel {
      * Constructor.
      *
      * @param graph The LocationGraph whose edges will be displayed
-     * @param floorImagePaths The image that will be used as the background
+     * @param maps The image that will be used as the background
      * @param defaultFloor The floor the be the main floor
      * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
+    public MapView(LocationGraph graph, HashMap<Integer, MapImage> maps, int defaultFloor, MapViewStyle viewStyle) {
         this.graph = graph;
-        this.floorsImagePaths = floorImagePaths;
+        //this.floorsImagePaths = floorImagePaths;
         this.currentFloorNumber = defaultFloor;
         this.style = viewStyle;
         this.searchList = new ArrayList<>();
@@ -72,6 +78,7 @@ public class MapView extends JPanel {
         this.locationButtonList = new ArrayList<>();
         this.universe = new SVGUniverse();
         this.zoomFactor = DEFAULT_ZOOM;
+        this.svgList = maps;
 
         svg = new SVGIcon();
         setCurrentImage();
@@ -172,7 +179,7 @@ public class MapView extends JPanel {
         //Add the slider
         this.floorSlider = new JSlider(JSlider.VERTICAL);
         floorSlider.setMinimum(0);
-        floorSlider.setMaximum(floorImagePaths.length - 1);
+        floorSlider.setMaximum(svgList.size() - 1);
         floorSlider.setValue(currentFloorNumber);
         floorSlider.setPaintTicks(true);
         floorSlider.setMajorTickSpacing(1);
@@ -276,23 +283,10 @@ public class MapView extends JPanel {
     }
 
     private void setCurrentImage() {
-        if (currentFloorNumber >= 0 && currentFloorNumber < floorsImagePaths.length) {
-            String path = floorsImagePaths[currentFloorNumber];
-
-            try {
-                universe.loadSVG(ClassLoader.getSystemResourceAsStream(path), "bg" + currentFloorNumber);
-                svg.setSvgURI(ClassLoader.getSystemResource(path).toURI());
-                svg.setAntiAlias(true);
-                svg.setClipToViewbox(false);
-                svg.setAutosize(SVGIcon.AUTOSIZE_STRETCH);
-
-                svgWidth = svg.getIconWidth();
-                svgHeight = svg.getIconHeight();
-
-                svg.setPreferredSize(new Dimension(svgWidth, svgHeight));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (currentFloorNumber >= 0 && currentFloorNumber < svgList.size()) {
+            svg = svgList.get(currentFloorNumber).getSVG();
+            svgWidth = svg.getIconWidth();
+            svgHeight = svg.getIconHeight();
         }
     }
 
@@ -705,5 +699,9 @@ public class MapView extends JPanel {
      */
     public int getFloorNumber() {
         return currentFloorNumber;
+    }
+
+    public MapImage getCurrentMapImage(){
+        return svgList.get(currentFloorNumber);
     }
 }

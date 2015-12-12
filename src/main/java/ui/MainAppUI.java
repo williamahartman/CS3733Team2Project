@@ -15,6 +15,8 @@ import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -88,6 +90,7 @@ public class MainAppUI extends JFrame{
     private Color oldEndColor;
 
     private int stepCount = 0;
+    private int time = 0;
 
     /**
      * Constructor.
@@ -973,20 +976,25 @@ public class MainAppUI extends JFrame{
 
     //Animate the panel
     private void animate(JPanel panel, boolean closing){
-        int totalTime = 350;
-        for (int time = 0; time < totalTime; time++) {
-            if (closing) {
-                panel.setBounds(panel.getX(), panel.getY(), panel.getWidth() - 1, panel.getHeight());
-                mapView.setBounds(mapView.getX() - 1, mapView.getY(), mapView.getWidth() + 1, mapView.getHeight());
-                mapView.validate();
-                panel.validate();
-                mapView.repaint();
-                panel.repaint();
-                try {
-                    Thread.sleep(10);
-                } catch (Exception exc){}
+        int totalTime = 350; //350
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                if (closing) {
+                    panel.setBounds(panel.getX() - 1, panel.getY(), panel.getWidth(), panel.getHeight());
+                    mapView.setBounds(mapView.getX() - 1, mapView.getY(), mapView.getWidth() + 1, mapView.getHeight());
+                    mapView.validate();
+                    time++;
+                } if (time >= totalTime) {
+                    time = 0;
+                    timer.cancel();
+                    mapView.validate();
+                }
             }
-        }
+        }, 0, 1);
+
     }
+
+
 
 }

@@ -521,7 +521,8 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
-                clearState();
+                resetMap(this.mapView);
+                //clearState(mapView);
                 route.clear();
 
                 //changed makeAStarRoute to makeMultipleRoute
@@ -553,6 +554,7 @@ public class MainAppUI extends JFrame{
                     clearButton.setEnabled(true);
                     multipleDestination.removeAllItems();
                     desNum = 0;
+
                     multiLoc.clear();
                 } else {
                     JOptionPane.showMessageDialog(this,
@@ -596,6 +598,10 @@ public class MainAppUI extends JFrame{
                 startPoint = tempLoc;
                 startInfo.setText("Start Point: " + locToSearch);
                 multiLoc.add(0, startPoint);
+                mapView.clearFromSearchList();
+                mapView.clearFromSearchList();
+                repaint();
+                updateStartEndColors();
                 //searchDropDownList.removeAllItems();
                 //searchDropDownList.setSelectedItem("");
                 //searchDropDownList.setPopupVisible(false);
@@ -651,8 +657,11 @@ public class MainAppUI extends JFrame{
                 } else if (size > 0 && (multiLoc.get(size - 1).equals(endPoint))){
                     JOptionPane.showMessageDialog(this, "You've already added this location.");
                 }
+                mapView.clearFromSearchList();
+                repaint();
+                updateStartEndColors();
             }
-            if (multiLoc.size() > 1){
+            if (startPoint != null && multiLoc.size() > 1){
                 makeAStarRoute.setEnabled(true);
             }
         });
@@ -813,6 +822,10 @@ public class MainAppUI extends JFrame{
     private void clearState() {
         startPoint = null;
         endPoint = null;
+
+        multiLoc.clear();
+        desNum = 0;
+
         startInfo.setText("Start Point: Not selected");
         endPointInfo.setText("End Point: Not selected");
         multipleDestination.removeAllItems();
@@ -832,16 +845,18 @@ public class MainAppUI extends JFrame{
             Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
 
             if (startPoint == null) {
-                multiLoc.add(clickedLocation);
+                multiLoc.add(0, clickedLocation);
                 startPoint = clickedLocation;
                 route.add(clickedLocation);
                 ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getStartPointColor());
                 if (clickedLocation.getNameList().length == 0){
                     startInfo.setText("Start Point:  Unnamed Location");
                 } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
-
+                if (startPoint != null && multiLoc.size() > 1) {
+                    makeAStarRoute.setEnabled(true);
+                }
                 clearButton.setEnabled(true);
-            } else if (clickedLocation != endPoint) {
+            } else if (startPoint != null && clickedLocation != endPoint) {
                 endPoint = clickedLocation;
                 route.add(clickedLocation);
                 multiLoc.add(clickedLocation);

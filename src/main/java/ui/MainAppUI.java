@@ -604,6 +604,10 @@ public class MainAppUI extends JFrame{
                 startPoint = tempLoc;
                 startInfo.setText("Start Point: " + locToSearch);
                 multiLoc.add(0, startPoint);
+                mapView.clearFromSearchList();
+                mapView.clearFromSearchList();
+                repaint();
+                updateStartEndColors();
                 //searchDropDownList.removeAllItems();
                 //searchDropDownList.setSelectedItem("");
                 //searchDropDownList.setPopupVisible(false);
@@ -651,8 +655,11 @@ public class MainAppUI extends JFrame{
                 } else if (size > 0 && (multiLoc.get(size - 1).equals(endPoint))){
                     JOptionPane.showMessageDialog(this, "You've already added this location.");
                 }
+                mapView.clearFromSearchList();
+                repaint();
+                updateStartEndColors();
             }
-            if (multiLoc.size() > 1){
+            if (startPoint != null && multiLoc.size() > 1){
                 makeAStarRoute.setEnabled(true);
             }
         });
@@ -845,14 +852,16 @@ public class MainAppUI extends JFrame{
                 Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
 
                 if (startPoint == null) {
-                    multiLoc.add(clickedLocation);
+                    multiLoc.add(0, clickedLocation);
                     startPoint = clickedLocation;
                     route.add(clickedLocation);
                     ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getStartPointColor());
                     if (clickedLocation.getNameList().length == 0){
                         startInfo.setText("Start Point:  Unnamed Location");
                     } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
-
+                    if (startPoint != null && multiLoc.size() > 1) {
+                        makeAStarRoute.setEnabled(true);
+                    }
                     clearButton.setEnabled(true);
                 } else if (startPoint != null && clickedLocation != endPoint) {
                     endPoint = clickedLocation;

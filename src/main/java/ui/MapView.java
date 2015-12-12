@@ -5,12 +5,13 @@ import com.kitfox.svg.app.beans.SVGIcon;
 import core.Edge;
 import core.Location;
 import core.LocationGraph;
-import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
-import org.jb2011.lnf.beautyeye.BeautyEyeLookAndFeelCross;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.Iterator;
@@ -27,17 +28,14 @@ public class MapView extends JPanel {
     private static final double MINIMUM_ZOOM = 2;
     private static final double MAXIMUM_ZOOM = 50;
     private static final double ZOOM_SPEED = 0.25;
-    //TODO make un-named points bigger in edit mode
 
     private JScrollPane scrollPane;
     private JPanel mapPanel;
     private JSlider floorSlider;
     private double zoomFactor;
 
-    //TODO locationList is redundant with locationButtonList
-    private List<Edge> graphEdgeList; //The list of edges from the represented graph
-    private List<Edge> edgeHighlightList; //The list of edge that will be highlighted when drawn
-    private List<Location> locationList; //The list of locations from the represented graph
+    private LocationGraph graph;
+    private List<Edge> edgeHighlightList;
     private List<LocationButton> locationButtonList;
     private List<List<Location>> routeLists;
     private List<Location> searchList;
@@ -53,17 +51,17 @@ public class MapView extends JPanel {
     private int svgHeight;
 
     private EventListener buttonListener;
-    private LocationGraph graph;
+
     /**
      * Constructor.
      *
-     * @param graph The LocationGraph whose edges will be displayed
+     * @param passedGraph The LocationGraph whose edges will be displayed
      * @param floorImagePaths The image that will be used as the background
      * @param defaultFloor The floor the be the main floor
      * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
-        this.graph = graph;
+    public MapView(LocationGraph passedGraph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
+        this.graph = passedGraph;
         this.floorsImagePaths = floorImagePaths;
         this.currentFloorNumber = defaultFloor;
         this.style = viewStyle;
@@ -105,6 +103,7 @@ public class MapView extends JPanel {
 
                 //Draw edges
                 g2d.setStroke(new BasicStroke(4));
+                List<Edge> graphEdgeList = graph.edgeByFloorNumber(currentFloorNumber);
                 if (style.isDrawAllEdges()) {
                     for (Edge e : graphEdgeList) {
                         g2d.setColor(style.getEdgeColor());
@@ -180,13 +179,8 @@ public class MapView extends JPanel {
             JSlider source = (JSlider) e.getSource();
             if (!source.getValueIsAdjusting()) {
                 currentFloorNumber = source.getValue();
-
-                List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
-                updateGraph(graph);
-                routeLists = backUpList;
-                updateButtonAttributes();
-
+                refreshGraph();
             }
         });
         floorSlider.setToolTipText("Change the displayed floor.");
@@ -206,8 +200,7 @@ public class MapView extends JPanel {
         mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
         zoomIncrementBy(0);
 
-        updateGraph(graph);
-        repaint();
+        refreshGraph();
     }
 
     /**
@@ -312,8 +305,6 @@ public class MapView extends JPanel {
 
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
-
-                repaint();
             }
             @Override
             public void mousePressed(MouseEvent e) {
@@ -345,14 +336,13 @@ public class MapView extends JPanel {
 
                     zoomIncrementBy(e.getWheelRotation() * -ZOOM_SPEED);
                     validate();
-                    updateButtonAttributes();
+                    refreshGraph();
 
                     Point newViewportPos = new Point();
                     newViewportPos.x = (int) ((xPosFrac * getCurrentPixelSize().getWidth()) - (viewportWidth / 2.0));
                     newViewportPos.y = (int) ((yPosFrac * getCurrentPixelSize().getHeight()) - (viewportHeight / 2.0));
 
                     mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
-
                     repaint();
                 }
             }
@@ -402,10 +392,21 @@ public class MapView extends JPanel {
             });
         }
     }
-    public void clearFromSearchList()
+    public void clearSearchList()
     {
         searchList.clear();
     }
+    public void clearRoutes() {
+        for (List<Location> locList: routeLists) {
+            locList.clear();
+        }
+        routeLists.clear();
+    }
+    public void clearHighlight()
+    {
+        edgeHighlightList.clear();
+    }
+
 
     public void addToHighlightList(Edge e) {
         edgeHighlightList.add(e);
@@ -455,6 +456,7 @@ public class MapView extends JPanel {
         mapPanel.removeAll();
         locationButtonList.clear();
 
+        List<Location> locationList = graph.getAllLocations();
         for (Location loc: locationList) {
             LocationButton currentButton = new LocationButton(loc, getStyle().getLocationColor());
             mapPanel.add(currentButton);
@@ -471,7 +473,8 @@ public class MapView extends JPanel {
                     locButton.addMouseMotionListener((MouseAdapter) buttonListener);
                     locButton.addMouseWheelListener((MouseAdapter) buttonListener);
                 } else {
-                    System.err.println("Unsupported listener type " + buttonListener.getClass());
+                    System.err.println("Unsupported listener type " + buttonListener.getClass() +
+                            ". Add a case for this type in MapView.java");
                 }
             }
         }
@@ -487,19 +490,23 @@ public class MapView extends JPanel {
      *
      * @param graph The graph whose edges will be displayed
      */
-    public void updateGraph(LocationGraph graph) {
-        this.graphEdgeList = graph.edgeByFloorNumber(currentFloorNumber);
-        this.locationList = graph.locationByFloorNumber(currentFloorNumber);
+    public void setGraph(LocationGraph graph) {
+        this.graph = graph;
         this.routeLists = new ArrayList<>();
         this.searchList = new ArrayList<>();
         this.edgeHighlightList = new ArrayList<>();
 
         addButtons();
         updateButtonAttributes();
-
+        repaint();
     }
 
-    public void updateButtonAttributes() {
+    public void refreshGraph() {
+        updateButtonAttributes();
+        repaint();
+    }
+
+    private void updateButtonAttributes() {
         for (LocationButton locButton: locationButtonList) {
             Location loc = locButton.getAssociatedLocation();
 
@@ -542,17 +549,17 @@ public class MapView extends JPanel {
 
 
             //Set visibility
-            if (style.isDrawAllPoints()) {
+            boolean locOnCurrentFloor = loc.getFloorNumber() == currentFloorNumber;
+            if (style.isDrawAllPoints() && locOnCurrentFloor) {
                 locButton.setVisible(true);
             } else {
                 locButton.setVisible(false);
             }
-            if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
+
+            if (style.isDrawNamedPoints() && loc.getNameList().length > 0 && locOnCurrentFloor) {
                 locButton.setVisible(true);
                 locButton.setToolTipText(loc.getNameList()[0]);
             }
-
-            repaint();
         }
     }
     //Make the passed button even bigger
@@ -578,12 +585,9 @@ public class MapView extends JPanel {
                {
                    currentFloorNumber = current.getFloorNumber();
                    floorSlider.setValue(currentFloorNumber);
-                   repaint();
 
-                   List<List<Location>> backUpList = routeLists;
                    setCurrentImage();
-                   updateGraph(graph);
-                   routeLists = backUpList;
+                   refreshGraph();
 
                    updateButtonAttributes();
                    repaint();
@@ -618,17 +622,11 @@ public class MapView extends JPanel {
                    }
                    if (current.getFloorNumber() != previous.getFloorNumber())
                    {
-                       //TODO put these threee lines in a nicer mehtod.
                        currentFloorNumber = current.getFloorNumber();
                        floorSlider.setValue(currentFloorNumber);
-                       repaint();
 
-                       List<List<Location>> backUpList = routeLists;
                        setCurrentImage();
-                       updateGraph(graph);
-                       routeLists = backUpList;
-                       updateButtonAttributes();
-                       repaint();
+                       refreshGraph();
                    }
                    for (LocationButton locButton : locationButtonList) {
                        if (locButton.getAssociatedLocation().equals(current)) {

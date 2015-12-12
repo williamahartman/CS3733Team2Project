@@ -33,7 +33,13 @@ public class Email extends Thread{
     public void sendEmail() {
         // Recipient's email ID needs to be mentioned.
         String to = recvEmail;
-        String directory = System.getProperty("java.io.tmpdir") + "aztecWash/";
+
+        String additionalChar = "";
+        if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+            additionalChar = "/";
+        }
+        String directory = System.getProperty("java.io.tmpdir") + additionalChar + "aztecWash/";
+
         // Sender's email ID needs to be mentioned
         String from = "aztec.wash.3733@gmail.com";
         final String username = "aztec.wash.3733";
@@ -64,12 +70,11 @@ public class Email extends Thread{
         while (iter.hasNext()){
             String direction = iter.next();
             if (!direction.equals("Continue straight\n") && !direction.equals("")) {
-                instructions += "<p>" + direction + "</p>";
-
+                instructions += ("<p>" + direction + "</p>");
 
                 File image = new File(directory + "image" + stepNum + ".jpeg");
                 if (image.exists() && !image.isDirectory()) {
-                    instructions += "<img src=\"cid:image" + imageNum + "\">";
+                    instructions += ("<img src=\"cid:image" + imageNum + "\">");
                     imagePaths.add(directory + "image" + stepNum + ".jpeg");
                     imageNum++;
                 }

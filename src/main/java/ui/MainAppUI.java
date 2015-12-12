@@ -10,13 +10,11 @@ import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -60,16 +58,17 @@ public class MainAppUI extends JFrame{
 
     private JButton clearButton;
     private JButton makeAStarRoute;
-    private JButton searchButton;
     private JButton emailButton;
 
 
     private JComboBox searchDropDownList;
+    private JComboBox searchBox;
+
     private JLabel searchInfo;
     private JLabel endLocInfo;
     private JButton addToStart;
     private JButton addToDestination;
-    private JComboBox multipleDestination;
+    private JComboBox<String> multipleDestination;
     private Location tempLoc;
     private List<Location> multiLoc;
     private int desNum;
@@ -143,9 +142,6 @@ public class MainAppUI extends JFrame{
                         "campusmap5.svg"},
                 3, defaultMapViewStyle);
         this.mapView.setButtonListener(buildRouteSelectListener());
-        this.mapView.getScrollPane().addMouseWheelListener(e -> {
-            updateStartEndColors();
-        });
         this.attributeManager = new EdgeAttributeManager();
 
         startPoint = null;
@@ -161,9 +157,7 @@ public class MainAppUI extends JFrame{
         JPanel sidePanel = new JPanel();
         JMenuBar menuBar = new JMenuBar();
         JMenu editMenu = new JMenu("Edit");
-        editMenu.addChangeListener(e -> {
-            menuBar.repaint();
-        });
+        editMenu.addChangeListener(e -> menuBar.repaint());
 
         JMenuItem refreshMap = new JMenuItem("Refresh Map");
         refreshMap.addActionListener(e -> {
@@ -188,8 +182,10 @@ public class MainAppUI extends JFrame{
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
+            mapView.setGraph(graph);
+            devToolsPanel.setLocationGraph(graph);
 
-            resetMap(mapView);
+            updateStartEndColors();
         });
         JMenuItem enterDeveloperMode = new JMenuItem("Edit Map (Developers Only!)");
 
@@ -203,9 +199,7 @@ public class MainAppUI extends JFrame{
 
         //Sets up the 'view' menu bar
         JMenu view = new JMenu("View");
-        view.addChangeListener(e -> {
-            menuBar.repaint();
-        });
+        view.addChangeListener(e -> menuBar.repaint());
 
         //'View' contains toggleEdges, showNodes, and changeStyle
         JMenuItem toggleEdges = new JMenuItem("Toggle Edges");
@@ -278,7 +272,7 @@ public class MainAppUI extends JFrame{
                     mapView.getStyle().setEndPointColor(mapView.getStyle().getSelectedPointColor());
 
                     //Update mapView for use with devtools
-                    clearState(mapView);
+                    clearState();
                     devToolClickListener = devToolsPanel.buildAddLocationListener(mapView.getMapPanel());
                     mapView.getScrollPane().addMouseListener(devToolClickListener);
                     mapView.setButtonListener(devToolsPanel.buildEditListener(graph));
@@ -312,7 +306,7 @@ public class MainAppUI extends JFrame{
                 mapView.removeMouseListener(devToolClickListener);
                 mapView.setButtonListener(buildRouteSelectListener());
 
-                resetMap(mapView);
+                refreshMap();
 
                 repaint();
             }
@@ -332,8 +326,7 @@ public class MainAppUI extends JFrame{
             drawAllLocations = !drawAllLocations;
             style.setDrawAllPoints(drawAllLocations);
 
-            mapView.updateButtonAttributes();
-            mapView.repaint();
+            mapView.refreshGraph();
         });
 
         /**
@@ -363,7 +356,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(defaultMapViewStyle);
-            updateStartEndColors();
+            refreshMap();
         });
 
         //Action listener for WPI style
@@ -389,7 +382,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(wpiMapViewStyle);
-            updateStartEndColors();
+            refreshMap();
         });
 
         //Action listener for Blue Style
@@ -415,7 +408,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(blueMapViewStyle);
-            updateStartEndColors();
+            refreshMap();
         });
 
         //Action listener for Neon Funk Style (Inspired by Chiara)
@@ -441,7 +434,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(neonFunkMapViewStyle);
-            updateStartEndColors();
+            refreshMap();
         });
 
         //Action listener for Vintage Style
@@ -467,7 +460,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(vintageMapViewStyle);
-            updateStartEndColors();
+            refreshMap();
         });
 
         //Action listener for Colorblind Style
@@ -493,7 +486,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(colorblindMapViewStyle);
-            updateStartEndColors();
+            refreshMap();
         });
 
         //Initialize Panels and buttons
@@ -522,7 +515,7 @@ public class MainAppUI extends JFrame{
         clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
         clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
         clearButton.setToolTipText("Remove the previously selected start and end points");
-        clearButton.addActionListener(e -> clearState(mapView));
+        clearButton.addActionListener(e -> clearState());
 
         makeAStarRoute = new JButton("Find Shortest Route");
         makeAStarRoute.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -530,8 +523,8 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
-                resetMap(this.mapView);
-                //clearState(mapView);
+                refreshMap();
+                mapView.clearRoutes();
                 route.clear();
 
                 //changed makeAStarRoute to makeMultipleRoute
@@ -570,28 +563,31 @@ public class MainAppUI extends JFrame{
                             "There is no path between the selected points!",
                             "Routing Error!",
                             JOptionPane.ERROR_MESSAGE);
-                    clearState(mapView);
+                    clearState();
                 }
             } else {
                 JOptionPane.showMessageDialog(this,
                         "You must select two points in order to generate a path.",
                         "Routing Error!",
                         JOptionPane.ERROR_MESSAGE);
-                clearState(mapView);
+                clearState();
             }
         });
 
         desNum = 0;
         namedLocations = graph.getNamedLocations();
-        searchDropDownList = new SearchComboBox(namedLocations);
+        searchDropDownList = new JComboBox();
         searchDropDownList.setEditable(true);
+        SearchBoxModel model = new SearchBoxModel(searchDropDownList, namedLocations);
+        searchDropDownList.setModel(model);
+        searchDropDownList.addItemListener(model);
         searchDropDownList.setPreferredSize(new Dimension(180, 30));
         searchDropDownList.setMaximumSize(new Dimension(180, 30));
 
 
         searchInfo = new JLabel("Search: ");
         endLocInfo = new JLabel("Destinations: ");
-        multipleDestination = new JComboBox();
+        multipleDestination = new JComboBox<>();
         multipleDestination.setPreferredSize(new Dimension(160, 30));
         multipleDestination.setMaximumSize(new Dimension(160, 30));
         tempLoc = null;
@@ -604,8 +600,7 @@ public class MainAppUI extends JFrame{
                 startPoint = tempLoc;
                 startInfo.setText("Start Point: " + locToSearch);
                 multiLoc.add(0, startPoint);
-                mapView.clearFromSearchList();
-                mapView.clearFromSearchList();
+                mapView.clearSearchList();
                 repaint();
                 updateStartEndColors();
                 //searchDropDownList.removeAllItems();
@@ -618,19 +613,27 @@ public class MainAppUI extends JFrame{
         });
 
         searchDropDownList.addActionListener(e -> {
-            resetMap(mapView);
+            refreshMap();
+            mapView.clearSearchList();
+
             String selectedName = (String) searchDropDownList.getSelectedItem();
+            if (searchExactName(selectedName) != null){
+                tempLoc = searchExactName(selectedName);
+                locToSearch = selectedName;
+            }
             //System.out.println(selectedName);
-            if (searchExactName(selectedName) != null) {
+
+            /*if (searchExactName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
                 tempLoc = searchExactName(selectedName);
                 locToSearch = selectedName;
-            }
-            if (searchSelectedName(selectedName) != null) {
+            }*/
+            /*if (searchSelectedName(selectedName) != null) {
                 searchDropDownList.removeAllItems();
                 searchDropDownList.addItem(selectedName);
-            }
+            }*/
+
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 makeAStarRoute.setEnabled(true);
             }
@@ -655,7 +658,7 @@ public class MainAppUI extends JFrame{
                 } else if (size > 0 && (multiLoc.get(size - 1).equals(endPoint))){
                     JOptionPane.showMessageDialog(this, "You've already added this location.");
                 }
-                mapView.clearFromSearchList();
+                mapView.clearSearchList();
                 repaint();
                 updateStartEndColors();
             }
@@ -749,7 +752,7 @@ public class MainAppUI extends JFrame{
                         Email email = new Email(emailToSend, instructions);
                         for (int i = 0; i < route.size(); i++) {
                             mapView.stepByStep(i, true, true);
-                            mapView.clearFromSearchList();
+                            mapView.clearSearchList();
                             try {
                                 Thread.sleep(1);
                             } catch (InterruptedException ex){
@@ -767,7 +770,6 @@ public class MainAppUI extends JFrame{
 
         });
 
-        EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         JScrollPane text = new JScrollPane(gps);
         text.setPreferredSize(new Dimension(300, 200));
         text.setMaximumSize(new Dimension(300, 200));
@@ -777,11 +779,7 @@ public class MainAppUI extends JFrame{
         textToVoice.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                if (textToVoice.isSelected()){
-                    voiceDirections = true;
-                } else {
-                    voiceDirections = false;
-                }
+                    voiceDirections = textToVoice.isSelected();
             }
         });
 
@@ -805,7 +803,6 @@ public class MainAppUI extends JFrame{
         sidePanel.add(emailText);
         sidePanel.add(emailButton);
         sidePanel.add(textToVoice);
-        //sidePanel.add(edgeWeightPanel);
 
         sidePanel.add(handicapCheckbox);
         sidePanel.add(editRoutePrefs);
@@ -817,84 +814,80 @@ public class MainAppUI extends JFrame{
         add(sidePanel, BorderLayout.WEST);
         add(devToolsPanel, BorderLayout.EAST);
 
-        clearState(mapView);
+        clearState();
     }
+
     /**
      * Clear the state of the App, returning it to the default state.
      */
-    private void clearState(MapView toReset) {
+    private void clearState() {
         startPoint = null;
         endPoint = null;
 
-        // ADDED
         multiLoc.clear();
         desNum = 0;
 
         startInfo.setText("Start Point: Not selected");
         endPointInfo.setText("End Point: Not selected");
+        multipleDestination.removeAllItems();
 
         makeAStarRoute.setEnabled(false);
         emailButton.setEnabled(false);
-
         clearButton.setEnabled(false);
-
-        multipleDestination.removeAllItems();
 
         gps.setText("");
 
-        resetMap(toReset);
+        mapView.setGraph(graph);
+        refreshMap();
     }
 
     private ActionListener buildRouteSelectListener() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
+        return e -> {
+            Location clickedLocation = ((LocationButton) e.getSource()).getAssociatedLocation();
 
-                if (startPoint == null) {
-                    multiLoc.add(0, clickedLocation);
-                    startPoint = clickedLocation;
-                    route.add(clickedLocation);
-                    ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getStartPointColor());
-                    if (clickedLocation.getNameList().length == 0){
-                        startInfo.setText("Start Point:  Unnamed Location");
-                    } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
-                    if (startPoint != null && multiLoc.size() > 1) {
-                        makeAStarRoute.setEnabled(true);
-                    }
-                    clearButton.setEnabled(true);
-                } else if (startPoint != null && clickedLocation != endPoint) {
-                    endPoint = clickedLocation;
-                    route.add(clickedLocation);
-                    multiLoc.add(clickedLocation);
-                    ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getEndPointColor());
-                    if (clickedLocation.getNameList().length == 0){
-                        multipleDestination.addItem("Unnamed Location");
-                        desNum += 1;
-                        multipleDestination.setSelectedIndex(desNum - 1);
-                    } else {
-                        multipleDestination.addItem(clickedLocation.getNameList()[0]);
-                        desNum += 1;
-                        multipleDestination.setSelectedIndex(desNum - 1);
-                    }
-
-                    clearButton.setEnabled(true);
+            if (startPoint == null) {
+                multiLoc.add(0, clickedLocation);
+                startPoint = clickedLocation;
+                route.add(clickedLocation);
+                ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getStartPointColor());
+                if (clickedLocation.getNameList().length == 0){
+                    startInfo.setText("Start Point:  Unnamed Location");
+                } else { startInfo.setText("Start Point:  " + clickedLocation.getNameList()[0]); }
+                if (startPoint != null && multiLoc.size() > 1) {
                     makeAStarRoute.setEnabled(true);
                 }
-                routeInfo.setText("");
-                if (!route.isEmpty())
-                {
-                    String str = "";
-                    for (int i = 0; i < route.size(); i++)
-                    {
-                        if (route.get(i).getNameList().length != 0)
-                        {
-                            str = i + ": " + route.get(i).getNameList()[0] + "\n";
-                            routeInfo.append(str);
-                        }
-                    }
-
+                clearButton.setEnabled(true);
+            } else if (startPoint != null && clickedLocation != endPoint) {
+                endPoint = clickedLocation;
+                route.add(clickedLocation);
+                multiLoc.add(clickedLocation);
+                ((LocationButton) e.getSource()).setBgColor(mapView.getStyle().getEndPointColor());
+                if (clickedLocation.getNameList().length == 0){
+                    multipleDestination.addItem("Unnamed Location");
+                    desNum += 1;
+                    multipleDestination.setSelectedIndex(desNum - 1);
+                } else {
+                    multipleDestination.addItem(clickedLocation.getNameList()[0]);
+                    desNum += 1;
+                    multipleDestination.setSelectedIndex(desNum - 1);
                 }
+
+                clearButton.setEnabled(true);
+                makeAStarRoute.setEnabled(true);
+            }
+            routeInfo.setText("");
+            if (!route.isEmpty())
+            {
+                String str = "";
+                for (int i = 0; i < route.size(); i++)
+                {
+                    if (route.get(i).getNameList().length != 0)
+                    {
+                        str = i + ": " + route.get(i).getNameList()[0] + "\n";
+                        routeInfo.append(str);
+                    }
+                }
+
             }
         };
     }
@@ -902,17 +895,17 @@ public class MainAppUI extends JFrame{
     /**
      * Reset the state of just the map. (none of the class data)
      *
-     * @param toReset the mapView to reset
      */
-    private void resetMap(MapView toReset) {
+    private void refreshMap() {
         gps.setText("");
-        toReset.updateGraph(graph);
-
-        updateStartEndColors();
+        mapView.refreshGraph();
     }
 
+    /**
+     * Update the colors of the slected route buttons to conform to the current theme.
+     * This is only used for locally selected points (not route start or end in mapview)
+     */
     private void updateStartEndColors() {
-        //TODO rewrite to keep start and end locations
         for (LocationButton locButton: mapView.getLocationButtonList()) {
             if (multiLoc.contains(locButton.getAssociatedLocation())) {
                 locButton.setBgColor(mapView.getStyle().getEndPointColor());
@@ -923,8 +916,6 @@ public class MainAppUI extends JFrame{
             locButton.repaint();
         }
     }
-
-    public MapView getMapView(){ return mapView;  }
 
     private Location searchSelectedName(String selectedName){
         Location result = null;

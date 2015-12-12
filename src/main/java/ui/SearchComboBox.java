@@ -1,25 +1,22 @@
 package ui;
 
-import core.EdgeAttributeManager;
 import core.Location;
 import core.LocationGraph;
-import dev.DevPassword;
-import dev.DevTools;
-import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.*;
 import java.util.List;
 
 /**
  * Created by hollyn on 12/7/15.
  */
-public class SearchComboBox extends JComboBox {
+public class SearchComboBox extends JComboBox<String> {
     LocationGraph graph;
     HashSet<Location> nameLoc;
 

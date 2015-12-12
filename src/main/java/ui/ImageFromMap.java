@@ -25,7 +25,12 @@ public class ImageFromMap {
         g2.drawImage(myImage,  (int) size.getWidth(), (int) size.getHeight(), null);
         myComponent.paint(g2);
         try {
-            File img =  new File(System.getProperty("java.io.tmpdir") + "aztecWash/" + filename);
+            String additionalChar = "";
+            if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+                additionalChar = "/";
+            }
+
+            File img =  new File(System.getProperty("java.io.tmpdir") + additionalChar + "aztecWash/" + filename);
             img.mkdirs();
             ImageIO.write(myImage, "JPEG", img);
         } catch (Exception e) {

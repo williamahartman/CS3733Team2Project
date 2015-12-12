@@ -183,6 +183,8 @@ public class MainAppUI extends JFrame{
                 }
             }
             mapView.setGraph(graph);
+            devToolsPanel.setLocationGraph(graph);
+
             updateStartEndColors();
         });
         JMenuItem enterDeveloperMode = new JMenuItem("Edit Map (Developers Only!)");
@@ -304,7 +306,7 @@ public class MainAppUI extends JFrame{
                 mapView.removeMouseListener(devToolClickListener);
                 mapView.setButtonListener(buildRouteSelectListener());
 
-                refreshMap(mapView);
+                refreshMap();
 
                 repaint();
             }
@@ -354,7 +356,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(defaultMapViewStyle);
-            refreshMap(mapView);
+            refreshMap();
         });
 
         //Action listener for WPI style
@@ -380,7 +382,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(wpiMapViewStyle);
-            refreshMap(mapView);
+            refreshMap();
         });
 
         //Action listener for Blue Style
@@ -406,7 +408,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(blueMapViewStyle);
-            refreshMap(mapView);
+            refreshMap();
         });
 
         //Action listener for Neon Funk Style (Inspired by Chiara)
@@ -432,7 +434,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(neonFunkMapViewStyle);
-            refreshMap(mapView);
+            refreshMap();
         });
 
         //Action listener for Vintage Style
@@ -458,7 +460,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(vintageMapViewStyle);
-            refreshMap(mapView);
+            refreshMap();
         });
 
         //Action listener for Colorblind Style
@@ -484,7 +486,7 @@ public class MainAppUI extends JFrame{
             );
 
             mapView.setStyle(colorblindMapViewStyle);
-            refreshMap(mapView);
+            refreshMap();
         });
 
         //Initialize Panels and buttons
@@ -521,7 +523,8 @@ public class MainAppUI extends JFrame{
         makeAStarRoute.setToolTipText("Generate the most efficient possible route between the selected points");
         makeAStarRoute.addActionListener(e -> {
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
-                refreshMap(mapView);
+                refreshMap();
+                mapView.clearRoutes();
                 route.clear();
 
                 //changed makeAStarRoute to makeMultipleRoute
@@ -610,7 +613,7 @@ public class MainAppUI extends JFrame{
         });
 
         searchDropDownList.addActionListener(e -> {
-            refreshMap(mapView);
+            refreshMap();
             mapView.clearSearchList();
 
             String selectedName = (String) searchDropDownList.getSelectedItem();
@@ -835,7 +838,7 @@ public class MainAppUI extends JFrame{
         gps.setText("");
 
         mapView.setGraph(graph);
-        refreshMap(mapView);
+        refreshMap();
     }
 
     private ActionListener buildRouteSelectListener() {
@@ -892,11 +895,10 @@ public class MainAppUI extends JFrame{
     /**
      * Reset the state of just the map. (none of the class data)
      *
-     * @param toReset the mapView to reset
      */
-    private void refreshMap(MapView toReset) {
+    private void refreshMap() {
         gps.setText("");
-        toReset.refreshGraph();
+        mapView.refreshGraph();
     }
 
     /**

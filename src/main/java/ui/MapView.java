@@ -55,13 +55,13 @@ public class MapView extends JPanel {
     /**
      * Constructor.
      *
-     * @param graph The LocationGraph whose edges will be displayed
+     * @param passedGraph The LocationGraph whose edges will be displayed
      * @param floorImagePaths The image that will be used as the background
      * @param defaultFloor The floor the be the main floor
      * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
-        this.graph = graph;
+    public MapView(LocationGraph passedGraph, String[] floorImagePaths, int defaultFloor, MapViewStyle viewStyle) {
+        this.graph = passedGraph;
         this.floorsImagePaths = floorImagePaths;
         this.currentFloorNumber = defaultFloor;
         this.style = viewStyle;
@@ -498,6 +498,7 @@ public class MapView extends JPanel {
 
         addButtons();
         updateButtonAttributes();
+        repaint();
     }
 
     public void refreshGraph() {

@@ -238,19 +238,19 @@ public class MainAppUI extends JFrame{
             JLabel aboutLabel = new JLabel("<html><center>Worcester Polytechnic Institute<br>" +
                     "CS3733 2015 B-Term<br>" +
                     "<br>" +
-                    "Developed by Team AZTEC WASH:<br>" +
-                    "Alex Locke [Map Artist / UI Designer]<br>" +
-                    "Zoe Ding [A* Specialist / Search Algorithm Specialist]<br>" +
-                    "Tom Farro [Project Manager / Developer Tools Specialist]<br>" +
-                    "Elizabeth Tomko []<br>" +
-                    "Callum Taylor [A* Specialist / Software Engineer]<br> " +
-                    "Will Hartman [Lead Software Engineer]<br>" +
-                    "Alora Hillman [Developer Tools Specialist / UI Designer]<br>" +
-                    "Scott Iwanicki [Database Specialist / Software Engineer]<br> " +
-                    "Holly Nguyen [Database Specialist / Project Manager]<br>" +
+                    "<u>Developed by Team AZTEC WASH:</u><br><br>" +
+                    "<b>Alex Locke</b><br>[Map Artist / UI Designer]<br><br>" +
+                    "<b>Zoe Ding</b><br>[A* Specialist / Search Algorithm Specialist]<br><br>" +
+                    "<b>Tom Farro</b><br>[Project Manager / Developer Tools Specialist]<br><br>" +
+                    "<b>Elizabeth Tomko</b><br>[Test Engineer / Documentation Specialist]<br><br>" +
+                    "<b>Callum Taylor</b><br>[A* Specialist / Software Engineer]<br><br>" +
+                    "<b>Will Hartman</b><br>[Lead Software Engineer]<br><br>" +
+                    "<b>Alora Hillman</b><br>[Developer Tools Specialist / UI Designer]<br><br>" +
+                    "<b>Scott Iwanicki</b><br>[Database Specialist / Software Engineer]<br><br>" +
+                    "<b>Holly Nguyen</b><br>[Database Specialist / Project Manager]<br>" +
                     "<br>" +
-                    "Special Thanks to:<br>" +
-                    "Coach Caitlin Malone and Prof. Wilson Wong<br>" +
+                    "<u>Special Thanks to:</u><br><br>" +
+                    "Coach <b>Caitlin Malone</b> and Prof. <b>Wilson Wong</b><br>" +
                     "</center></html>");
             aboutPanel.add(aboutLabel);
             aboutFrame.add(aboutPanel);

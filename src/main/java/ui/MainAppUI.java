@@ -517,6 +517,8 @@ public class MainAppUI extends JFrame{
         gps = new JTextArea();
         gps.setVisible(true);
         gps.setEditable(false);
+        gps.setLineWrap(true);
+        gps.setWrapStyleWord(true);
 
         clearButton = new JButton("Clear Selections");
         clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
@@ -543,13 +545,23 @@ public class MainAppUI extends JFrame{
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
+
+                    HashMap<StartEnd, String> hm = instruct.stepByStepInstruction(routeTime, MAP_SCALE_X, MAP_SCALE_Y);
+                    /*if (hm.isEmpty()) { System.out.println("EMPTY OH NO!\n"); };
+                    */
+                    for (Map.Entry<StartEnd, String> entry : hm.entrySet()) {
+                        count++;
+                        gps.append(count + ")" + entry.getValue() + "\n");
+                    }
+
+                    /*
                     for (String str : instruct.stepByStepInstruction(routeTime, MAP_SCALE_X, MAP_SCALE_Y)) {
                         if (!str.equals("Continue straight\n") && !str.equals(""))
                         {
                             count++;
                             gps.append(count + ") " + str);
                         }
-                    }
+                    }*/
 
                     repaint();
                     startPoint = null;
@@ -731,7 +743,7 @@ public class MainAppUI extends JFrame{
         emailButton.setPreferredSize(new Dimension(90, 30));
         emailButton.setMaximumSize(new Dimension(90, 30));
         emailButton.setToolTipText("Send an email.");
-        emailButton.addActionListener(e -> {
+        /*emailButton.addActionListener(e -> {
             emailButton.setEnabled(false);
             emailToSend = null;
             try {
@@ -744,7 +756,8 @@ public class MainAppUI extends JFrame{
                     if (emailToSend.length() > 0) {
 
                         Instruction instruct = new Instruction();
-                        List<String> instructions =
+                        //// TODO: 12/12/15 FIX email stuff
+                        HashMap<StartEnd, String> instructions =
                                 instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
                         Email email = new Email(emailToSend, instructions);
                         for (int i = 0; i < route.size(); i++) {
@@ -765,7 +778,7 @@ public class MainAppUI extends JFrame{
             }
             emailButton.setEnabled(true);
 
-        });
+        });*/
 
         EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
         JScrollPane text = new JScrollPane(gps);

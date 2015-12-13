@@ -9,9 +9,14 @@ import dev.DevPassword;
 import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -90,6 +95,7 @@ public class MainAppUI extends JFrame{
     private Color oldEndColor;
 
     private int stepCount = 0;
+    private int flag = 0;
 
     /**
      * Constructor.
@@ -488,6 +494,215 @@ public class MainAppUI extends JFrame{
             mapView.setStyle(colorblindMapViewStyle);
             refreshMap();
         });
+
+        //Sets up the "help" menu bar
+        JMenu help = new JMenu("Help");
+        help.addChangeListener(e -> menuBar.repaint());
+        //'Help' contains tutorial
+        JMenuItem tutorial = new JMenuItem("Tutorial              ");
+        menuBar.add(help);
+        help.add(tutorial);
+
+        tutorial.addActionListener(e ->{
+
+           /* JDialog tutorialWindow = new JDialog(this, "Tutorial", Dialog.ModalityType.APPLICATION_MODAL);
+            tutorialWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            tutorialWindow.setMinimumSize(new Dimension(1200, 700));
+            tutorialWindow.setLocationRelativeTo(null);
+            tutorialWindow.getContentPane().setLayout(new BorderLayout());*/
+
+            JFrame tutorialWindow = new JFrame("Tutorial");
+            tutorialWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            tutorialWindow.setMinimumSize(new Dimension(1200, 700));
+            tutorialWindow.setPreferredSize(new Dimension(1200, 1000));
+            tutorialWindow.setVisible(true);
+            setLayout(new BorderLayout());
+            tutorialWindow.setLocationRelativeTo(null);
+
+            JPanel tutorialSidePanel = new JPanel();
+            JPanel imagePanel = new JPanel();
+
+            imagePanel.setLayout(new FlowLayout());
+            imagePanel.setPreferredSize(new Dimension(1000, 700));
+            imagePanel.setVisible(true);
+
+            tutorialSidePanel.setBorder(BorderFactory.createLineBorder(Color.black));
+            tutorialSidePanel.setLayout(new BoxLayout(tutorialSidePanel, BoxLayout.Y_AXIS));
+            tutorialSidePanel.setPreferredSize(new Dimension(200, 700));
+            tutorialSidePanel.setVisible(true);
+            JLabel user = new JLabel("User");
+            JLabel developer = new JLabel("Developer");
+
+            JButton search = new JButton("Search");
+            JButton selectedNodes = new JButton("Click Nodes");
+            JButton stepBystep = new JButton("Direction");
+            JButton editButton = new JButton("Edit Menu");
+            JButton viewButton = new JButton("View");
+            JButton otherFeature = new JButton("Other Features");
+
+            JButton password = new JButton("Password");
+            JButton addNode = new JButton("Add Nodes");
+            JButton addEdge = new JButton("Add Edge");
+
+            JButton previous = new JButton("Previous");
+            JButton next = new JButton("Next");
+
+            previous.setPreferredSize(new Dimension(200, 30));
+            previous.setMaximumSize(new Dimension(200, 30));
+            next.setPreferredSize(new Dimension(200, 30));
+            next.setMaximumSize(new Dimension(200, 30));
+
+
+            user.setPreferredSize(new Dimension(200, 40));
+            developer.setPreferredSize(new Dimension(200, 40));
+            user.setMaximumSize(new Dimension(200, 40));
+            developer.setMaximumSize(new Dimension(200, 40));
+
+            search.setPreferredSize(new Dimension(200, 30));
+            selectedNodes.setPreferredSize(new Dimension(200, 30));
+            stepBystep.setPreferredSize(new Dimension(200, 30));
+            editButton.setPreferredSize(new Dimension(200, 30));
+            viewButton.setPreferredSize(new Dimension(200, 30));
+            otherFeature.setPreferredSize(new Dimension(200, 30));
+            search.setMaximumSize(new Dimension(200, 30));
+            selectedNodes.setMaximumSize(new Dimension(200, 30));
+            stepBystep.setMaximumSize(new Dimension(200, 30));
+            otherFeature.setMaximumSize(new Dimension(200, 30));
+            editButton.setMaximumSize(new Dimension(200, 30));
+            viewButton.setMaximumSize(new Dimension(200, 30));
+
+            password.setPreferredSize(new Dimension(200, 30));
+            addNode.setPreferredSize(new Dimension(200, 30));
+            addEdge.setPreferredSize(new Dimension(200, 30));
+            password.setMaximumSize(new Dimension(200, 30));
+            addNode.setMaximumSize(new Dimension(200, 30));
+            addEdge.setMaximumSize(new Dimension(200, 30));
+
+            tutorialSidePanel.add(user);
+            tutorialSidePanel.add(search);
+            tutorialSidePanel.add(selectedNodes);
+            tutorialSidePanel.add(stepBystep);
+            tutorialSidePanel.add(editButton);
+            tutorialSidePanel.add(viewButton);
+            tutorialSidePanel.add(otherFeature);
+            tutorialSidePanel.add(Box.createRigidArea(new Dimension(5, 0)));
+            tutorialSidePanel.add(developer);
+            tutorialSidePanel.add(password);
+            tutorialSidePanel.add(addNode);
+            tutorialSidePanel.add(addEdge);
+            //tutorialFrame.add(tutorialSidePanel, BorderLayout.WEST);
+            tutorialWindow.add(tutorialSidePanel, BorderLayout.WEST);
+            ImageIcon pic1 = new ImageIcon("src/main/resources/testPhoto.png");
+            ImageIcon pic2 = new ImageIcon("src/main/resources/testPhoto2.png");
+            ImageIcon pic3 = new ImageIcon("src/main/resources/testPhoto.png");
+            ImageIcon pic4 = new ImageIcon("src/main/resources/testPhoto2.png");
+            ImageIcon pic5 = new ImageIcon("src/main/resources/testPhoto.png");
+            ImageIcon pic6 = new ImageIcon("src/main/resources/testPhoto2.png");
+            ImageIcon pic7 = new ImageIcon("src/main/resources/testPhoto.png");
+            ImageIcon pic8 = new ImageIcon("src/main/resources/testPhoto2.png");
+            ImageIcon pic9 = new ImageIcon("src/main/resources/testPhoto.png");
+            JLabel pic = new JLabel(pic1);
+
+            pic.setMaximumSize(new Dimension(1000, 600));
+            pic.setMinimumSize(new Dimension(1000, 600));
+            pic.setPreferredSize(new Dimension(1000, 600));
+
+            //tutorialFrame.add(pic1, BorderLayout.EAST);
+            imagePanel.add(pic);
+            imagePanel.add(previous);
+            imagePanel.add(next);
+            tutorialWindow.add(imagePanel, BorderLayout.EAST);
+            tutorialWindow.setVisible(true);
+
+            search.addActionListener(actionEvent -> {
+                pic.setIcon(pic1);
+                flag = 1;
+            });
+            selectedNodes.addActionListener(actionEvent -> {
+                pic.setIcon(pic2);
+                flag = 2;
+            });
+            stepBystep.addActionListener(actionEvent -> {
+                pic.setIcon(pic3);
+                flag = 3;
+            });
+            editButton.addActionListener(actionEvent -> {
+                pic.setIcon(pic4);
+                flag = 4;
+            });
+            viewButton.addActionListener(actionEvent -> {
+                pic.setIcon(pic5);
+                flag = 5;
+            });
+            otherFeature.addActionListener(actionEvent -> {
+                pic.setIcon(pic6);
+                flag = 6;
+            });
+            password.addActionListener(actionEvent -> {
+                pic.setIcon(pic7);
+                flag = 7;
+            });
+            addNode.addActionListener(actionEvent -> {
+                pic.setIcon(pic8);
+                flag = 8;
+            });
+            addEdge.addActionListener(actionEvent -> {
+                pic.setIcon(pic9);
+                flag = 9;
+            });
+
+            next.addActionListener(actionEvent ->{
+                if (flag == 0){
+                    pic.setIcon(pic1);
+                } else if (flag == 1){
+                    pic.setIcon(pic2);
+                } else if (flag == 2){
+                    pic.setIcon(pic3);
+                } else if (flag == 3){
+                    pic.setIcon(pic4);
+                } else if (flag == 4){
+                    pic.setIcon(pic5);
+                } else if (flag == 5){
+                    pic.setIcon(pic6);
+                } else if (flag == 6){
+                    pic.setIcon(pic7);
+                } else if (flag == 7){
+                    pic.setIcon(pic8);
+                } else if (flag == 8){
+                    pic.setIcon(pic9);
+                }
+                if (flag < 9){
+                    flag++;
+                }
+            });
+
+            previous.addActionListener(actionEvent ->{
+                if (flag == 9){
+                    pic.setIcon(pic8);
+                } else if (flag == 8){
+                    pic.setIcon(pic7);
+                } else if (flag == 7){
+                    pic.setIcon(pic6);
+                } else if (flag == 6){
+                    pic.setIcon(pic5);
+                } else if (flag == 5){
+                    pic.setIcon(pic4);
+                } else if (flag == 4){
+                    pic.setIcon(pic3);
+                } else if (flag == 3){
+                    pic.setIcon(pic2);
+                } else if (flag == 2){
+                    pic.setIcon(pic1);
+                } else if (flag == 1){
+                    pic.setIcon(pic9);
+                }
+                if (flag > 1){
+                    flag--;
+                }
+            });
+
+        });
+
 
         //Initialize Panels and buttons
         sidePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

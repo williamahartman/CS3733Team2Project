@@ -264,15 +264,15 @@ public class Instruction {
      */
 
     private void addFirstDirection(double deg, String direction) {
-        if (deg < 10) {
+        if (deg < 20) {
             instruction.add("Head East\n");
-        } else if (deg >= 10 && deg <= 80) {
+        } else if (deg >= 20 && deg <= 70) {
             instruction.add("Head " + direction + " East\n");
-        } else if (deg > 80 && deg < 100) {
+        } else if (deg > 70 && deg < 110) {
             instruction.add("Head " + direction + "\n");
-        } else if (deg >= 100 && deg <= 170) {
+        } else if (deg >= 110 && deg <= 160) {
             instruction.add("Head " + direction + " West\n");
-        } else if (deg > 170) {
+        } else if (deg > 160) {
             instruction.add("Head West\n");
         }
     }

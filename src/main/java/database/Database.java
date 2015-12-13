@@ -761,7 +761,7 @@ public class Database {
     public void addMap(int floorNum, String imagePath, int scalex, int scaley){
         try {
             Statement stmt = con.createStatement();
-            String mapQuery = "INSERT INTO mapData.MAPS (FLOOR_NUM, IMAGE, FLOOR_NUM) VALUES " +
+            String mapQuery = "INSERT INTO mapData.MAPS (FLOOR_NUM, IMAGE, SCALE_X, SCALE_Y) VALUES " +
                     "(" + floorNum + "," + '"' + imagePath + '"'
                     + "," + scalex + "," + scaley + ")";
             stmt.execute(mapQuery);
@@ -781,11 +781,11 @@ public class Database {
         String remMap = "DELETE FROM mapData.MAPS WHERE ";
 
         //add floor number to query if the floor number is greater than 0
-        if (floorNum > 0){
+        if (floorNum >= 0){
             remMap = remMap + "FLOOR_NUM = " + floorNum;
         }
         //if both floor number and imagePath are used, add comma and "AND"
-        if (floorNum > 0 && (imagePath != null)){
+        if (floorNum >= 0 && (imagePath != null)){
             remMap = remMap + ", AND ";
         }
         //if the image path isn't null add image to query

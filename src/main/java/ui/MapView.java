@@ -41,10 +41,8 @@ public class MapView extends JPanel {
 
     private MapViewStyle style;
 
-    private String[] floorsImagePaths;
     private int currentFloorNumber;
 
-    private SVGUniverse universe;
     private HashMap<Integer, MapImage> svgList;
     private SVGIcon svg;
     private int svgWidth;
@@ -62,13 +60,11 @@ public class MapView extends JPanel {
      */
     public MapView(LocationGraph graph, HashMap<Integer, MapImage> maps, int defaultFloor, MapViewStyle viewStyle) {
         this.graph = graph;
-        //this.floorsImagePaths = floorImagePaths;
         this.currentFloorNumber = defaultFloor;
         this.style = viewStyle;
         this.searchList = new ArrayList<>();
         this.routeLists = new ArrayList<>();
         this.locationButtonList = new ArrayList<>();
-        this.universe = new SVGUniverse();
         this.zoomFactor = DEFAULT_ZOOM;
         this.svgList = maps;
 
@@ -558,8 +554,10 @@ public class MapView extends JPanel {
            if (step < ll.size()) {
                Location current = ll.get(step);
                Instruction instruct = new Instruction();
-               textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y).get(step)
-                       + instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y).get(step + 1);
+               int scaleX = getCurrentMapImage().getScaleX();
+               int scaleY = getCurrentMapImage().getScaleX();
+               textStep = instruct.stepByStepInstruction(ll, scaleX, scaleY).get(step)
+                       + instruct.stepByStepInstruction(ll, scaleX, scaleY).get(step + 1);
                if (current.getFloorNumber() != currentFloorNumber)
                {
                    currentFloorNumber = current.getFloorNumber();
@@ -585,9 +583,9 @@ public class MapView extends JPanel {
                    img.saveComponentAsJPEG(this, "image" + step + ".jpeg");
                }
                if (step > 0) {
-                   textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y)
+                   textStep = instruct.stepByStepInstruction(ll, scaleX, scaleY)
                            .get(step * 2)
-                           + instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y)
+                           + instruct.stepByStepInstruction(ll, scaleX, scaleY)
                            .get(step * 2 + 1);
                    Location previous;
                    if (way == true) {
@@ -597,9 +595,9 @@ public class MapView extends JPanel {
                    {
                        previous = ll.get(step);
                        current = ll.get(step - 1);
-                       textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y)
+                       textStep = instruct.stepByStepInstruction(ll, scaleX, scaleY)
                                .get((step - 1) * 2)
-                               + instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y)
+                               + instruct.stepByStepInstruction(ll, scaleX, scaleY)
                                .get((step - 1) * 2 + 1);
                    }
                    if (current.getFloorNumber() != previous.getFloorNumber())

@@ -19,8 +19,8 @@ public class MapImage {
 
     public SVGIcon getSVG(){ return svg; }
 
-    public int getScale_x(){ return scaleX;  }
+    public int getScaleX(){ return scaleX;  }
 
-    public int getScale_y(){ return scaleY; }
+    public int getScaleY(){ return scaleY; }
 
 }

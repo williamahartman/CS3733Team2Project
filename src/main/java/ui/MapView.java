@@ -555,7 +555,7 @@ public class MapView extends JPanel {
                Location current = ll.get(step);
                Instruction instruct = new Instruction();
                int scaleX = getCurrentMapImage().getScaleX();
-               int scaleY = getCurrentMapImage().getScaleX();
+               int scaleY = getCurrentMapImage().getScaleY();
                textStep = instruct.stepByStepInstruction(ll, scaleX, scaleY).get(step)
                        + instruct.stepByStepInstruction(ll, scaleX, scaleY).get(step + 1);
                if (current.getFloorNumber() != currentFloorNumber)

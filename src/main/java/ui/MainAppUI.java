@@ -529,7 +529,7 @@ public class MainAppUI extends JFrame{
                     int count = 0;
 
                     int scaleX = mapView.getCurrentMapImage().getScaleX();
-                    int scaleY = mapView.getCurrentMapImage().getScaleX();
+                    int scaleY = mapView.getCurrentMapImage().getScaleY();
                     for (String str : instruct.stepByStepInstruction(routeTime, scaleX, scaleY)) {
                         if (!str.equals("Continue straight\n") && !str.equals(""))
                         {
@@ -726,7 +726,7 @@ public class MainAppUI extends JFrame{
                         Instruction instruct = new Instruction();
 
                         int scaleX = mapView.getCurrentMapImage().getScaleX();
-                        int scaleY = mapView.getCurrentMapImage().getScaleX();
+                        int scaleY = mapView.getCurrentMapImage().getScaleY();
                         List<String> instructions = instruct.stepByStepInstruction(route, scaleX, scaleY);
                         Email email = new Email(emailToSend, instructions);
                         for (int i = 0; i < route.size(); i++) {

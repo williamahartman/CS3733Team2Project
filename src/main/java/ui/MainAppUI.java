@@ -9,14 +9,9 @@ import dev.DevPassword;
 import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -67,7 +62,6 @@ public class MainAppUI extends JFrame{
 
 
     private JComboBox searchDropDownList;
-    private JComboBox searchBox;
 
     private JLabel searchInfo;
     private JLabel endLocInfo;
@@ -531,7 +525,6 @@ public class MainAppUI extends JFrame{
             tutorialSidePanel.setPreferredSize(new Dimension(200, 700));
             tutorialSidePanel.setVisible(true);
             JLabel user = new JLabel("User");
-            JLabel developer = new JLabel("Developer");
 
             JButton search = new JButton("Search");
             JButton selectedNodes = new JButton("Click Nodes");
@@ -540,9 +533,9 @@ public class MainAppUI extends JFrame{
             JButton viewButton = new JButton("View");
             JButton otherFeature = new JButton("Other Features");
 
-            JButton password = new JButton("Password");
-            JButton addNode = new JButton("Add Nodes");
-            JButton addEdge = new JButton("Add Edge");
+            //JButton password = new JButton("Password");
+            //JButton addNode = new JButton("Add Nodes");
+            //JButton addEdge = new JButton("Add Edge");
 
             JButton previous = new JButton("Previous");
             JButton next = new JButton("Next");
@@ -554,9 +547,7 @@ public class MainAppUI extends JFrame{
 
 
             user.setPreferredSize(new Dimension(200, 40));
-            developer.setPreferredSize(new Dimension(200, 40));
             user.setMaximumSize(new Dimension(200, 40));
-            developer.setMaximumSize(new Dimension(200, 40));
 
             search.setPreferredSize(new Dimension(200, 30));
             selectedNodes.setPreferredSize(new Dimension(200, 30));
@@ -571,13 +562,6 @@ public class MainAppUI extends JFrame{
             editButton.setMaximumSize(new Dimension(200, 30));
             viewButton.setMaximumSize(new Dimension(200, 30));
 
-            password.setPreferredSize(new Dimension(200, 30));
-            addNode.setPreferredSize(new Dimension(200, 30));
-            addEdge.setPreferredSize(new Dimension(200, 30));
-            password.setMaximumSize(new Dimension(200, 30));
-            addNode.setMaximumSize(new Dimension(200, 30));
-            addEdge.setMaximumSize(new Dimension(200, 30));
-
             tutorialSidePanel.add(user);
             tutorialSidePanel.add(search);
             tutorialSidePanel.add(selectedNodes);
@@ -586,11 +570,7 @@ public class MainAppUI extends JFrame{
             tutorialSidePanel.add(viewButton);
             tutorialSidePanel.add(otherFeature);
             tutorialSidePanel.add(Box.createRigidArea(new Dimension(5, 0)));
-            tutorialSidePanel.add(developer);
-            tutorialSidePanel.add(password);
-            tutorialSidePanel.add(addNode);
-            tutorialSidePanel.add(addEdge);
-            //tutorialFrame.add(tutorialSidePanel, BorderLayout.WEST);
+
             tutorialWindow.add(tutorialSidePanel, BorderLayout.WEST);
             ImageIcon pic1 = new ImageIcon("src/main/resources/testPhoto.png");
             ImageIcon pic2 = new ImageIcon("src/main/resources/testPhoto2.png");
@@ -598,9 +578,7 @@ public class MainAppUI extends JFrame{
             ImageIcon pic4 = new ImageIcon("src/main/resources/testPhoto4.png");
             ImageIcon pic5 = new ImageIcon("src/main/resources/testPhoto5.png");
             ImageIcon pic6 = new ImageIcon("src/main/resources/testPhoto6.png");
-            ImageIcon pic7 = new ImageIcon("src/main/resources/testPhoto7.png");
-            ImageIcon pic8 = new ImageIcon("src/main/resources/testPhoto8.png");
-            ImageIcon pic9 = new ImageIcon("src/main/resources/testPhoto9.png");
+
             JLabel pic = new JLabel(pic1);
 
             pic.setMaximumSize(new Dimension(1000, 600));
@@ -638,18 +616,7 @@ public class MainAppUI extends JFrame{
                 pic.setIcon(pic6);
                 flag = 6;
             });
-            password.addActionListener(actionEvent -> {
-                pic.setIcon(pic7);
-                flag = 7;
-            });
-            addNode.addActionListener(actionEvent -> {
-                pic.setIcon(pic8);
-                flag = 8;
-            });
-            addEdge.addActionListener(actionEvent -> {
-                pic.setIcon(pic9);
-                flag = 9;
-            });
+
 
             next.addActionListener(actionEvent ->{
                 if (flag == 1){
@@ -662,26 +629,14 @@ public class MainAppUI extends JFrame{
                     pic.setIcon(pic5);
                 } else if (flag == 5){
                     pic.setIcon(pic6);
-                } else if (flag == 6){
-                    pic.setIcon(pic7);
-                } else if (flag == 7){
-                    pic.setIcon(pic8);
-                } else if (flag == 8){
-                    pic.setIcon(pic9);
                 }
-                if (flag < 9){
+                if (flag < 6){
                     flag++;
                 }
             });
 
             previous.addActionListener(actionEvent ->{
-                if (flag == 9){
-                    pic.setIcon(pic8);
-                } else if (flag == 8){
-                    pic.setIcon(pic7);
-                } else if (flag == 7){
-                    pic.setIcon(pic6);
-                } else if (flag == 6){
+                if (flag == 6){
                     pic.setIcon(pic5);
                 } else if (flag == 5){
                     pic.setIcon(pic4);
@@ -832,18 +787,6 @@ public class MainAppUI extends JFrame{
                 tempLoc = searchExactName(selectedName);
                 locToSearch = selectedName;
             }
-            //System.out.println(selectedName);
-
-            /*if (searchExactName(selectedName) != null) {
-                searchDropDownList.removeAllItems();
-                searchDropDownList.addItem(selectedName);
-                tempLoc = searchExactName(selectedName);
-                locToSearch = selectedName;
-            }*/
-            /*if (searchSelectedName(selectedName) != null) {
-                searchDropDownList.removeAllItems();
-                searchDropDownList.addItem(selectedName);
-            }*/
 
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 makeAStarRoute.setEnabled(true);

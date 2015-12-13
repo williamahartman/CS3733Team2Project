@@ -95,7 +95,7 @@ public class MainAppUI extends JFrame{
     private Color oldEndColor;
 
     private int stepCount = 0;
-    private int flag = 0;
+    private int flag = 1;
 
     /**
      * Constructor.
@@ -594,13 +594,13 @@ public class MainAppUI extends JFrame{
             tutorialWindow.add(tutorialSidePanel, BorderLayout.WEST);
             ImageIcon pic1 = new ImageIcon("src/main/resources/testPhoto.png");
             ImageIcon pic2 = new ImageIcon("src/main/resources/testPhoto2.png");
-            ImageIcon pic3 = new ImageIcon("src/main/resources/testPhoto.png");
-            ImageIcon pic4 = new ImageIcon("src/main/resources/testPhoto2.png");
-            ImageIcon pic5 = new ImageIcon("src/main/resources/testPhoto.png");
-            ImageIcon pic6 = new ImageIcon("src/main/resources/testPhoto2.png");
-            ImageIcon pic7 = new ImageIcon("src/main/resources/testPhoto.png");
-            ImageIcon pic8 = new ImageIcon("src/main/resources/testPhoto2.png");
-            ImageIcon pic9 = new ImageIcon("src/main/resources/testPhoto.png");
+            ImageIcon pic3 = new ImageIcon("src/main/resources/testPhoto3.png");
+            ImageIcon pic4 = new ImageIcon("src/main/resources/testPhoto4.png");
+            ImageIcon pic5 = new ImageIcon("src/main/resources/testPhoto5.png");
+            ImageIcon pic6 = new ImageIcon("src/main/resources/testPhoto6.png");
+            ImageIcon pic7 = new ImageIcon("src/main/resources/testPhoto7.png");
+            ImageIcon pic8 = new ImageIcon("src/main/resources/testPhoto8.png");
+            ImageIcon pic9 = new ImageIcon("src/main/resources/testPhoto9.png");
             JLabel pic = new JLabel(pic1);
 
             pic.setMaximumSize(new Dimension(1000, 600));
@@ -652,9 +652,7 @@ public class MainAppUI extends JFrame{
             });
 
             next.addActionListener(actionEvent ->{
-                if (flag == 0){
-                    pic.setIcon(pic1);
-                } else if (flag == 1){
+                if (flag == 1){
                     pic.setIcon(pic2);
                 } else if (flag == 2){
                     pic.setIcon(pic3);
@@ -693,8 +691,6 @@ public class MainAppUI extends JFrame{
                     pic.setIcon(pic2);
                 } else if (flag == 2){
                     pic.setIcon(pic1);
-                } else if (flag == 1){
-                    pic.setIcon(pic9);
                 }
                 if (flag > 1){
                     flag--;

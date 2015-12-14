@@ -11,15 +11,16 @@ import core.Edge;
  */
 public class Instruction {
     //private List<String> instruction;
-    private HashMap<StartEnd, String> instruction;
+    private LinkedHashMap<StartEnd, String> instruction;
     private List<String> totals;
     private double totalDistance;
     private int count;
+    private StartEnd prev;
 
     public Instruction(){
         //this.instruction = new ArrayList<>();
         this.totals = new ArrayList<>();
-        this.instruction = new HashMap<>();
+        this.instruction = new LinkedHashMap<>();
         this.totalDistance = 0;
         this.count = 0;
     }
@@ -32,7 +33,7 @@ public class Instruction {
      * @param scaleY The height of the map in feet
      * @return The list of step by step instructions
      */
-    public HashMap<StartEnd, String> stepByStepInstruction(List<Location> locList, int scaleX, int scaleY) {
+    public LinkedHashMap<StartEnd, String> stepByStepInstruction(List<Location> locList, int scaleX, int scaleY) {
         totalDistance = 0.0;
         int flag; //records the relation between previous edge and next edge
         int flag2 = 0; //records the relation between previous edge and the edge before previous edge
@@ -42,21 +43,6 @@ public class Instruction {
         int listSize = locList.size();
         int temp; //used to add appropriate distance to the instruction
 
-
-        //if there is no location in location list
-       /* if (listSize == 0) {
-//            instruction.add("Can't find route between these two locations.");
-            instruction.put(null, "");
-            System.out.println("In other\n");
-            return instruction;
-        }
-        //if there is only one location in location list
-        else if (listSize == 1 || (locList.get(listSize - 1) == locList.get(0))) {
-//            instruction.add("You have arrived at your destination.");
-            instruction.put(null, "");
-            System.out.println("In other\n");
-            return instruction;
-        }*/
         //if there are more than one location in location list
         //else {
             for (int i = 0; i < (listSize - 1); i++) {
@@ -79,6 +65,11 @@ public class Instruction {
 
                 // To be used to add to the hashmap
                 StartEnd cur = new StartEnd(locCurrent, locNext);
+                /*if (i != 0) {
+                    prev = new StartEnd(locPrev, locCurrent);
+                } else {
+                    prev = cur;
+                }*/
                 System.out.print("Init StartEnd and strings\n");
 
                 //vector1 is parallel to vector pointing from current location to previous location
@@ -174,7 +165,10 @@ public class Instruction {
                             System.out.println("put heading SOUTH: " + curInst);
                             //addFirstDirection(locCurrent, locNext, deg, curInst, "South");
                         }
-                        instruction.put(cur, curInst);
+                        if (!curInst.isEmpty()) {
+                            System.out.println("Adding heading inst");
+                            instruction.put(cur, curInst);
+                        }
                         System.out.print(instruction.get(cur));
                     }
 
@@ -193,7 +187,7 @@ public class Instruction {
                         flag = 2; //right
                         turn = "right";
                     } else {
-                        System.out.println("i" + ":" + i + "Set flag to 3\n");
+                        System.out.println("i" + ":" + i + " Set flag to 3\n");
                         flag = 3; //straight
                     }
 
@@ -233,47 +227,58 @@ public class Instruction {
                         }
                         temp = this.make2Decimal(distance);
                         totalDistance += temp;
-                        //instruction.add("Go " + temp + " feet.\n");
 
-                        curInst = curInst + "Go " + temp + " feet. ";
-                        System.out.println("i" + ":" + i + curInst);
+                        //StartEnd check = new StartEnd(locPrev, locCurrent);
+                        if (prev != cur) {
+                            System.out.println("Check: " + instruction.containsValue("Head East. "));
+                            System.out.println("Check2: " + instruction.containsKey(new StartEnd(locPrev, locCurrent)));
+                            System.out.println("Check2: " + instruction.containsKey(prev));
+                            System.out.println("CurrentStart: " + cur.getStart().getPosition());
+                            System.out.println("PreviousStart: " + prev.getStart().getPosition());
+                        }
 
-                        /*for (int j = 0; j < count; j++) {
+                        String prevInst = instruction.get(prev);
+                        if (prevInst != null) {
+                            prevInst = prevInst + "Go " + temp + " feet. ";
+                            instruction.remove(prev);
+                            instruction.put(prev, prevInst);
+                            System.out.println("i" + ":" + i + prevInst);
+                        } else {
+                          System.out.println("UH OH PREV WAS NULL");
+                        }
+
+                        for (int j = 0; j < count; j++) {
                             if (i != 0) {
-                                //instruction.add("Continue straight\n");
-                                //instruction.add("");
-                                curInst = curInst + "Continue straight. ";
-                                System.out.println("i" + ":" + i + curInst);
+                                //curInst = curInst + "Continue straight. ";
+                                //System.out.println("i" + ":" + i + curInst);
                             }
-                        }*/
-                        curInst = curInst + "Continue straight. ";
+                        }
+                        //curInst = curInst + "Continue straight. ";
                         count = 0;
 
-                        curInst = curInst + "Turn" + str + turn + ". ";
+                        curInst = "Turn" + str + turn + ". ";
+                        //curInst = curInst + "Turn" + str + turn + ". ";
                         System.out.println("i" + ":" + i + curInst);
-                        //instruction.add("Turn" + str + turn + "\n");
                         //if next location is at the end of the location list
                         if (i == listSize - 2) {
                             temp = this.make2Decimal(l2);
-                            //instruction.add("Go " + temp + " feet.\n");
-                            curInst = curInst + "Go " + temp + " feet. ";
+                            curInst = curInst + "Go " + temp + " feet. You have arrived at your destination.";
                             System.out.println("i" + ":" + i + curInst);
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
-                                    //instruction.add("Continue straight\n");
-                                    //instruction.add("");
-                                    curInst = curInst + "Continue straight. ";
-                                    System.out.println("i" + ":" + i + curInst);
+                                    //curInst = curInst + "Continue straight. ";
+                                    //System.out.println("i" + ":" + i + curInst);
                                 }
                             }
                             totalDistance += temp;
                         }
-                        System.out.println("TURN: " + curInst);
                         if (!curInst.isEmpty()) {
+                            System.out.println("Adding go/turn: " + curInst);
                             instruction.put(cur, curInst);
                         }
                         flag2 = 0;
                         distance = 0;
+                        prev = cur;
                     }
                     else {
                         //this step is going straight, add the distance between previous location and current location
@@ -287,32 +292,40 @@ public class Instruction {
                             temp = this.make2Decimal(distance);
                             totalDistance += temp;
                             //instruction.add("Go " + temp + " feet.\n");
-                            currentInst = currentInst + "Go " + temp + " feet. ";
+                            currentInst = currentInst + "Go " + temp + " feet. You have arrived at your destination.";
                             System.out.println("i" + ":" + i + currentInst);
 
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
                                     //instruction.add("Continue straight\n");
                                     //instruction.add("");
-                                    currentInst = currentInst + "Continue straight. ";
+                                    //currentInst = currentInst + "Continue straight. ";
                                     System.out.println("i" + ":" + i + currentInst);
                                 }
                             }
                         }
                         System.out.println("GO: " + currentInst);
-                        if (!curInst.isEmpty() && instruction.containsKey(cur)) {
+                        if (!curInst.isEmpty() && !instruction.containsKey(cur)) {
+                            System.out.println("Adding go inst");
                             instruction.put(cur, currentInst);
                         } else if (!curInst.isEmpty()) {
                             String tempStr = instruction.get(cur);
                             tempStr = tempStr + currentInst;
+                            System.out.println("Adding: " + tempStr);
                             instruction.remove(cur);
                             instruction.put(cur, tempStr);
                         }
 
                         flag2 = 1;
+                        if (i == 0) {
+                            //Set the prev equal to the current if going through loop for first time
+                            prev = cur;
+                        }
                     }
                 }
+
             }
+
             //totals.add("You have arrived at your destination.\n");
             totalDistance = this.make2Decimal(totalDistance);
             totals.add("The total distance is " + (int) totalDistance + " feet.\n");

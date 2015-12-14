@@ -546,12 +546,12 @@ public class MainAppUI extends JFrame{
                     Instruction instruct = new Instruction();
                     int count = 0;
 
-                    HashMap<StartEnd, String> hm = instruct.stepByStepInstruction(routeTime, MAP_SCALE_X, MAP_SCALE_Y);
-                    /*if (hm.isEmpty()) { System.out.println("EMPTY OH NO!\n"); };
-                    */
+                    LinkedHashMap<StartEnd, String> hm;
+                    hm = instruct.stepByStepInstruction(routeTime, MAP_SCALE_X, MAP_SCALE_Y);
+
                     for (Map.Entry<StartEnd, String> entry : hm.entrySet()) {
                         count++;
-                        gps.append(count + ")" + entry.getValue() + "\n");
+                        gps.append(count + ") " + entry.getValue() + "\n");
                     }
 
                     /*
@@ -685,8 +685,34 @@ public class MainAppUI extends JFrame{
         {
             if (stepCount < route.size())
             {
-                gps.setText(mapView.stepByStep(stepCount, true, false));
+                String text;
+                Instruction instruct = new Instruction();
+                LinkedHashMap<StartEnd, String> hm = instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
+
+                if (stepCount == 0) {
+                    System.out.println("Step count 0 - MAIN APP UI");
+                    text = mapView.stepByStepHM(hm, route.get(stepCount),
+                            route.get(stepCount), route.get(stepCount + 1), true);
+                    if (!text.equals("")) {
+                        System.out.println("Set text");
+                        gps.setText(text);
+                    }
+                } else {
+                    System.out.println("Step count >0 - MAIN APP UI");
+                    text = mapView.stepByStepHM(hm, route.get(stepCount - 1),
+                            route.get(stepCount), route.get(stepCount + 1), true);
+                    while (text.equals("")) {
+                        stepCount++;
+                        text = mapView.stepByStepHM(hm, route.get(stepCount - 1),
+                                route.get(stepCount), route.get(stepCount + 1), true);
+                    }
+                    System.out.println("Set text");
+                    gps.setText(text);
+                }
+
+                //gps.setText(mapView.stepByStep(stepCount, true, false));
                 stepCount++;
+
                 TextToVoice tv = new TextToVoice(gps.getText());
                 if (voiceDirections) {
                     tv.start();
@@ -701,6 +727,32 @@ public class MainAppUI extends JFrame{
         {
             if (stepCount > 0)
             {
+                /*
+                String text;
+                Instruction instruct = new Instruction();
+                LinkedHashMap<StartEnd, String> hm = instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
+
+                if (stepCount == 0) {
+                    System.out.println("Step count 0 - MAIN APP UI");
+                    text = mapView.stepByStepHM(hm, route.get(stepCount),
+                            route.get(stepCount), route.get(stepCount + 1), true);
+                    if (!text.equals("")) {
+                        System.out.println("Set text");
+                        gps.setText(text);
+                    }
+                } else {
+                    System.out.println("Step count >0 - MAIN APP UI");
+                    text = mapView.stepByStepHM(hm, route.get(stepCount - 1),
+                            route.get(stepCount), route.get(stepCount + 1), true);
+                    while (text.equals("")) {
+                        stepCount++;
+                        text = mapView.stepByStepHM(hm, route.get(stepCount - 1),
+                                route.get(stepCount), route.get(stepCount + 1), true);
+                    }
+                    System.out.println("Set text");
+                    gps.setText(text);
+                }*/
+
                 stepCount--;
                 gps.setText(mapView.stepByStep(stepCount, false, false));
             }

@@ -11,9 +11,7 @@ import org.jb2011.lnf.beautyeye.BeautyEyeLookAndFeelCross;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.EventListener;
-import java.util.Iterator;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -565,11 +563,73 @@ public class MapView extends JPanel {
         locationButton.setToolTipText(tooltip);
     }
 
+
+    public String stepByStepHM(LinkedHashMap<StartEnd, String> locMap,
+                               Location previous, Location current, Location next, boolean emailMode) {
+        String textStep = "";
+        int flagFirst = 0;
+        int emailCount = 0;
+        StartEnd pairPrev = new StartEnd(previous, current);
+        StartEnd pair = new StartEnd(current, next);
+
+        System.out.println("In step by step");
+
+        if (locMap.containsKey(pair)) {
+            // Get text
+            String directions = locMap.get(pair);
+            textStep = directions;
+            Location cur = pair.getStart(); // Get current location
+
+            if (previous == current) {
+                System.out.println("First time through - step count is 0");
+                setPosAndZoom();
+                ImageFromMap img = new ImageFromMap();
+                img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
+                emailCount++;
+            } else if (pairPrev.getStart().getFloorNumber() != pair.getEnd().getFloorNumber()) {
+                System.out.println("Should change floors");
+                floorSlider.setValue(current.getFloorNumber());
+                repaint();
+
+                List<List<Location>> backUpList = routeLists;
+                setCurrentImage();
+                updateGraph(graph);
+
+                updateButtonAttributes();
+                repaint();
+                setPosAndZoom();
+
+                if (emailMode) {
+                    ImageFromMap img = new ImageFromMap();
+                    img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
+                    emailCount++;
+                }
+            } else {
+
+            }
+            System.out.println("Should happen in second call");
+            for (LocationButton locButton : locationButtonList) {
+                if (locButton.getAssociatedLocation().equals(current)) {
+                    locButton.setBgColor(new Color(250, 118, 0));
+                    searchList.add(locButton.getAssociatedLocation());
+                    repaint();
+                }
+                if (locButton.getAssociatedLocation().equals(pairPrev.getStart())) {
+                    locButton.setBgColor(style.getRouteLocationColor());
+                    searchList.remove(locButton.getAssociatedLocation());
+                    repaint();
+                }
+            }
+        }
+
+        return textStep;
+    }
+
     public String stepByStep(int step, boolean way, boolean emailMode)
     {
         String textStep = "";
-       for (List<Location> ll:routeLists) {
-           if (step < ll.size()) {
+        for (List<Location> ll:routeLists) {
+            if (step < ll.size()) {
                Location current = ll.get(step);
                Instruction instruct = new Instruction();
                textStep = instruct.stepByStepInstruction(ll, MainAppUI.MAP_SCALE_X, MainAppUI.MAP_SCALE_Y).get(step)

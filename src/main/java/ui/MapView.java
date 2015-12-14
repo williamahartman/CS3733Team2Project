@@ -528,7 +528,7 @@ public class MapView extends JPanel {
                             buttonSize = (int) style.getNamedButtonSize();
                             break;
                         } else {
-                            buttonSize = (int) style.getUnnamedButtonSize();
+                            buttonSize = (int) style.getUnnamedButtonSize() + 2;
                         }
                     }
                 }

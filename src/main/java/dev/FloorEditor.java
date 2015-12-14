@@ -1,7 +1,8 @@
-package ui;
+package dev;
 
 import core.MapImage;
 import database.Database;
+import ui.MapView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,18 +19,24 @@ public class FloorEditor {
     HashMap<Integer, MapImage> mapImages;
     JSpinner defaultFloorSpinner;
 
+    private String username;
+    private String password;
+
     /**
      * Constructor.
      *
      * @param mapImages the HashSet of map images
      * @param defaultFloorNum the default floor number
      */
-    public FloorEditor(HashMap<Integer, MapImage> mapImages, int defaultFloorNum) {
+    public FloorEditor(HashMap<Integer, MapImage> mapImages, int defaultFloorNum, String username, String password) {
         this.mapImages = mapImages;
         floorPanels = new ArrayList<>();
         mapListPanel = new JPanel();
         defaultFloorSpinner = new JSpinner(new SpinnerNumberModel(defaultFloorNum, 0, mapImages.size() - 1, 1));
         defaultFloorSpinner.setMaximumSize(new Dimension(60, 30));
+
+        this.username = username;
+        this.password = password;
     }
 
     private void addFloorEditPanel(FloorEditPanel panel) {
@@ -91,7 +98,7 @@ public class FloorEditor {
         JButton saveToDatabase = new JButton("Save to Database");
         saveToDatabase.addActionListener(e -> {
             try {
-                Database database = new Database();
+                Database database = new Database(username, password);
                 for (int i: mapImages.keySet()) {
                     database.removeMap(i, null);
                 }

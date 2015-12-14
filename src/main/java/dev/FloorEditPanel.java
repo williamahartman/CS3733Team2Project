@@ -1,4 +1,4 @@
-package ui;
+package dev;
 
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.app.beans.SVGIcon;

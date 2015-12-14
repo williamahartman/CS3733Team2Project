@@ -808,10 +808,30 @@ public class Database {
     }
 
     public int getDefaultFloor() {
-        return 3;
+
+        try {
+            Statement stmt = con.createStatement();
+            String mapQuery = "SELECT * FROM mapData.DEFAULT_FLOOR";
+            ResultSet rs = stmt.executeQuery(mapQuery);
+            if (rs.next()) {
+                return rs.getInt("FLOOR_NUM");
+            }
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     public void setDefaultFloor(int newDefault) {
-        System.out.println("UPDATING DEFAULT FLOOR!");
+        try {
+            Statement stmt = con.createStatement();
+            String floorQuery = "DELETE FROM mapData.DEFAULT_FLOOR";
+            stmt.execute(floorQuery);
+            floorQuery = "INSERT INTO mapData.DEFAULT_FLOOR (FLOOR_NUM) VALUES " +
+                    "(" + newDefault + ")";
+            stmt.execute(floorQuery);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
     }
 }

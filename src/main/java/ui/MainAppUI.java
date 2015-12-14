@@ -1,5 +1,6 @@
 package ui;
 
+import com.kitfox.svg.app.beans.SVGIcon;
 import core.*;
 import database.Database;
 import dev.DevPassword;
@@ -165,6 +166,9 @@ public class MainAppUI extends JFrame{
                 try {
                     Database graphData = new Database();
                     graph = graphData.createGraph();
+                    mapView.setSvgList(graphData.getMaps());
+                    resetMap(mapView);
+                    graphData.closeConnection();
                 } catch (SQLException exception) {
                     JOptionPane.showMessageDialog(mapView.getParent(),
                             "Failed to connect to the online database (be on the internet!)",
@@ -172,8 +176,6 @@ public class MainAppUI extends JFrame{
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
-
-            resetMap(mapView);
         });
         JMenuItem enterDeveloperMode = new JMenuItem("Edit Map (Developers Only!)");
 

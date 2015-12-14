@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -173,6 +174,21 @@ public class FloorEditPanel extends JPanel {
         }
     }
 
+    public MapImage buildMapImage() {
+        SVGIcon svg = new SVGIcon();
+        try {
+            URL url = new URL(imageURL);
+            SVGUniverse universe = new SVGUniverse();
+            universe.loadSVG(url);
+            svg.setSvgURI(url.toURI());
+        } catch (URISyntaxException | MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        MapImage result = new MapImage(svg, Integer.parseInt(scaleX), Integer.parseInt(scaleY));
+        return result;
+    }
+
     private boolean checkValid() {
         try {
             Integer.parseInt(scaleX);
@@ -192,9 +208,7 @@ public class FloorEditPanel extends JPanel {
             URL url = new URL(imageURL);
             SVGUniverse universe = new SVGUniverse();
             universe.loadSVG(url);
-            SVGIcon svg = new SVGIcon();
-            svg.setSvgURI(url.toURI());
-        } catch (IOException | URISyntaxException e) {
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(this,
                     "The entered URL (" + imageURL + ") does not appear to have a valid .svg file!",
                     "Invalid Input!",

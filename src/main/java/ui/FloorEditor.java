@@ -48,7 +48,7 @@ public class FloorEditor {
         mapListPanel.repaint();
     }
 
-    public void showDialog(Window owner) {
+    public void showDialog(Window owner, MapView toUpdate) {
         //Build the dialog box
         JDialog editFloorsWindow = new JDialog(owner, "Edit Route Preferences", Dialog.ModalityType.APPLICATION_MODAL);
         editFloorsWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -74,10 +74,15 @@ public class FloorEditor {
                 for (int i: mapImages.keySet()) {
                     database.removeMap(i, null);
                 }
+                mapImages.clear();
 
                 for (int i = 0; i < floorPanels.size(); i++) {
+                    mapImages.put(i, floorPanels.get(i).buildMapImage());
                     floorPanels.get(i).addMapToDatabase(database, i);
                 }
+
+                toUpdate.setSvgList(mapImages);
+                toUpdate.repaint();
 
                 editFloorsWindow.dispose();
             } catch (SQLException ex) {

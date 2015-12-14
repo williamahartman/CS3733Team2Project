@@ -478,7 +478,22 @@ public class MapView extends JPanel {
 
         addButtons();
         updateButtonAttributes();
+        setCurrentImage();
+    }
 
+    public void setSvgList(HashMap<Integer, MapImage> svgList) {
+        this.svgList = svgList;
+
+        //Update the floor slider
+        floorSlider.setMinimum(0);
+        floorSlider.setMaximum(svgList.size() - 1);
+
+        //If floors were deleted (the list got smaller) and the old current floor number is gone,
+        //move down to a floor that exists.
+        if (currentFloorNumber > svgList.size() - 1) {
+            currentFloorNumber = svgList.size() - 1;
+            floorSlider.setValue(currentFloorNumber);
+        }
     }
 
     public void updateButtonAttributes() {

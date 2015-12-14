@@ -333,7 +333,7 @@ public class DevTools extends JPanel {
 
         //Create edit floor button
         JButton editFloors = new JButton("Add/Remove/Edit Floors");
-        editFloors.addActionListener(e -> new FloorEditor(mapView.getMapImages()).showDialog(null));
+        editFloors.addActionListener(e -> new FloorEditor(mapView.getMapImages()).showDialog(null, mapView));
 
         TitledBorder title = BorderFactory.createTitledBorder("Edge Attributes");
         TitledBorder highlightTitle = BorderFactory.createTitledBorder("Highlight Edges");

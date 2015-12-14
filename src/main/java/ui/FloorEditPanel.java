@@ -61,7 +61,7 @@ public class FloorEditPanel extends JPanel {
         setBorder(BorderFactory.createTitledBorder(""));
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
-        JLabel floorLabel = new JLabel("Floor " + floorNum);
+        JLabel floorLabel = new JLabel("Index " + floorNum);
 
         JLabel imgLinkLabel = new JLabel(".svg URL:   ");
         JTextField imgLink = new JTextField(imageURL, 20);
@@ -92,7 +92,7 @@ public class FloorEditPanel extends JPanel {
         add(imgLinkLabel);
         add(imgLink);
 
-        JLabel scaleXLabel = new JLabel("X Scale:   ");
+        JLabel scaleXLabel = new JLabel("Width (feet):   ");
         JTextField xScale = new JTextField("" + scaleX, 4);
         xScale.setMinimumSize(new Dimension(40, 30));
         xScale.setPreferredSize(new Dimension(40, 30));
@@ -119,7 +119,7 @@ public class FloorEditPanel extends JPanel {
             }
         });
 
-        JLabel scaleYLabel = new JLabel("Y Scale:   ");
+        JLabel scaleYLabel = new JLabel("Height (feet):   ");
         JTextField yScale = new JTextField("" + scaleY, 4);
         yScale.setMinimumSize(new Dimension(40, 30));
         yScale.setPreferredSize(new Dimension(40, 30));
@@ -146,6 +146,7 @@ public class FloorEditPanel extends JPanel {
             }
         });
 
+        add(Box.createHorizontalStrut(10));
         add(Box.createGlue());
         add(floorLabel);
         add(Box.createHorizontalStrut(20));
@@ -157,13 +158,7 @@ public class FloorEditPanel extends JPanel {
         add(Box.createHorizontalStrut(20));
         add(scaleYLabel);
         add(yScale);
-        add(Box.createGlue());
-
-        Dimension d = getPreferredSize();
-        d.height = 60;
-        setMinimumSize(d);
-        setPreferredSize(d);
-        setMaximumSize(d);
+        add(Box.createHorizontalStrut(10));
     }
 
     /**

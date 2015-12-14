@@ -206,7 +206,7 @@ public class MainAppUI extends JFrame{
 
         JMenuItem editFloors = new JMenuItem("Edit floors");
         editFloors.addActionListener(e -> {
-            FloorEditor.editFloors(this);
+            new FloorEditor().showDialog(this);
         });
         view.add(editFloors);
 

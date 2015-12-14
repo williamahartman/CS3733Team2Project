@@ -13,30 +13,51 @@ import java.util.List;
  * Created by Will on 12/13/2015.
  */
 public class FloorEditor {
+    java.util.List<FloorEditPanel> floorPanels;
+    JPanel mapListPanel;
 
-    public static void editFloors(Window owner) {
+    public FloorEditor() {
+        floorPanels = new ArrayList<>();
+        mapListPanel = new JPanel();
+    }
+
+    private void addFloorEditPanel(FloorEditPanel panel) {
+        JButton deleteButton = new JButton("Delete");
+        deleteButton.addActionListener(e -> {
+            mapListPanel.remove(panel);
+            floorPanels.remove(panel);
+
+            mapListPanel.revalidate();
+            mapListPanel.repaint();
+        });
+        panel.add(deleteButton);
+        panel.add(Box.createHorizontalStrut(10));
+
+        Dimension d = panel.getPreferredSize();
+        d.height = 60;
+        panel.setMinimumSize(d);
+        panel.setPreferredSize(d);
+        panel.setMaximumSize(d);
+
+        floorPanels.add(panel);
+        mapListPanel.add(panel);
+
+        mapListPanel.revalidate();
+        mapListPanel.repaint();
+    }
+
+    public void showDialog(Window owner) {
         //Build the dialog box
         JDialog editFloorsWindow = new JDialog(owner, "Edit Route Preferences", Dialog.ModalityType.APPLICATION_MODAL);
         editFloorsWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        editFloorsWindow.setMinimumSize(new Dimension(640, 480));
-        editFloorsWindow.setLocationRelativeTo(null);
-        editFloorsWindow.getContentPane().setLayout(new BorderLayout());
-        editFloorsWindow.setResizable(false);
 
-        java.util.List<FloorEditPanel> floorPanels = new ArrayList<>();
-        List<Integer> floorNums = new ArrayList<>();
-
-        JPanel mapListPanel = new JPanel();
         mapListPanel.setLayout(new BoxLayout(mapListPanel, BoxLayout.Y_AXIS));
         JButton saveToDatabase = new JButton("Save to Database");
         JButton addFloor = new JButton("Add a Floor");
         addFloor.addActionListener(e -> {
             FloorEditPanel floorEditPanel = new FloorEditPanel(floorPanels.size(),
-                    "Add an image URL...", "Add an X Scale...", "Add an X Scale...");
-            floorPanels.add(floorEditPanel);
-            mapListPanel.add(floorEditPanel);
-            mapListPanel.revalidate();
-            mapListPanel.repaint();
+                    "Add an image URL...", "", "");
+            addFloorEditPanel(floorEditPanel);
         });
         JButton cancel = new JButton("Cancel");
         cancel.addActionListener(e -> editFloorsWindow.dispose());
@@ -45,16 +66,12 @@ public class FloorEditor {
         try {
             Database database = new Database();
             HashMap<Integer, MapImage> mapImages = database.getMaps();
-
-            for (int i: mapImages.keySet()) {
-                floorNums.add(i);
-                FloorEditPanel floorEditPanel = new FloorEditPanel(i, mapImages.get(i));
-                floorPanels.add(floorEditPanel);
-                mapListPanel.add(floorEditPanel);
+            for (int i = 0; i < mapImages.keySet().size(); i++) {
+                addFloorEditPanel(new FloorEditPanel(i, mapImages.get(i)));
             }
 
             saveToDatabase.addActionListener(e -> {
-                for (int i: floorNums) {
+                for (int i: mapImages.keySet()) {
                     database.removeMap(i, null);
                 }
 
@@ -83,6 +100,10 @@ public class FloorEditor {
         mainPanel.add(scrollPane);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
+        editFloorsWindow.setMinimumSize(new Dimension(
+                mapListPanel.getPreferredSize().width + 50,
+                480));
+        editFloorsWindow.setLocationRelativeTo(null);
         editFloorsWindow.setContentPane(mainPanel);
         editFloorsWindow.setVisible(true);
     }

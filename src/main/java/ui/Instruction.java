@@ -70,7 +70,7 @@ public class Instruction {
                 } else {
                     prev = cur;
                 }*/
-                System.out.print("Init StartEnd and strings\n");
+                //System.out.print("Init StartEnd and strings\n");
 
                 //vector1 is parallel to vector pointing from current location to previous location
                 //the tail of vector1 is (0, 0)
@@ -79,12 +79,12 @@ public class Instruction {
                 //the tail of vector2 is (0, 0)
                 Point2D.Double vector2 = new Point2D.Double((locNextX - locCurrentX), (locNextY - locCurrentY));
                 if (locCurrent.getFloorNumber() != locPrev.getFloorNumber()) {
-                    System.out.println("if statement 1");
+                    //System.out.println("if statement 1");
                     for (Edge e : locCurrent.getEdges()) {
                         System.out.println("for loop");
                         if (e.getNode1().equals(locCurrent) && e.getNode2().equals(locPrev) ||
                                 e.getNode1().equals(locPrev) && e.getNode2().equals(locCurrent)) {
-                            System.out.println("if statement 2");
+                            //System.out.println("if statement 2");
                             if (e.hasAttribute(EdgeAttribute.STAIRS)
                                     && locCurrent.getFloorNumber() == locPrev.getFloorNumber() + 1) {
                                 instruction.put(cur, "Go up the stairs\n");
@@ -106,15 +106,14 @@ public class Instruction {
                                 }
 
                                 instruction.put(cur, elevatorFloorText);
-                                //                            instruction.add(elevatorFloorText + "\n");
-                                //                            instruction.add("");
+
                             } else {
                                 //do nothing
                             }
                         }
                     }
                 } else {
-                    System.out.print("In else statement\n");
+                    //System.out.print("In else statement\n");
                     if (i == 0) {
                         //vector3 is a vector point from (0, 0) to (1, 0)
                         Point2D.Double vector3 = new Point2D.Double(1, 0);
@@ -126,16 +125,16 @@ public class Instruction {
                         double deg = Math.toDegrees(
                                 Math.acos((1 + vector2Length * vector2Length - l * l) / (2 * vector2Length)));
                         if (vector2.getY() == 0) {
-                            System.out.print("In if for v2y\n");
+                            //System.out.print("In if for v2y\n");
                             if (vector2.getX() > 0) {
-                                System.out.print("In if for v2y east\n");
+                                //System.out.print("In if for v2y east\n");
                                 curInst = curInst + "Head East. ";
                             } else if (vector2.getY() < 0) {
                                 curInst = curInst + "Head West. ";
                             }
                             instruction.put(cur, curInst);
                         } else if (vector2.getY() > 0) {
-                            System.out.print("In if for north\n");
+                            //System.out.print("In if for north\n");
                             if (deg < 22.5) {
                                 curInst = curInst + "Head East. ";
                             } else if (deg >= 22.5 && deg <= 67.5) {
@@ -147,7 +146,7 @@ public class Instruction {
                             } else if (deg > 157.5) {
                                 curInst = curInst + "Head West. ";
                             }
-                            System.out.println("put heading NORTH");
+                            //System.out.println("put heading NORTH");
 
                         } else if (vector2.getY() < 0) {
                             System.out.print("In if for south\n");
@@ -162,7 +161,7 @@ public class Instruction {
                             } else if (deg > 157.5) {
                                 curInst = curInst + "Head West. ";
                             }
-                            System.out.println("put heading SOUTH: " + curInst);
+                            //System.out.println("put heading SOUTH: " + curInst);
                             //addFirstDirection(locCurrent, locNext, deg, curInst, "South");
                         }
                         if (!curInst.isEmpty()) {
@@ -179,15 +178,15 @@ public class Instruction {
                     //sin(x) is negative if it rotates clockwise, sin(x) is positive if it rotates counterclockwise
                     //sin(x) is 0 if it rotates 180 degree
                     if (cross < 0) { //clockwise
-                        System.out.println("i" + ":" + i + "Set flag to 1\n");
+                        //System.out.println("i" + ":" + i + "Set flag to 1\n");
                         flag = 1; //left
                         turn = "left";
                     } else if (cross > 0) { //counterclockwise
-                        System.out.println("i" + ":" + i + "Set flag to 2\n");
+                        //System.out.println("i" + ":" + i + "Set flag to 2\n");
                         flag = 2; //right
                         turn = "right";
                     } else {
-                        System.out.println("i" + ":" + i + " Set flag to 3\n");
+                        //System.out.println("i" + ":" + i + " Set flag to 3\n");
                         flag = 3; //straight
                     }
 
@@ -216,7 +215,7 @@ public class Instruction {
                     }
                     //if it is time to turn
                     if (flag == 1 || flag == 2) {
-                        System.out.println("Time to turn\n");
+                        //System.out.println("Time to turn\n");
 
                         if (flag2 == 1) {
                             //if previous step is going straight, then add up all distance after last turning
@@ -229,22 +228,22 @@ public class Instruction {
                         totalDistance += temp;
 
                         //StartEnd check = new StartEnd(locPrev, locCurrent);
-                        if (prev != cur) {
+                        /*if (prev != cur) {
                             System.out.println("Check: " + instruction.containsValue("Head East. "));
                             System.out.println("Check2: " + instruction.containsKey(new StartEnd(locPrev, locCurrent)));
                             System.out.println("Check2: " + instruction.containsKey(prev));
                             System.out.println("CurrentStart: " + cur.getStart().getPosition());
                             System.out.println("PreviousStart: " + prev.getStart().getPosition());
-                        }
+                        }*/
 
                         String prevInst = instruction.get(prev);
                         if (prevInst != null) {
                             prevInst = prevInst + "Go " + temp + " feet. ";
                             instruction.remove(prev);
                             instruction.put(prev, prevInst);
-                            System.out.println("i" + ":" + i + prevInst);
+                            //System.out.println("i" + ":" + i + prevInst);
                         } else {
-                          System.out.println("UH OH PREV WAS NULL");
+                          //System.out.println("UH OH PREV WAS NULL");
                         }
 
                         for (int j = 0; j < count; j++) {
@@ -258,12 +257,12 @@ public class Instruction {
 
                         curInst = "Turn" + str + turn + ". ";
                         //curInst = curInst + "Turn" + str + turn + ". ";
-                        System.out.println("i" + ":" + i + curInst);
+                        //System.out.println("i" + ":" + i + curInst);
                         //if next location is at the end of the location list
                         if (i == listSize - 2) {
                             temp = this.make2Decimal(l2);
                             curInst = curInst + "Go " + temp + " feet. You have arrived at your destination.";
-                            System.out.println("i" + ":" + i + curInst);
+                            //System.out.println("i" + ":" + i + curInst);
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
                                     //curInst = curInst + "Continue straight. ";
@@ -273,7 +272,7 @@ public class Instruction {
                             totalDistance += temp;
                         }
                         if (!curInst.isEmpty()) {
-                            System.out.println("Adding go/turn: " + curInst);
+                            //System.out.println("Adding go/turn: " + curInst);
                             instruction.put(cur, curInst);
                         }
                         flag2 = 0;
@@ -293,25 +292,25 @@ public class Instruction {
                             totalDistance += temp;
                             //instruction.add("Go " + temp + " feet.\n");
                             currentInst = currentInst + "Go " + temp + " feet. You have arrived at your destination.";
-                            System.out.println("i" + ":" + i + currentInst);
+                            //System.out.println("i" + ":" + i + currentInst);
 
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
                                     //instruction.add("Continue straight\n");
                                     //instruction.add("");
                                     //currentInst = currentInst + "Continue straight. ";
-                                    System.out.println("i" + ":" + i + currentInst);
+                                    //System.out.println("i" + ":" + i + currentInst);
                                 }
                             }
                         }
-                        System.out.println("GO: " + currentInst);
+                        //System.out.println("GO: " + currentInst);
                         if (!curInst.isEmpty() && !instruction.containsKey(cur)) {
-                            System.out.println("Adding go inst");
+                            //System.out.println("Adding go inst");
                             instruction.put(cur, currentInst);
                         } else if (!curInst.isEmpty()) {
                             String tempStr = instruction.get(cur);
                             tempStr = tempStr + currentInst;
-                            System.out.println("Adding: " + tempStr);
+                            //System.out.println("Adding: " + tempStr);
                             instruction.remove(cur);
                             instruction.put(cur, tempStr);
                         }
@@ -323,7 +322,6 @@ public class Instruction {
                         }
                     }
                 }
-
             }
 
             //totals.add("You have arrived at your destination.\n");
@@ -332,7 +330,7 @@ public class Instruction {
 
             //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
             int timeNeed = (int) (totalDistance / 237);
-            totals.add("On average it takes " + timeNeed + " minutes to arrive at your destination.\n");
+            totals.add("Average arrival time: " + timeNeed + " minutes \n");
 
             return instruction;
         }

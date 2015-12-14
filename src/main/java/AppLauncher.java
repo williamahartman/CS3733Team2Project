@@ -14,7 +14,7 @@ public class AppLauncher{
     public static void main(String[] args) {
         try {
             //Set up loading screen
-            JSplash splashscreen = new JSplash(AppLauncher.class.getResource (""),
+            JSplash splashscreen = new JSplash(AppLauncher.class.getResource ("BrokeEverything.png"),
                     true, true, false, "AZTEC WASH Mapper", null, Color.BLACK, Color.BLUE);
             splashscreen.splashOn();
             splashscreen.setProgress(20, "Initializing....");

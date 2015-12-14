@@ -3,6 +3,7 @@ package ui;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.app.beans.SVGIcon;
 import core.Edge;
+import core.EdgeAttribute;
 import core.Location;
 import core.LocationGraph;
 
@@ -519,10 +520,20 @@ public class MapView extends JPanel {
                 int buttonSize = (int) style.getUnnamedButtonSize();
                 locButton.setBounds(xPos - (buttonSize / 2), yPos - (buttonSize / 2), buttonSize, buttonSize);
             } else {
+                int buttonSize = (int) style.getNamedButtonSize();
+                if (loc.getEdges() != null){
+                    for (Edge e:loc.getEdges()){
+                        if (!e.hasAttribute(EdgeAttribute.INDOORS)){
+                            buttonSize = (int) style.getNamedButtonSize();
+                            break;
+                        } else {
+                            buttonSize = (int) style.getUnnamedButtonSize();
+                        }
+                    }
+                }
                 int xPos = (int) (loc.getPosition().x * getCurrentPixelSize().width);
                 int yPos = (int) (loc.getPosition().y * getCurrentPixelSize().height);
 
-                int buttonSize = (int) style.getNamedButtonSize();
                 locButton.setBounds(xPos - (buttonSize / 2), yPos - (buttonSize / 2), buttonSize, buttonSize);
             }
 

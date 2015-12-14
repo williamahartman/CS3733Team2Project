@@ -369,10 +369,10 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() ? DEV_UNNAMED_SIZE : UNNAMED_SIZE, //Unnamed button size
                     devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
                     devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
-                    new Color(169, 176, 183),   //Edge color
-                    new Color(169, 176, 183),   //Route Edge color
+                    new Color(100, 100, 100),   //Edge color
+                    new Color(100, 0, 0),   //Route Edge color
                     new Color(0, 0, 0),         //Location Color
-                    new Color(100, 0, 0),       //Route Location color
+                    new Color(200, 0, 0),       //Route Location color
                     Color.RED,      //Start Point color
                     Color.GREEN,    //End Point color
                     Color.CYAN,     //Selected Point color
@@ -396,9 +396,10 @@ public class MainAppUI extends JFrame{
                     devToolsPanel.getDevMode() ? DEV_NAMED_SIZE : NAMED_SIZE,     //Name button size
                     devToolsPanel.getDevMode() ? DEV_START_SIZE : START_SIZE,     //Start or end button size
                     new Color(105, 138, 172), //Edge color
-                    new Color(169, 176, 183), //Route Edge color
-                    new Color(16, 78, 139),   //Location Color
-                    new Color(0, 245, 255),   //Route Location color
+                    new Color(0, 245, 255), //Route Edge color
+                    new Color(16, 78, 139),  //Location Color
+                    new Color(0, 50, 60), //Route Location color
+
                     Color.RED,      //Start Point color
                     Color.GREEN,    //End Point color
                     Color.CYAN,     //Selected Point color

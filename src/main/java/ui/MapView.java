@@ -68,6 +68,7 @@ public class MapView extends JPanel {
         this.style = viewStyle;
         this.searchList = new ArrayList<>();
         this.routeLists = new ArrayList<>();
+        this.edgeHighlightList = new ArrayList<>();
         this.locationButtonList = new ArrayList<>();
         this.universe = new SVGUniverse();
         this.zoomFactor = DEFAULT_ZOOM;
@@ -557,7 +558,12 @@ public class MapView extends JPanel {
             if (searchList.contains(loc)) {
                 locButton.setBgColor(style.getSearchResultColor());
             }
-
+            //Highlight highlight Edge buttons
+            for (Edge e: edgeHighlightList) {
+                if (e.getNode1() == loc || e.getNode2() == loc) {
+                    locButton.setBgColor(style.getEdgeHighlightColor());
+                }
+            }
 
             //Set visibility
             boolean locOnCurrentFloor = loc.getFloorNumber() == currentFloorNumber;

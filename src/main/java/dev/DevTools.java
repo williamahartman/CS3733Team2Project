@@ -523,7 +523,6 @@ public class DevTools extends JPanel {
         if (lastButtonClicked != null) {
             lastButtonClicked.setBgColor(mapView.getStyle().getPreviousSelectedColor());
         }
-
         mapView.repaint();
 
         int dbChanges = dblist.getRemoveEdgeList().size() +
@@ -610,9 +609,7 @@ public class DevTools extends JPanel {
     }
 
     private void updateHighlightedEdges(){
-        for (Edge e:  graph.edgeByFloorNumber(mapView.getFloorNumber())){
-            //TODO make changes in checkboxes result in style change
-
+        for (Edge e:  graph.getAllEdges()){
             if ((stairsHL.isSelected() && e.hasAttribute(EdgeAttribute.STAIRS)) ||
                 (elevatorHL.isSelected() && e.hasAttribute(EdgeAttribute.ELEVATOR)) ||
                 (notHandicapHL.isSelected() && e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)) ||
@@ -620,6 +617,6 @@ public class DevTools extends JPanel {
                 mapView.addToHighlightList(e);
             }
         }
-        mapView.repaint();
+        mapView.refreshGraph();
     }
 }

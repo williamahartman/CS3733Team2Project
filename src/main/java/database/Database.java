@@ -109,12 +109,14 @@ public class Database {
         double x = locToAdd.getPosition().getX(); //get the x of the node to add
         double y = locToAdd.getPosition().getY(); //get the y of the node to add
         int floorNum = locToAdd.getFloorNumber(); //get the floor number
+        String imagePath = locToAdd.getImagePath();
 
         //query for inserting the node into the database
-        String query = "INSERT INTO mapData.NODES (POS_X, POS_Y, FLOOR_NUM) VALUES " +
-                "(" + x + "," + y + "," + floorNum + ")";
+        String query = "INSERT INTO mapData.NODES (POS_X, POS_Y, FLOOR_NUM, IMAGE ) VALUES " +
+                "(" + x + "," + y + "," + floorNum + "," + imagePath + ")";
         String getID = "SELECT NODE_ID FROM mapData.NODES WHERE" +
-                "(POS_X = " + x + ") AND (POS_Y = " + y + ")";
+                "(POS_X = " + x + ") AND (POS_Y = " + y + ")" +
+                " AND (FLOOR_NUM = " + '"' + floorNum + '"' + ")";
         try {
             Statement stmt = con.createStatement();
             //execute the query to add the node
@@ -150,7 +152,7 @@ public class Database {
 
             //get the id of the node to remove
             String getID = "SELECT NODE_ID FROM mapData.NODES WHERE POS_X = "  +
-                    x + " and POS_Y =" + y;
+                    x + " and POS_Y =" + y + " AND FLOOR_NUM = " + locToRem.getFloorNumber();
             ResultSet rs = stmt.executeQuery(getID);
             if (!rs.next()){
                 throw new SQLException("No locations with those coordinates");
@@ -210,7 +212,8 @@ public class Database {
 
             //update floor number
             String updateFloor = "UPDATE mapData.NODES SET "
-                    + "FLOOR_NUM = " + locToUpdate.getFloorNumber()
+                    + "FLOOR_NUM = " + locToUpdate.getFloorNumber() + "," +
+                    " IMAGE = " + '"' + locToUpdate.getImagePath() + '"'
                     + " WHERE NODE_ID =" + nodeId;
             stmt.execute(updateFloor);
 
@@ -518,6 +521,7 @@ public class Database {
                 Point2D.Double coords = new Point2D.Double(res.getDouble("POS_X"),
                         res.getDouble("POS_Y"));
                 int floor = res.getInt("FLOOR_NUM");
+                String image = res.getString("IMAGE");
                 //create a new location with the row's info and
                 //the corresponding name list from the hashmap
                 Location loc;
@@ -526,11 +530,11 @@ public class Database {
                     nmList = (String[]) nameHm.get(nodeId).toArray(nmList);
                      loc = new Location(
                             coords,
-                            floor,  nmList);
+                            floor,  nmList , image);
                 } else {
                     loc = new Location(
                             coords,
-                            floor, new String[0]);
+                            floor, new String[0], image);
                 }
                 // Add locations and node id to a hash map
                 hm.put(nodeId, loc);

@@ -38,6 +38,7 @@ public class DevTools extends JPanel {
 
     private JLabel buttonLabel1;
     private JLabel buttonLabel2;
+    private JLabel buttonLabel3;
 
     //Edge attribute check boxes
     private JCheckBox indoors = new JCheckBox("Indoors");
@@ -48,6 +49,7 @@ public class DevTools extends JPanel {
     //Fields with their initial entries (for floor numbers & location names)
     private JFormattedTextField field1 = new JFormattedTextField();
     private JFormattedTextField field2 = new JFormattedTextField();
+    private JFormattedTextField field3 = new JFormattedTextField();
 
     private int dbChanges;
 
@@ -132,6 +134,7 @@ public class DevTools extends JPanel {
         //Labels that appear on the left side and describe the open fields
         buttonLabel1 = new JLabel("Floor Number:");
         buttonLabel2 = new JLabel("Name List:");
+        buttonLabel3 = new JLabel("Tooltip Image Link:");
 
         //Blank labels created to make the formatting of the panel better
         JLabel blank1 = new JLabel("");
@@ -169,10 +172,13 @@ public class DevTools extends JPanel {
 
 
         field1.setValue("");
+        field3.setValue("");
         field1.setToolTipText("<html>The floor number associated with the currently selected node.<br>" +
                 "Only valid integers will be accepted.</html>");
         field2.setToolTipText("<html>The list of names that this node should be searchable by.<br>" +
                 "Separate multiple names with a comma.</html>");
+        field3.setToolTipText("<html>The URL link to the image that<br>" +
+                "will show up in this location's tool tip</html>");
 
         //Creates an OK button that updates the nodes with their inputted floor numbers & location names when clicked
         JButton okButton = new JButton("OK");
@@ -183,6 +189,8 @@ public class DevTools extends JPanel {
                 if (e.getButton() == 1 && lastButtonClicked != null) {
                     //update values for Location object
                     lastButtonClicked.getAssociatedLocation().setFloorNumber((int) field1.getValue());
+                    String imgLink = (String) field3.getValue();
+                    lastButtonClicked.getAssociatedLocation().setImagePath(imgLink);
                     String tempString = (String) field2.getValue();
                     String[] nameList;
                     if (tempString.contains(",")) {
@@ -274,12 +282,14 @@ public class DevTools extends JPanel {
         //Attach labels to fields
         buttonLabel1.setLabelFor(field1);
         buttonLabel2.setLabelFor(field2);
+        buttonLabel3.setLabelFor(field3);
 
         //Panel displaying all the labels
         JPanel labelPanel1 = new JPanel(new GridLayout(0, 1, 5, 20));
         JPanel highlightPanel = new JPanel(new GridLayout(0, 1, 5, 20));
         labelPanel1.add(buttonLabel1);
         labelPanel1.add(buttonLabel2);
+        labelPanel1.add(buttonLabel3);
         labelPanel1.add(blank3);
         labelPanel1.add(blank5);
 
@@ -293,6 +303,7 @@ public class DevTools extends JPanel {
         JPanel edgeAttributePanel = new JPanel(new GridLayout(0, 1, 5, 20));
         textPanel1.add(field1);
         textPanel1.add(field2);
+        textPanel1.add(field3);
         textPanel1.add(okButton);
         textPanel1.add(blank1);
 
@@ -359,8 +370,13 @@ public class DevTools extends JPanel {
     private void setElementsEnabled(boolean enabled) {
         buttonLabel1.setEnabled(enabled);
         buttonLabel2.setEnabled(enabled);
+        buttonLabel3.setEnabled(enabled);
         field1.setEnabled(enabled);
         field2.setEnabled(enabled);
+        field3.setEnabled(enabled);
+        field1.setColumns(15);
+        field2.setColumns(15);
+        field3.setColumns(15);
         indoors.setEnabled(enabled);
         stairs.setEnabled(enabled);
         elevator.setEnabled(enabled);
@@ -577,6 +593,7 @@ public class DevTools extends JPanel {
             }
         }
         field2.setValue(locationNames.toString());
+        field3.setValue(lastButtonClicked.getAssociatedLocation().getImagePath());
     }
 
     public boolean getDevMode(){ return inDevMode; }

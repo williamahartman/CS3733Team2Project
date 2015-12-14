@@ -1,6 +1,10 @@
 package core;
 
+import javax.imageio.ImageIO;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +20,7 @@ public class Location {
     private int floorNumber;
     private String[] nameList;
     private List<Edge> edgeList;
+    private String imagePath;
 
     /**
      * Constructor. This is intended for loading a Location from a file.
@@ -32,8 +37,45 @@ public class Location {
         this.floorNumber = floorNumber;
         this.nameList = nameList;
         this.edgeList = edgeList;
+        imagePath = "";
     }
 
+    /**
+     *  Constructor. This is intended for loading a Location from a file.
+     *
+     * @param position The position of the Location on the map (as a fraction of the width and
+     *                 height of the map)
+     * @param floorNumber The floor the Location will be placed on. Should be 0 for outdoor points.
+     * @param nameList The list of searchable names for the Location
+     * @param edgeList The list of Edges that include the Location as one of their nodes
+     * @param imagePath The path to the image to be associated with the location
+     */
+    public Location(Point2D.Double position, int floorNumber, String[] nameList,
+                    List<Edge> edgeList, String imagePath) {
+        this.position = position;
+        this.floorNumber = floorNumber;
+        this.nameList = nameList;
+        this.edgeList = edgeList;
+        this.imagePath = imagePath;
+    }
+
+    /**
+     *  Constructor. This is intended for loading a Location from a file.
+     *
+     * @param position The position of the Location on the map (as a fraction of the width and
+     *                 height of the map)
+     * @param floorNumber The floor the Location will be placed on. Should be 0 for outdoor points.
+     * @param nameList The list of searchable names for the Location
+     * @param imagePath The path to the image to be associated with the location
+     */
+    public Location(Point2D.Double position, int floorNumber, String[] nameList,
+                    String imagePath) {
+        this.position = position;
+        this.floorNumber = floorNumber;
+        this.nameList = nameList;
+        this.edgeList =  new ArrayList<>();
+        this.imagePath = imagePath;
+    }
     /**
      * Constructor.
      *
@@ -174,4 +216,7 @@ public class Location {
     public void setNameList(String[] s){
         nameList = s;
     }
+    public String getImagePath(){  return imagePath; }
+    public void setImagePath(String newPath){  imagePath = newPath; }
+
 }

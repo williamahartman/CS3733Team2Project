@@ -535,7 +535,13 @@ public class MapView extends JPanel {
             }
             if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
                 locButton.setVisible(true);
-                locButton.setToolTipText(loc.getNameList()[0]);
+                String toolTip = "<html><p>" + loc.getNameList()[0] + "</p>";
+
+                //add image if the image attribute of the location isn't null or blank
+                if (loc.getImagePath() != null && loc.getImagePath().length() != 0) {
+                    toolTip = toolTip + "<img src=\"" + loc.getImagePath() + "\">";
+                }
+                locButton.setToolTipText(toolTip);
             }
 
             repaint();

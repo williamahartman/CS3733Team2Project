@@ -90,7 +90,7 @@ public class MainAppUI extends JFrame{
      *
      * @param graph The graph that will be shown
      */
-    public MainAppUI(LocationGraph graph, HashMap<Integer, MapImage> maps) {
+    public MainAppUI(LocationGraph graph, HashMap<Integer, MapImage> maps, int defaultFloor) {
         super(FRAME_TITLE);
 
         //change the look and feel to the BeautyEye style
@@ -124,14 +124,14 @@ public class MainAppUI extends JFrame{
                 Color.BLACK      //Search Result Color
         );
 
-        this.mapView = new MapView(graph,
-                maps,
-                3, defaultMapViewStyle);
+        this.mapView = new MapView(graph, maps, defaultFloor, defaultMapViewStyle);
         this.mapView.setButtonListener(buildRouteSelectListener());
         this.mapView.getScrollPane().addMouseWheelListener(e -> {
             updateStartEndColors();
         });
         this.attributeManager = new EdgeAttributeManager();
+
+        devToolsPanel = new DevTools(graph, mapView);
 
         startPoint = null;
         endPoint = null;
@@ -166,7 +166,11 @@ public class MainAppUI extends JFrame{
                 try {
                     Database graphData = new Database();
                     graph = graphData.createGraph();
+
                     mapView.setSvgList(graphData.getMaps());
+                    mapView.setDefaultFloor(graphData.getDefaultFloor());
+                    mapView.setFloor(mapView.getDefaultFloorNumber());
+
                     resetMap(mapView);
                     graphData.closeConnection();
                 } catch (SQLException exception) {
@@ -180,8 +184,6 @@ public class MainAppUI extends JFrame{
         JMenuItem enterDeveloperMode = new JMenuItem("Edit Map (Developers Only!)");
 
         DevPassword passBox = new DevPassword("aztec", "wash");
-
-        devToolsPanel = new DevTools(graph, mapView);
         devToolsPanel.setVisible(false);
 
         userLoggedIn = false;

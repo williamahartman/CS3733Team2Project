@@ -42,6 +42,7 @@ public class MapView extends JPanel {
     private MapViewStyle style;
 
     private int currentFloorNumber;
+    private int defaultFloorNumber;
 
     private HashMap<Integer, MapImage> svgList;
     private SVGIcon svg;
@@ -61,6 +62,7 @@ public class MapView extends JPanel {
     public MapView(LocationGraph graph, HashMap<Integer, MapImage> maps, int defaultFloor, MapViewStyle viewStyle) {
         this.graph = graph;
         this.currentFloorNumber = defaultFloor;
+        this.defaultFloorNumber = defaultFloor;
         this.style = viewStyle;
         this.searchList = new ArrayList<>();
         this.routeLists = new ArrayList<>();
@@ -581,9 +583,7 @@ public class MapView extends JPanel {
                        + instruct.stepByStepInstruction(ll, scaleX, scaleY).get(step + 1);
                if (current.getFloorNumber() != currentFloorNumber)
                {
-                   currentFloorNumber = current.getFloorNumber();
-                   floorSlider.setValue(currentFloorNumber);
-                   repaint();
+                   setFloor(current.getFloorNumber());
 
                    List<List<Location>> backUpList = routeLists;
                    setCurrentImage();
@@ -623,54 +623,51 @@ public class MapView extends JPanel {
                    }
                    if (current.getFloorNumber() != previous.getFloorNumber())
                    {
-                       //TODO put these threee lines in a nicer mehtod.
-                       currentFloorNumber = current.getFloorNumber();
-                       floorSlider.setValue(currentFloorNumber);
-                       repaint();
+                       setFloor(current.getFloorNumber());
 
-                       List<List<Location>> backUpList = routeLists;
-                       setCurrentImage();
-                       updateGraph(graph);
-                       routeLists = backUpList;
-                       updateButtonAttributes();
-                       repaint();
-                   }
-                   for (LocationButton locButton : locationButtonList) {
-                       if (locButton.getAssociatedLocation().equals(current)) {
-                           locButton.setBgColor(new Color(250, 118, 0));
-                           searchList.add(locButton.getAssociatedLocation());
-                           repaint();
-                       }
-                       if (locButton.getAssociatedLocation().equals(previous)) {
-                           locButton.setBgColor(style.getRouteLocationColor());
-                           searchList.remove(locButton.getAssociatedLocation());
-                           repaint();
-                       }
-                   }
-               } else {
-                   for (LocationButton locButton : locationButtonList) {
-                       if (way == true) {
-                           if (locButton.getAssociatedLocation().equals(current)) {
-                               locButton.setBgColor(new Color(250, 118, 0));
-                               searchList.add(locButton.getAssociatedLocation());
-                               repaint();
-                           }
-                       }
-                       else {
-                           if (locButton.getAssociatedLocation().equals(current)) {
-                               locButton.setBgColor(new Color(250, 118, 0));
-                               searchList.remove(locButton.getAssociatedLocation());
-                               repaint();
-                           }
-                       }
-                   }
-               }
-           }
-       }
-        return textStep;
-    }
+     List<List<Location>> backUpList = routeLists;
+     setCurrentImage();
+     updateGraph(graph);
+     routeLists = backUpList;
+     updateButtonAttributes();
+     repaint();
+     }
+     for (LocationButton locButton : locationButtonList) {
+     if (locButton.getAssociatedLocation().equals(current)) {
+     locButton.setBgColor(new Color(250, 118, 0));
+     searchList.add(locButton.getAssociatedLocation());
+     repaint();
+     }
+     if (locButton.getAssociatedLocation().equals(previous)) {
+     locButton.setBgColor(style.getRouteLocationColor());
+     searchList.remove(locButton.getAssociatedLocation());
+     repaint();
+     }
+     }
+     } else {
+     for (LocationButton locButton : locationButtonList) {
+     if (way == true) {
+     if (locButton.getAssociatedLocation().equals(current)) {
+     locButton.setBgColor(new Color(250, 118, 0));
+     searchList.add(locButton.getAssociatedLocation());
+     repaint();
+     }
+     }
+     else {
+     if (locButton.getAssociatedLocation().equals(current)) {
+     locButton.setBgColor(new Color(250, 118, 0));
+     searchList.remove(locButton.getAssociatedLocation());
+     repaint();
+     }
+     }
+     }
+     }
+     }
+     }
+     return textStep;
+     }
 
-    /**
+     /**
      * Sets the listener that will be associated with all buttons in the MapView.
      *
      * @param buttonListener The listener that will be associated
@@ -718,5 +715,19 @@ public class MapView extends JPanel {
 
     public HashMap<Integer, MapImage> getMapImages() {
         return svgList;
+    }
+
+    public int getDefaultFloorNumber() {
+        return defaultFloorNumber;
+    }
+
+    public void setFloor(int currentFloorNumber) {
+        this.currentFloorNumber = currentFloorNumber;
+        floorSlider.setValue(currentFloorNumber);
+        repaint();
+    }
+
+    public void setDefaultFloor(int defaultFloorNumber) {
+        this.defaultFloorNumber = defaultFloorNumber;
     }
 }

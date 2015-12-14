@@ -1,8 +1,11 @@
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.app.beans.SVGIcon;
+import core.LocationGraph;
+import core.MapImage;
 import database.Database;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import ui.MainAppUI;
+import ui.MapView;
 import ui.TextToVoice;
 
 import javax.imageio.ImageIO;
@@ -10,6 +13,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 
 /**
  * This runs the application.
@@ -20,18 +24,13 @@ public class AppLauncher{
     public static void main(String[] args) {
         try {
             Database graphData = new Database();
-            //Make a frame
-            MainAppUI app = new MainAppUI(graphData.createGraph(), graphData.getMaps());
-            graphData.closeConnection();
 
-            //change the look and feel to the Nimbus style
-            try {
-                UIManager
-                        .setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-            } catch (ClassNotFoundException | InstantiationException
-                    | IllegalAccessException | UnsupportedLookAndFeelException e) {
-                e.printStackTrace();
-            }
+            LocationGraph graph = graphData.createGraph();
+            HashMap<Integer, MapImage> floors = graphData.getMaps();
+            int defaultFloor = graphData.getDefaultFloor();
+
+            MainAppUI app = new MainAppUI(graph, floors, defaultFloor);
+            graphData.closeConnection();
 
             app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             app.setMinimumSize(new Dimension(1024, 768));

@@ -807,4 +807,11 @@ public class Database {
         }
     }
 
+    public int getDefaultFloor() {
+        return 3;
+    }
+
+    public void setDefaultFloor(int newDefault) {
+        System.out.println("UPDATING DEFAULT FLOOR!");
+    }
 }

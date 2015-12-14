@@ -6,6 +6,7 @@ import core.Location;
 import core.LocationGraph;
 import database.Database;
 import database.DatabaseList;
+import ui.FloorEditor;
 import ui.LocationButton;
 import ui.MapView;
 
@@ -330,6 +331,9 @@ public class DevTools extends JPanel {
             }
         });
 
+        //Create edit floor button
+        JButton editFloors = new JButton("Add/Remove/Edit Floors");
+        editFloors.addActionListener(e -> new FloorEditor(mapView.getMapImages()).showDialog(null));
 
         TitledBorder title = BorderFactory.createTitledBorder("Edge Attributes");
         TitledBorder highlightTitle = BorderFactory.createTitledBorder("Highlight Edges");
@@ -360,7 +364,12 @@ public class DevTools extends JPanel {
         panelLayout.add(separator1, BorderLayout.LINE_END);
         panelLayout.add(panel2, BorderLayout.LINE_START);
 
-        panelLayout.add(saveToDatabase, BorderLayout.SOUTH);
+        JPanel buttonButtonPanel = new JPanel();
+        buttonButtonPanel.setLayout(new BorderLayout());
+        buttonButtonPanel.add(saveToDatabase, BorderLayout.NORTH);
+        buttonButtonPanel.add(editFloors, BorderLayout.SOUTH);
+
+        panelLayout.add(buttonButtonPanel, BorderLayout.SOUTH);
         panelLayout.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panelLayout.setPreferredSize(new Dimension(350, 768));
 

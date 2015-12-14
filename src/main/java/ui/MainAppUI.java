@@ -204,13 +204,6 @@ public class MainAppUI extends JFrame{
         JMenuItem vintageStyle = new JMenuItem("Vintage Style");
         JMenuItem colorBlindStyle = new JMenuItem("Colorblind Accessible Style");
 
-        JMenuItem editFloors = new JMenuItem("Edit floors");
-        editFloors.addActionListener(e -> {
-            new FloorEditor().showDialog(this);
-        });
-        view.add(editFloors);
-
-
         //Sets up menu hierarchy
         setJMenuBar(menuBar);
         menuBar.add(editMenu);

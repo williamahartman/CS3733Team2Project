@@ -700,4 +700,8 @@ public class MapView extends JPanel {
     public MapImage getCurrentMapImage(){
         return svgList.get(currentFloorNumber);
     }
+
+    public HashMap<Integer, MapImage> getMapImages() {
+        return svgList;
+    }
 }

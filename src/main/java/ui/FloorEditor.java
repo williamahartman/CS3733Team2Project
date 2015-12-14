@@ -13,10 +13,12 @@ import java.util.List;
  * Created by Will on 12/13/2015.
  */
 public class FloorEditor {
-    java.util.List<FloorEditPanel> floorPanels;
+    List<FloorEditPanel> floorPanels;
     JPanel mapListPanel;
+    HashMap<Integer, MapImage> mapImages;
 
-    public FloorEditor() {
+    public FloorEditor(HashMap<Integer, MapImage> mapImages) {
+        this.mapImages = mapImages;
         floorPanels = new ArrayList<>();
         mapListPanel = new JPanel();
     }
@@ -62,15 +64,13 @@ public class FloorEditor {
         JButton cancel = new JButton("Cancel");
         cancel.addActionListener(e -> editFloorsWindow.dispose());
 
-        //Stuff that uses the DB
-        try {
-            Database database = new Database();
-            HashMap<Integer, MapImage> mapImages = database.getMaps();
-            for (int i = 0; i < mapImages.keySet().size(); i++) {
-                addFloorEditPanel(new FloorEditPanel(i, mapImages.get(i)));
-            }
+        for (int i = 0; i < mapImages.keySet().size(); i++) {
+            addFloorEditPanel(new FloorEditPanel(i, mapImages.get(i)));
+        }
 
-            saveToDatabase.addActionListener(e -> {
+        saveToDatabase.addActionListener(e -> {
+            try {
+                Database database = new Database();
                 for (int i: mapImages.keySet()) {
                     database.removeMap(i, null);
                 }
@@ -80,10 +80,14 @@ public class FloorEditor {
                 }
 
                 editFloorsWindow.dispose();
-            });
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(null,
+                        "Failed to connect to the online database (be on the internet!)",
+                        "Database error!",
+                        JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
+        });
 
         //Adding to panels, JDialog
         JScrollPane scrollPane = new JScrollPane(mapListPanel);

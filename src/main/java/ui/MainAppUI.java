@@ -7,13 +7,12 @@ import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -23,10 +22,6 @@ import java.util.List;
 public class MainAppUI extends JFrame{
     private static final String FRAME_TITLE = "AZTEC WASH Mapper";
     private static final int SIDEPANEL_WIDTH = 250;
-
-    //Map scale
-    public static final int MAP_SCALE_X = 3355; // Map width in feet
-    public static final int MAP_SCALE_Y = 1780; // Map height in feet
 
     //Button sized
     private static final int UNNAMED_SIZE = 5;
@@ -208,6 +203,13 @@ public class MainAppUI extends JFrame{
         JMenuItem neonFunkStyle = new JMenuItem("Neon Funk Style");
         JMenuItem vintageStyle = new JMenuItem("Vintage Style");
         JMenuItem colorBlindStyle = new JMenuItem("Colorblind Accessible Style");
+
+        JMenuItem editFloors = new JMenuItem("Edit floors");
+        editFloors.addActionListener(e -> {
+            FloorEditor.editFloors(this);
+        });
+        view.add(editFloors);
+
 
         //Sets up menu hierarchy
         setJMenuBar(menuBar);
@@ -532,7 +534,10 @@ public class MainAppUI extends JFrame{
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
-                    for (String str : instruct.stepByStepInstruction(routeTime, MAP_SCALE_X, MAP_SCALE_Y)) {
+
+                    int scaleX = mapView.getCurrentMapImage().getScaleX();
+                    int scaleY = mapView.getCurrentMapImage().getScaleY();
+                    for (String str : instruct.stepByStepInstruction(routeTime, scaleX, scaleY)) {
                         if (!str.equals("Continue straight\n") && !str.equals(""))
                         {
                             count++;
@@ -726,8 +731,10 @@ public class MainAppUI extends JFrame{
                     if (emailToSend.length() > 0) {
 
                         Instruction instruct = new Instruction();
-                        List<String> instructions =
-                                instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
+
+                        int scaleX = mapView.getCurrentMapImage().getScaleX();
+                        int scaleY = mapView.getCurrentMapImage().getScaleY();
+                        List<String> instructions = instruct.stepByStepInstruction(route, scaleX, scaleY);
                         Email email = new Email(emailToSend, instructions);
                         for (int i = 0; i < route.size(); i++) {
                             mapView.stepByStep(i, true, true);

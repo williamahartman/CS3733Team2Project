@@ -28,10 +28,14 @@ import java.util.List;
  * makes devPanel and listeners for editing
  */
 public class DevTools extends JPanel {
-
     private LocationGraph graph;
+
     private MapView mapView;
     private boolean inDevMode = false;
+
+    private String username;
+    private String password;
+
     private Edge currentEdge;
     private LocationButton lastButtonClicked; //The last button you clicked
     private LocationButton originalButton; //The button you clicked before the last one
@@ -318,11 +322,14 @@ public class DevTools extends JPanel {
         saveToDatabase.setToolTipText("Commit the changes made to the online database.");
         saveToDatabase.addActionListener(listener -> {
             try {
-                Database graphData = new Database();
-                graphData.updateDB(dblist);
-                graphData.closeConnection();
-
-                dblist = new DatabaseList();
+                if (username != null && password != null) {
+                    Database graphData = new Database(username, password);
+                    graphData.updateDB(dblist);
+                    graphData.closeConnection();
+                    dblist = new DatabaseList();
+                } else {
+                    System.err.println("Username or password not set");
+                }
             } catch (SQLException exception) {
                 JOptionPane.showMessageDialog(mapView.getParent(),
                         "Failed to connect to the online database (be on the internet!)",
@@ -606,6 +613,12 @@ public class DevTools extends JPanel {
         field3.setValue(lastButtonClicked.getAssociatedLocation().getImagePath());
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
     public boolean getDevMode(){ return inDevMode; }
     public void setDevMode(boolean devMode){ inDevMode = devMode; }
 

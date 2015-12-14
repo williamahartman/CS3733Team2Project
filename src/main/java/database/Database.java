@@ -36,7 +36,7 @@ public class Database {
         }
         con = DriverManager.getConnection("jdbc:mysql://" +
                         "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
-                "aztecwash", "aztecwash");
+                "user", "guest");
 
         //ACTUAL READ ONLY USER IS USERNAME: user PASSWORD: guest
 

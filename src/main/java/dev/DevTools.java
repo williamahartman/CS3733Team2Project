@@ -1,5 +1,6 @@
 package dev;
 
+import com.thehowtotutorial.splashscreen.JSplash;
 import core.Edge;
 import core.EdgeAttribute;
 import core.Location;
@@ -306,9 +307,15 @@ public class DevTools extends JPanel {
         saveToDatabase.setToolTipText("Commit the changes made to the online database.");
         saveToDatabase.addActionListener(listener -> {
             try {
+                //URL newUrl = DevTools.class.getResource("BrokeEverything.png");
+                JSplash devSplash = new JSplash(getClass().getResource("dev/BrokeEverything.png"),
+                        false, false, false, " ", null, null, null);
+                devSplash.splashOn();
+                Thread.sleep(1);
                 Database graphData = new Database();
                 graphData.updateDB(dblist);
                 graphData.closeConnection();
+                devSplash.splashOff();
 
                 dblist = new DatabaseList();
             } catch (SQLException exception) {
@@ -316,6 +323,8 @@ public class DevTools extends JPanel {
                         "Failed to connect to the online database (be on the internet!)",
                         "Database error!",
                         JOptionPane.ERROR_MESSAGE);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         });
 

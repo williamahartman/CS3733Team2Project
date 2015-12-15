@@ -4,6 +4,7 @@ import com.thehowtotutorial.splashscreen.JSplash;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 import java.sql.SQLException;
 
 /**

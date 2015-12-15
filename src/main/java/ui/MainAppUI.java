@@ -524,12 +524,11 @@ public class MainAppUI extends JFrame{
 
             JButton search = new JButton("Search");
             JButton selectedNodes = new JButton("Click Nodes");
-            JButton stepBystep = new JButton("Direction");
+           // JButton findRoute = new JButton("Find Route");
+            JButton stepBystep = new JButton("Navigation");
             JButton newRoute = new JButton("New Route");
             JButton editButton = new JButton("Edit Menu");
             JButton viewButton = new JButton("View Menu");
-            JButton otherFeature = new JButton("Other Features");
-
 
             JButton previous = new JButton("Previous");
             JButton next = new JButton("Next");
@@ -545,11 +544,11 @@ public class MainAppUI extends JFrame{
             stepBystep.setPreferredSize(new Dimension(200, 40));
             editButton.setPreferredSize(new Dimension(200, 40));
             viewButton.setPreferredSize(new Dimension(200, 40));
-            otherFeature.setPreferredSize(new Dimension(200, 40));
+            //findRoute.setPreferredSize(new Dimension(200, 40));
             search.setMaximumSize(new Dimension(200, 40));
             selectedNodes.setMaximumSize(new Dimension(200, 40));
             stepBystep.setMaximumSize(new Dimension(200, 40));
-            otherFeature.setMaximumSize(new Dimension(200, 40));
+            //findRoute.setMaximumSize(new Dimension(200, 40));
             editButton.setMaximumSize(new Dimension(200, 40));
             viewButton.setMaximumSize(new Dimension(200, 40));
             newRoute.setPreferredSize(new Dimension(200, 40));
@@ -558,20 +557,19 @@ public class MainAppUI extends JFrame{
             tutorialSidePanel.add(user);
             tutorialSidePanel.add(search);
             tutorialSidePanel.add(selectedNodes);
+            //tutorialSidePanel.add(findRoute);
             tutorialSidePanel.add(stepBystep);
             tutorialSidePanel.add(newRoute);
             tutorialSidePanel.add(editButton);
             tutorialSidePanel.add(viewButton);
-            tutorialSidePanel.add(otherFeature);
 
             tutorialWindow.add(tutorialSidePanel, BorderLayout.WEST);
             ImageIcon pic1 = new ImageIcon("src/main/resources/pic1.png");
-            ImageIcon pic2 = new ImageIcon("src/main/resources/testPhoto2.png");
-            ImageIcon pic3 = new ImageIcon("src/main/resources/testPhoto3.png");
-            ImageIcon pic4 = new ImageIcon("src/main/resources/testPhoto4.png");
-            ImageIcon pic5 = new ImageIcon("src/main/resources/testPhoto5.png");
-            ImageIcon pic6 = new ImageIcon("src/main/resources/testPhoto6.png");
-            ImageIcon pic7 = new ImageIcon("src/main/resources/testPhoto7.png");
+            ImageIcon pic2 = new ImageIcon("src/main/resources/pic2.png");
+            ImageIcon pic3 = new ImageIcon("src/main/resources/pic3.png");
+            ImageIcon pic4 = new ImageIcon("src/main/resources/pic4.png");
+            ImageIcon pic5 = new ImageIcon("src/main/resources/pic5.png");
+            ImageIcon pic6 = new ImageIcon("src/main/resources/pic6.png");
 
             JLabel pic = new JLabel(pic1);
 
@@ -610,10 +608,6 @@ public class MainAppUI extends JFrame{
                 pic.setIcon(pic6);
                 flag = 6;
             });
-            otherFeature.addActionListener(actionEvent -> {
-                pic.setIcon(pic7);
-                flag = 7;
-            });
 
 
             next.addActionListener(actionEvent ->{
@@ -628,17 +622,16 @@ public class MainAppUI extends JFrame{
                 } else if (flag == 5){
                     pic.setIcon(pic6);
                 } else if (flag == 6){
-                    pic.setIcon(pic7);
+                    pic.setIcon(pic1);
+                    flag = 1;
                 }
-                if (flag < 7){
+                if (flag < 6){
                     flag++;
                 }
             });
 
             previous.addActionListener(actionEvent ->{
-                if (flag == 7){
-                    pic.setIcon(pic6);
-                } else if (flag == 6){
+                if (flag == 6){
                     pic.setIcon(pic5);
                 } else if (flag == 5){
                     pic.setIcon(pic4);
@@ -648,6 +641,9 @@ public class MainAppUI extends JFrame{
                     pic.setIcon(pic2);
                 } else if (flag == 2){
                     pic.setIcon(pic1);
+                } else if (flag == 1){
+                    pic.setIcon(pic6);
+                    flag = 6;
                 }
                 if (flag > 1){
                     flag--;

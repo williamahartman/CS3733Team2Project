@@ -565,14 +565,14 @@ public class MapView extends JPanel {
 
 
     public String stepByStepHM(LinkedHashMap<StartEnd, String> locMap,
-                               Location previous, Location current, Location next, boolean emailMode) {
+                               Location prevStart, Location prevEnd,
+                               Location current, Location next, boolean emailMode) {
         String textStep = "";
-        int flagFirst = 0;
         int emailCount = 0;
-        StartEnd pairPrev = new StartEnd(previous, current);
+        StartEnd pairPrev = new StartEnd(prevStart, prevEnd);
         StartEnd pair = new StartEnd(current, next);
 
-        System.out.println("In step by step");
+        //System.out.println("In step by step");
 
         if (locMap.containsKey(pair)) {
             // Get text
@@ -580,24 +580,56 @@ public class MapView extends JPanel {
             textStep = directions;
             Location cur = pair.getStart(); // Get current location
 
-            if (previous == current) {
-                System.out.println("First time through - step count is 0");
-                setPosAndZoom();
-                ImageFromMap img = new ImageFromMap();
-                img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
-                emailCount++;
-            } else if (pairPrev.getStart().getFloorNumber() != pair.getEnd().getFloorNumber()) {
+            if (pair.getStart().getFloorNumber() != currentFloorNumber) {
                 System.out.println("Should change floors");
-                floorSlider.setValue(current.getFloorNumber());
+                currentFloorNumber = current.getFloorNumber();
+                System.out.println("Floor: " + currentFloorNumber);
+                floorSlider.setValue(currentFloorNumber);
                 repaint();
 
-                List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
                 updateGraph(graph);
 
                 updateButtonAttributes();
                 repaint();
                 setPosAndZoom();
+            }
+            if (prevStart == current) {
+                //System.out.println("First time through - step count is 0");
+                setPosAndZoom();
+
+                System.out.println("Previous = current");
+
+                for (LocationButton locButton : locationButtonList) {
+                    if (locButton.getAssociatedLocation().equals(current)) {
+                        System.out.println("Set current with arrow");
+                        locButton.setBgColor(new Color(250, 118, 0));
+                        searchList.add(locButton.getAssociatedLocation());
+                        repaint();
+                    }
+                    /*if (flagFirst != 0) {
+                        if (locButton.getAssociatedLocation().equals(pairPrev.getStart())) {
+                            locButton.setBgColor(style.getRouteLocationColor());
+                            searchList.remove(locButton.getAssociatedLocation());
+                            repaint();
+                        }
+                    }*/
+                }
+
+                ImageFromMap img = new ImageFromMap();
+                img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
+                emailCount++;
+            } else if (pairPrev.getStart().getFloorNumber() != pair.getEnd().getFloorNumber()) {
+                System.out.println("Should change floors");
+                currentFloorNumber = current.getFloorNumber();
+                System.out.println("Floor: " + currentFloorNumber);
+                floorSlider.setValue(currentFloorNumber);
+                repaint();
+
+                setCurrentImage();
+                updateGraph(graph);
+                updateButtonAttributes();
+                repaint();
 
                 if (emailMode) {
                     ImageFromMap img = new ImageFromMap();
@@ -607,7 +639,7 @@ public class MapView extends JPanel {
             } else {
 
             }
-            System.out.println("Should happen in second call");
+            //System.out.println("Should happen in second call");
             for (LocationButton locButton : locationButtonList) {
                 if (locButton.getAssociatedLocation().equals(current)) {
                     locButton.setBgColor(new Color(250, 118, 0));
@@ -615,6 +647,7 @@ public class MapView extends JPanel {
                     repaint();
                 }
                 if (locButton.getAssociatedLocation().equals(pairPrev.getStart())) {
+                    System.out.println("Remove from search list");
                     locButton.setBgColor(style.getRouteLocationColor());
                     searchList.remove(locButton.getAssociatedLocation());
                     repaint();

@@ -149,7 +149,7 @@ public class Instruction {
                             //System.out.println("put heading NORTH");
 
                         } else if (vector2.getY() < 0) {
-                            System.out.print("In if for south\n");
+                            //System.out.print("In if for south\n");
                             if (deg < 22.5) {
                                 curInst = curInst + "Head East. ";
                             } else if (deg >= 22.5 && deg <= 67.5) {
@@ -165,10 +165,10 @@ public class Instruction {
                             //addFirstDirection(locCurrent, locNext, deg, curInst, "South");
                         }
                         if (!curInst.isEmpty()) {
-                            System.out.println("Adding heading inst");
+                            //System.out.println("Adding heading inst");
                             instruction.put(cur, curInst);
                         }
-                        System.out.print(instruction.get(cur));
+                        //System.out.print(instruction.get(cur));
                     }
 
                     String turn = "";
@@ -206,7 +206,7 @@ public class Instruction {
                         double degree = Math.toDegrees(Math.acos((l1 * l1 + l2 * l2 - l3 * l3) / (2 * l1 * l2)));
                         if (degree >= 170 || degree <= 10) {
                             flag = 3; //treats the small turn as going straight
-                            System.out.println("i" + ":" + i + "Should be straight\n");
+                            //System.out.println("i" + ":" + i + "Should be straight\n");
                         } else if (degree > 120 && degree < 170) {
                             str = " slightly ";
                         } else if (degree < 60 && degree > 10) {
@@ -326,7 +326,7 @@ public class Instruction {
 
             //totals.add("You have arrived at your destination.\n");
             totalDistance = this.make2Decimal(totalDistance);
-            totals.add("The total distance is " + (int) totalDistance + " feet.\n");
+            totals.add("Total distance: " + (int) totalDistance + " feet\n");
 
             //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
             int timeNeed = (int) (totalDistance / 237);

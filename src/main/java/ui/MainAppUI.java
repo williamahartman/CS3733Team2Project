@@ -1,6 +1,5 @@
 package ui;
 
-import com.kitfox.svg.app.beans.SVGIcon;
 import core.*;
 import database.Database;
 import dev.DevPassword;
@@ -9,7 +8,10 @@ import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +41,6 @@ public class MainAppUI extends JFrame{
     private Location startPoint;
     private Location endPoint;
     private List<Location> route;
-
-    private HashSet<Location> namedLocations;
 
     private JLabel startInfo;
     private JLabel endPointInfo;
@@ -178,6 +178,8 @@ public class MainAppUI extends JFrame{
             }
             mapView.setGraph(graph);
             devToolsPanel.setLocationGraph(graph);
+            SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations());
+            searchDropDownList.setModel(model);
 
             updateStartEndColors();
         });
@@ -299,6 +301,9 @@ public class MainAppUI extends JFrame{
                 //Get mapView back to the way it was
                 mapView.removeMouseListener(devToolClickListener);
                 mapView.setButtonListener(buildRouteSelectListener());
+
+                SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations());
+                searchDropDownList.setModel(model);
 
                 refreshMap();
 
@@ -573,10 +578,9 @@ public class MainAppUI extends JFrame{
         });
 
         desNum = 0;
-        namedLocations = graph.getNamedLocations();
         searchDropDownList = new JComboBox();
         searchDropDownList.setEditable(true);
-        SearchBoxModel model = new SearchBoxModel(searchDropDownList, namedLocations);
+        SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations());
         searchDropDownList.setModel(model);
         searchDropDownList.addItemListener(model);
         searchDropDownList.setPreferredSize(new Dimension(180, 30));

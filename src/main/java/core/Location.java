@@ -1,10 +1,6 @@
 package core;
 
-import javax.imageio.ImageIO;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 

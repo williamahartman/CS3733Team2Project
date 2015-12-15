@@ -1,12 +1,7 @@
 package ui;
 
-import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.app.beans.SVGIcon;
-import core.Edge;
-import core.EdgeAttribute;
-import core.Location;
-import core.LocationGraph;
-import core.MapImage;
+import core.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -150,13 +145,15 @@ public class MapView extends JPanel {
                 //Draw arrows on search results
                 if (searchList != null && searchList.size() > 0){
                     for (Location loc: searchList) {
-                        g2d.setColor(style.getStartPointColor());
-                        double halfButtonSize = style.getNamedButtonSize() / 2.0;
-                        int locX = (int) (loc.getPosition().x * imageRes.getWidth());
-                        int locY = (int) ((loc.getPosition().y * imageRes.getHeight()) - halfButtonSize - 3);
-                        g2d.drawLine(locX, locY, locX, locY - 30);
-                        g2d.drawLine(locX, locY, locX - 10, locY - 10);
-                        g2d.drawLine(locX, locY, locX + 10, locY - 10);
+                        if (loc.getFloorNumber() == currentFloorNumber) {
+                            g2d.setColor(style.getStartPointColor());
+                            double halfButtonSize = style.getNamedButtonSize() / 2.0;
+                            int locX = (int) (loc.getPosition().x * imageRes.getWidth());
+                            int locY = (int) ((loc.getPosition().y * imageRes.getHeight()) - halfButtonSize - 3);
+                            g2d.drawLine(locX, locY, locX, locY - 30);
+                            g2d.drawLine(locX, locY, locX - 10, locY - 10);
+                            g2d.drawLine(locX, locY, locX + 10, locY - 10);
+                        }
                     }
                 }
             }

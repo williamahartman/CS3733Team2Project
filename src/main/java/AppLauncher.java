@@ -1,17 +1,10 @@
-import com.kitfox.svg.SVGUniverse;
-import com.kitfox.svg.app.beans.SVGIcon;
 import core.LocationGraph;
 import core.MapImage;
 import database.Database;
-import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 import ui.MainAppUI;
-import ui.MapView;
-import ui.TextToVoice;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-
 import java.sql.SQLException;
 import java.util.HashMap;
 

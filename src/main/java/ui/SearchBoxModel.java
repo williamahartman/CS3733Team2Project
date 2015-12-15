@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -18,16 +19,21 @@ import java.util.List;
  */
 public class SearchBoxModel extends AbstractListModel
         implements ComboBoxModel, KeyListener, ItemListener {
-    List<String> nameInList;
-    List<String> allNames;
-    String nameSelected;
-    JComboBox searchBox;
-    ComboBoxEditor searchText;
-    int currPos;
+    private List<String> nameInList;
+    private List<String> allNames;
+    private String nameSelected;
+    private JComboBox searchBox;
+    private ComboBoxEditor searchText;
+    private int currPos;
+    private MapView mapView;
+    private List<Location> locations;
 
-    public SearchBoxModel(JComboBox searchBox, HashSet<Location> locations){
+    public SearchBoxModel(JComboBox searchBox, HashSet<Location> locations, MapView mapView){
         this.nameInList = new ArrayList<>();
         this.allNames = new ArrayList<>();
+        this.mapView = mapView;
+        this.locations = new ArrayList<>(locations);
+
         for (Location l: locations){
             for (String name: l.getNameList()){
                 allNames.add(name);
@@ -41,16 +47,36 @@ public class SearchBoxModel extends AbstractListModel
 
     public void updateModel(String str){
         nameInList.clear();
-        allNames.stream().filter(name->name.toLowerCase().contains(str.toLowerCase())).forEach(nameInList::add);
+        nameInList = allNames.stream()
+                .filter(name->name.toLowerCase().contains(str.toLowerCase()))
+                .collect(Collectors.toList());
         Collections.sort(nameInList);
         super.fireContentsChanged(this, 0, nameInList.size());
-       // searchBox.hidePopup();
+        //searchBox.hidePopup();
         if (str.length() > 0) {
             searchBox.showPopup();
         } else {
             searchBox.setSelectedIndex(-1);
         }
 
+        //Change the floor if all points are on one floor
+        List<Location> searchResultLocs = locations.stream()
+                .filter(loc -> loc.namesInclude(str))
+                .collect(Collectors.toList());
+        if (!searchResultLocs.isEmpty()) {
+            int floor = searchResultLocs.get(0).getFloorNumber();
+            boolean floorHasChanged = false;
+            for (Location loc : searchResultLocs) {
+                if (loc.namesInclude(str) && loc.getFloorNumber() != floor) {
+                    floorHasChanged = true;
+                    break;
+                }
+            }
+
+            if (!floorHasChanged) {
+                mapView.setFloor(floor);
+            }
+        }
     }
 
     @Override

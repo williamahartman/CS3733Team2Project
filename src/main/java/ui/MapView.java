@@ -587,8 +587,10 @@ public class MapView extends JPanel {
                 floorSlider.setValue(currentFloorNumber);
                 repaint();
 
+                List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
                 updateGraph(graph);
+                routeLists = backUpList;
 
                 updateButtonAttributes();
                 repaint();
@@ -626,8 +628,11 @@ public class MapView extends JPanel {
                 floorSlider.setValue(currentFloorNumber);
                 repaint();
 
+                List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
                 updateGraph(graph);
+                routeLists = backUpList;
+
                 updateButtonAttributes();
                 repaint();
 

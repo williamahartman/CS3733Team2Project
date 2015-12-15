@@ -830,34 +830,87 @@ public class MainAppUI extends JFrame{
             }
         });
         mapView.getFloorSliderPanel().add(closeWindow, BorderLayout.PAGE_START);
-        //mapView.add(closeWindow, BorderLayout.PAGE_START);
         closeWindow.setPreferredSize(new Dimension(40, 40));
 
-        //Add elements to the search panel
-        sidePanel.add(searchInfo);
-        sidePanel.add(searchDropDownList);
-        sidePanel.add(new JLabel(""), FlowLayout.RIGHT);
-        sidePanel.add(addToStart);
-        sidePanel.add(addToDestination);
-        sidePanel.add(Box.createHorizontalStrut(10));
-        sidePanel.add(startInfo);
-        sidePanel.add(Box.createHorizontalStrut(10));
-        sidePanel.add(endLocInfo);
-        sidePanel.add(multipleDestination);
-        sidePanel.add(Box.createHorizontalStrut(10));
-        sidePanel.add(makeAStarRoute);
-        sidePanel.add(clearButton, BorderLayout.SOUTH);
-        sidePanel.add(text);
-        sidePanel.add(stepBackOnRouteButton);
-        sidePanel.add(stepForwardOnRouteButton);
-        sidePanel.add(emailText);
-        sidePanel.add(emailButton);
-        sidePanel.add(textToVoice);
+        //Build child panels for organizing search stuff
+        JPanel searchPanel = new JPanel();
+        searchPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        searchPanel.setLayout(new BoxLayout(searchPanel, BoxLayout.Y_AXIS));
 
-        sidePanel.add(handicapCheckbox);
-        sidePanel.add(editRoutePrefs);
+        JPanel searchBarPanel = new JPanel();
+        searchBarPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        searchBarPanel.setLayout(new BoxLayout(searchBarPanel, BoxLayout.X_AXIS));
 
+        JPanel searchButtonPanel = new JPanel();
+        searchButtonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        searchButtonPanel.setLayout(new BoxLayout(searchButtonPanel, BoxLayout.X_AXIS));
 
+        JPanel destPanel = new JPanel();
+        destPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        destPanel.setLayout(new BoxLayout(destPanel, BoxLayout.X_AXIS));
+        //Add search stuff to these panels
+        searchBarPanel.add(searchInfo);
+        searchBarPanel.add(searchDropDownList);
+        searchButtonPanel.add(addToStart);
+        searchButtonPanel.add(addToDestination);
+        searchPanel.add(searchBarPanel);
+        searchPanel.add(searchButtonPanel);
+        searchPanel.add(startInfo);
+        destPanel.add(endLocInfo);
+        destPanel.add(multipleDestination);
+        searchPanel.add(destPanel);
+
+        //Make a panel for the main buttons
+        JPanel aStarPanel = new JPanel();
+        aStarPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        aStarPanel.setLayout(new BoxLayout(aStarPanel, BoxLayout.Y_AXIS));
+        aStarPanel.add(makeAStarRoute);
+        aStarPanel.add(clearButton);
+
+        //Make a panel for the directions stuff
+        JPanel directionsPanel = new JPanel();
+        directionsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        directionsPanel.setLayout(new BoxLayout(directionsPanel, BoxLayout.Y_AXIS));
+        JPanel directionsButtonPanel = new JPanel();
+        directionsButtonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        directionsButtonPanel.setLayout(new BoxLayout(directionsButtonPanel, BoxLayout.X_AXIS));
+        directionsButtonPanel.add(stepBackOnRouteButton);
+        directionsButtonPanel.add(stepForwardOnRouteButton);
+        text.setAlignmentX(Component.LEFT_ALIGNMENT);
+        directionsPanel.add(text);
+        directionsPanel.add(directionsButtonPanel);
+
+        //Make a panel for email
+        JPanel emailPanel = new JPanel();
+        emailPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.X_AXIS));
+        emailPanel.add(emailText);
+        emailPanel.add(emailButton);
+
+        //Make prefs
+        JPanel routePrefsPanel = new JPanel();
+        routePrefsPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        routePrefsPanel.setLayout(new BoxLayout(routePrefsPanel, BoxLayout.Y_AXIS));
+        routePrefsPanel.add(textToVoice);
+        routePrefsPanel.add(handicapCheckbox);
+        routePrefsPanel.add(editRoutePrefs);
+
+        sidePanel.setBackground(Color.DARK_GRAY);
+        searchPanel.setBackground(Color.RED);
+        aStarPanel.setBackground(Color.GREEN);
+        directionsPanel.setBackground(Color.BLUE);
+        emailPanel.setBackground(Color.CYAN);
+        routePrefsPanel.setBackground(Color.PINK);
+
+        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+        sidePanel.add(searchPanel);
+        sidePanel.add(Box.createVerticalStrut(50));
+        sidePanel.add(aStarPanel);
+        sidePanel.add(Box.createVerticalStrut(50));
+        sidePanel.add(directionsPanel);
+        sidePanel.add(emailPanel);
+        sidePanel.add(Box.createVerticalGlue());
+        sidePanel.add(routePrefsPanel);
 
         //Set layout and add
         setLayout(new BorderLayout());

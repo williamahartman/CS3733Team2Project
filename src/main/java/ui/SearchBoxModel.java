@@ -46,6 +46,8 @@ public class SearchBoxModel extends AbstractListModel
     }
 
     public void updateModel(String str){
+        mapView.clearSearchList();
+
         nameInList.clear();
         nameInList = allNames.stream()
                 .filter(name->name.toLowerCase().contains(str.toLowerCase()))
@@ -76,6 +78,11 @@ public class SearchBoxModel extends AbstractListModel
             if (!floorHasChanged) {
                 mapView.setFloor(floor);
             }
+        }
+
+        if(str.length() > 1) {
+            mapView.addToSearchList(searchResultLocs);
+            mapView.repaint();
         }
     }
 

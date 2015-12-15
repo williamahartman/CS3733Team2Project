@@ -23,6 +23,7 @@ repositories {
 dependencies {
     compile files('libs/svgSalamander.jar')
     compile files('libs/beautyeye_lnf.jar')
+    compile files('libs/JSplashScreen.jar')
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.6';
     compile group: 'javax.mail', name: 'mail', version: '1.5.0-b01';

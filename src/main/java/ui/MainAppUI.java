@@ -177,7 +177,7 @@ public class MainAppUI extends JFrame{
             }
             mapView.setGraph(graph);
             devToolsPanel.setLocationGraph(graph);
-            SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations());
+            SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations(), mapView);
             searchDropDownList.setModel(model);
 
             updateStartEndColors();
@@ -301,7 +301,7 @@ public class MainAppUI extends JFrame{
                 mapView.removeMouseListener(devToolClickListener);
                 mapView.setButtonListener(buildRouteSelectListener());
 
-                SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations());
+                SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations(), mapView);
                 searchDropDownList.setModel(model);
 
                 refreshMap();
@@ -579,7 +579,7 @@ public class MainAppUI extends JFrame{
         desNum = 0;
         searchDropDownList = new JComboBox();
         searchDropDownList.setEditable(true);
-        SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations());
+        SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations(), mapView);
         searchDropDownList.setModel(model);
         searchDropDownList.addItemListener(model);
         searchDropDownList.setPreferredSize(new Dimension(180, 30));
@@ -604,9 +604,6 @@ public class MainAppUI extends JFrame{
                 mapView.clearSearchList();
                 repaint();
                 updateStartEndColors();
-                //searchDropDownList.removeAllItems();
-                //searchDropDownList.setSelectedItem("");
-                //searchDropDownList.setPopupVisible(false);
             }
             if (multiLoc.size() > 1){
                 makeAStarRoute.setEnabled(true);
@@ -622,18 +619,6 @@ public class MainAppUI extends JFrame{
                 tempLoc = searchExactName(selectedName);
                 locToSearch = selectedName;
             }
-            //System.out.println(selectedName);
-
-            /*if (searchExactName(selectedName) != null) {
-                searchDropDownList.removeAllItems();
-                searchDropDownList.addItem(selectedName);
-                tempLoc = searchExactName(selectedName);
-                locToSearch = selectedName;
-            }*/
-            /*if (searchSelectedName(selectedName) != null) {
-                searchDropDownList.removeAllItems();
-                searchDropDownList.addItem(selectedName);
-            }*/
 
             if (startPoint != null && endPoint != null && startPoint != endPoint) {
                 makeAStarRoute.setEnabled(true);

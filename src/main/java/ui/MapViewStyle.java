@@ -1,7 +1,6 @@
 package ui;
 
 import java.awt.*;
-import java.util.HashMap;
 
 /**
  * This class holds style values for a MapView.

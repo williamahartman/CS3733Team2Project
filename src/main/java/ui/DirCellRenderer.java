@@ -9,8 +9,8 @@ import java.util.*;
  */
 class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
     //Need images
-    ImageIcon slightRightIcon; /* =
-            new ImageIcon(getClass().getClassLoader().getResource("resources/slightRightIcon.png"));*/
+    ImageIcon slightRightIcon =
+            new ImageIcon("slightRightIcon.png", "slight right");
     ImageIcon hardRightIcon; /* =
             new ImageIcon(getClass().getClassLoader().getResource("resources/hardRightIcon.png"));*/
     ImageIcon rightIcon; /* =

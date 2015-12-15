@@ -711,7 +711,7 @@ public class MainAppUI extends JFrame{
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 System.out.println("Clicked on item in directions");
-
+/*
                 // Get string of selected item
                 int index = directions.locationToIndex(e.getPoint());
                 String selectedStr = directions.getModel().getElementAt(index);
@@ -735,7 +735,7 @@ public class MainAppUI extends JFrame{
 
                     System.out.println("Text: " + text);
                 }
-
+*/
             }
         };
         directions.addMouseListener(mouseListener);

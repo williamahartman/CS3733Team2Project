@@ -167,7 +167,7 @@ public class MainAppUI extends JFrame{
                     mapView.setDefaultFloor(graphData.getDefaultFloor());
                     mapView.setFloor(mapView.getDefaultFloorNumber());
 
-                    resetMap(mapView);
+                    refreshMap();
                     graphData.closeConnection();
                 } catch (SQLException exception) {
                     JOptionPane.showMessageDialog(mapView.getParent(),

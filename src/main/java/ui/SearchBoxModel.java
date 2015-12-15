@@ -80,7 +80,7 @@ public class SearchBoxModel extends AbstractListModel
             }
         }
 
-        if(str.length() > 1) {
+        if (str.length() > 1) {
             mapView.addToSearchList(searchResultLocs);
             mapView.repaint();
         }

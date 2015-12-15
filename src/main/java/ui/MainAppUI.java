@@ -498,17 +498,10 @@ public class MainAppUI extends JFrame{
         help.add(tutorial);
 
         tutorial.addActionListener(e ->{
-
-           /* JDialog tutorialWindow = new JDialog(this, "Tutorial", Dialog.ModalityType.APPLICATION_MODAL);
-            tutorialWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            tutorialWindow.setMinimumSize(new Dimension(1200, 700));
-            tutorialWindow.setLocationRelativeTo(null);
-            tutorialWindow.getContentPane().setLayout(new BorderLayout());*/
-
-            JFrame tutorialWindow = new JFrame("Tutorial");
+            JFrame tutorialWindow = new JFrame("AZTEC WASH Mapper Tutorial");
             tutorialWindow.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             tutorialWindow.setMinimumSize(new Dimension(1200, 700));
-            tutorialWindow.setPreferredSize(new Dimension(1200, 1000));
+            tutorialWindow.setPreferredSize(new Dimension(1200, 700));
             tutorialWindow.setVisible(true);
             setLayout(new BorderLayout());
             tutorialWindow.setLocationRelativeTo(null);
@@ -517,67 +510,68 @@ public class MainAppUI extends JFrame{
             JPanel imagePanel = new JPanel();
 
             imagePanel.setLayout(new FlowLayout());
-            imagePanel.setPreferredSize(new Dimension(1000, 700));
+            imagePanel.setPreferredSize(new Dimension(950, 700));
             imagePanel.setVisible(true);
 
             tutorialSidePanel.setBorder(BorderFactory.createLineBorder(Color.black));
-            tutorialSidePanel.setLayout(new BoxLayout(tutorialSidePanel, BoxLayout.Y_AXIS));
-            tutorialSidePanel.setPreferredSize(new Dimension(200, 700));
+            tutorialSidePanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+            tutorialSidePanel.setPreferredSize(new Dimension(250, 700));
             tutorialSidePanel.setVisible(true);
             JLabel user = new JLabel("User");
+            user.setPreferredSize(new Dimension(200, 50));
+            user.setMaximumSize(new Dimension(200, 50));
+            user.setFont(new Font("Courier", Font.BOLD, 30));
 
             JButton search = new JButton("Search");
             JButton selectedNodes = new JButton("Click Nodes");
             JButton stepBystep = new JButton("Direction");
+            JButton newRoute = new JButton("New Route");
             JButton editButton = new JButton("Edit Menu");
-            JButton viewButton = new JButton("View");
+            JButton viewButton = new JButton("View Menu");
             JButton otherFeature = new JButton("Other Features");
 
-            //JButton password = new JButton("Password");
-            //JButton addNode = new JButton("Add Nodes");
-            //JButton addEdge = new JButton("Add Edge");
 
             JButton previous = new JButton("Previous");
             JButton next = new JButton("Next");
 
-            previous.setPreferredSize(new Dimension(200, 30));
-            previous.setMaximumSize(new Dimension(200, 30));
-            next.setPreferredSize(new Dimension(200, 30));
-            next.setMaximumSize(new Dimension(200, 30));
+            previous.setPreferredSize(new Dimension(200, 40));
+            previous.setMaximumSize(new Dimension(200, 40));
+            next.setPreferredSize(new Dimension(200, 40));
+            next.setMaximumSize(new Dimension(200, 40));
 
 
-            user.setPreferredSize(new Dimension(200, 40));
-            user.setMaximumSize(new Dimension(200, 40));
-
-            search.setPreferredSize(new Dimension(200, 30));
-            selectedNodes.setPreferredSize(new Dimension(200, 30));
-            stepBystep.setPreferredSize(new Dimension(200, 30));
-            editButton.setPreferredSize(new Dimension(200, 30));
-            viewButton.setPreferredSize(new Dimension(200, 30));
-            otherFeature.setPreferredSize(new Dimension(200, 30));
-            search.setMaximumSize(new Dimension(200, 30));
-            selectedNodes.setMaximumSize(new Dimension(200, 30));
-            stepBystep.setMaximumSize(new Dimension(200, 30));
-            otherFeature.setMaximumSize(new Dimension(200, 30));
-            editButton.setMaximumSize(new Dimension(200, 30));
-            viewButton.setMaximumSize(new Dimension(200, 30));
+            search.setPreferredSize(new Dimension(200, 40));
+            selectedNodes.setPreferredSize(new Dimension(200, 40));
+            stepBystep.setPreferredSize(new Dimension(200, 40));
+            editButton.setPreferredSize(new Dimension(200, 40));
+            viewButton.setPreferredSize(new Dimension(200, 40));
+            otherFeature.setPreferredSize(new Dimension(200, 40));
+            search.setMaximumSize(new Dimension(200, 40));
+            selectedNodes.setMaximumSize(new Dimension(200, 40));
+            stepBystep.setMaximumSize(new Dimension(200, 40));
+            otherFeature.setMaximumSize(new Dimension(200, 40));
+            editButton.setMaximumSize(new Dimension(200, 40));
+            viewButton.setMaximumSize(new Dimension(200, 40));
+            newRoute.setPreferredSize(new Dimension(200, 40));
+            newRoute.setMaximumSize(new Dimension(200, 40));
 
             tutorialSidePanel.add(user);
             tutorialSidePanel.add(search);
             tutorialSidePanel.add(selectedNodes);
             tutorialSidePanel.add(stepBystep);
+            tutorialSidePanel.add(newRoute);
             tutorialSidePanel.add(editButton);
             tutorialSidePanel.add(viewButton);
             tutorialSidePanel.add(otherFeature);
-            tutorialSidePanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
             tutorialWindow.add(tutorialSidePanel, BorderLayout.WEST);
-            ImageIcon pic1 = new ImageIcon("src/main/resources/testPhoto.png");
+            ImageIcon pic1 = new ImageIcon("src/main/resources/pic1.png");
             ImageIcon pic2 = new ImageIcon("src/main/resources/testPhoto2.png");
             ImageIcon pic3 = new ImageIcon("src/main/resources/testPhoto3.png");
             ImageIcon pic4 = new ImageIcon("src/main/resources/testPhoto4.png");
             ImageIcon pic5 = new ImageIcon("src/main/resources/testPhoto5.png");
             ImageIcon pic6 = new ImageIcon("src/main/resources/testPhoto6.png");
+            ImageIcon pic7 = new ImageIcon("src/main/resources/testPhoto7.png");
 
             JLabel pic = new JLabel(pic1);
 
@@ -604,17 +598,21 @@ public class MainAppUI extends JFrame{
                 pic.setIcon(pic3);
                 flag = 3;
             });
-            editButton.addActionListener(actionEvent -> {
+            newRoute.addActionListener(actionEvent -> {
                 pic.setIcon(pic4);
                 flag = 4;
             });
-            viewButton.addActionListener(actionEvent -> {
+            editButton.addActionListener(actionEvent -> {
                 pic.setIcon(pic5);
                 flag = 5;
             });
-            otherFeature.addActionListener(actionEvent -> {
+            viewButton.addActionListener(actionEvent -> {
                 pic.setIcon(pic6);
                 flag = 6;
+            });
+            otherFeature.addActionListener(actionEvent -> {
+                pic.setIcon(pic7);
+                flag = 7;
             });
 
 
@@ -629,14 +627,18 @@ public class MainAppUI extends JFrame{
                     pic.setIcon(pic5);
                 } else if (flag == 5){
                     pic.setIcon(pic6);
+                } else if (flag == 6){
+                    pic.setIcon(pic7);
                 }
-                if (flag < 6){
+                if (flag < 7){
                     flag++;
                 }
             });
 
             previous.addActionListener(actionEvent ->{
-                if (flag == 6){
+                if (flag == 7){
+                    pic.setIcon(pic6);
+                } else if (flag == 6){
                     pic.setIcon(pic5);
                 } else if (flag == 5){
                     pic.setIcon(pic4);

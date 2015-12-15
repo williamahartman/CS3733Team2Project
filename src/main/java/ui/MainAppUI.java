@@ -623,7 +623,7 @@ public class MainAppUI extends JFrame{
                     pic.setIcon(pic6);
                 } else if (flag == 6){
                     pic.setIcon(pic1);
-                    flag = 1;
+                    flag = 0;
                 }
                 if (flag < 6){
                     flag++;
@@ -643,7 +643,7 @@ public class MainAppUI extends JFrame{
                     pic.setIcon(pic1);
                 } else if (flag == 1){
                     pic.setIcon(pic6);
-                    flag = 6;
+                    flag = 7;
                 }
                 if (flag > 1){
                     flag--;

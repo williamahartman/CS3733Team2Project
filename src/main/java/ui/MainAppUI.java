@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,7 +91,7 @@ public class MainAppUI extends JFrame{
      *
      * @param graph The graph that will be shown
      */
-    public MainAppUI(LocationGraph graph, HashMap<Integer, MapImage> maps, int defaultFloor) {
+    public MainAppUI(LocationGraph graph, HashMap<Integer, MapImage> maps, int defaultFloor, BufferedImage compass) {
         super(FRAME_TITLE);
 
         //change the look and feel to the BeautyEye style
@@ -124,7 +125,7 @@ public class MainAppUI extends JFrame{
                 Color.BLACK      //Search Result Color
         );
 
-        this.mapView = new MapView(graph, maps, defaultFloor, defaultMapViewStyle);
+        this.mapView = new MapView(graph, maps, defaultFloor, defaultMapViewStyle, compass);
         this.mapView.setButtonListener(buildRouteSelectListener());
         this.attributeManager = new EdgeAttributeManager();
 

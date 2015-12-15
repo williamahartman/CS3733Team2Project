@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.image.BufferedImage;
 import java.util.*;
 import java.util.List;
 
@@ -45,6 +46,8 @@ public class MapView extends JPanel {
     private int svgWidth;
     private int svgHeight;
 
+    private JLabel compass;
+
     private EventListener buttonListener;
 
     /**
@@ -55,7 +58,8 @@ public class MapView extends JPanel {
      * @param defaultFloor The floor the be the main floor
      * @param viewStyle The viewStyle used by the mapView
      */
-    public MapView(LocationGraph graph, HashMap<Integer, MapImage> maps, int defaultFloor, MapViewStyle viewStyle) {
+    public MapView(LocationGraph graph, HashMap<Integer, MapImage> maps, int defaultFloor, MapViewStyle viewStyle,
+                   BufferedImage compass) {
         this.graph = graph;
         this.currentFloorNumber = defaultFloor;
         this.defaultFloorNumber = defaultFloor;
@@ -66,9 +70,14 @@ public class MapView extends JPanel {
         this.locationButtonList = new ArrayList<>();
         this.zoomFactor = DEFAULT_ZOOM;
         this.svgList = maps;
+        this.compass = new JLabel(new ImageIcon(compass));
+
+
 
         svg = new SVGIcon();
         setCurrentImage();
+
+
 
         //Make the panel
         mapPanel = new JPanel(true) {
@@ -160,6 +169,7 @@ public class MapView extends JPanel {
         };
         mapPanel.setLayout(null);
 
+
         //Set up the scroll panel
         scrollPane = new JScrollPane();
         scrollPane.setWheelScrollingEnabled(false);
@@ -199,6 +209,13 @@ public class MapView extends JPanel {
         zoomIncrementBy(0);
 
         refreshGraph();
+
+        //Set up the compass
+        mapPanel.add(this.compass);
+        Rectangle rect = mapPanel.getVisibleRect();
+        double paneHeight = rect.getHeight();
+        double paneWidth = rect.getWidth();
+        this.compass.setBounds((int) paneHeight - 120, (int) paneWidth - 120, 120, 120);
     }
 
     /**
@@ -290,6 +307,13 @@ public class MapView extends JPanel {
 
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
+
+               /*
+                Rectangle rect = mapPanel.getVisibleRect();
+                double paneHeight = rect.getHeight();
+                double paneWidth = rect.getWidth();
+                compass.setBounds((int) paneHeight - 120, (int) paneWidth - 120, 120, 120);
+                */
             }
             @Override
             public void mousePressed(MouseEvent e) {
@@ -329,6 +353,13 @@ public class MapView extends JPanel {
 
                     mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
                     repaint();
+
+                    /*
+                    Rectangle rect = mapPanel.getVisibleRect();
+                    double paneHeight = rect.getHeight();
+                    double paneWidth = rect.getWidth();
+                    compass.setBounds((int) paneHeight - 120, (int) paneWidth - 120, 120, 120);
+                    */
                 }
             }
         };

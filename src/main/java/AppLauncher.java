@@ -4,8 +4,12 @@ import database.Database;
 import ui.MainAppUI;
 import com.thehowtotutorial.splashscreen.JSplash;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.Buffer;
 import java.sql.SQLException;
 import java.util.HashMap;
 
@@ -30,7 +34,10 @@ public class AppLauncher{
             splashscreen.setProgress(40, "Initializing....");
             int defaultFloor = graphData.getDefaultFloor();
 
-            MainAppUI app = new MainAppUI(graph, floors, defaultFloor);
+
+            BufferedImage compass = ImageIO.read(AppLauncher.class.getResourceAsStream("compass.png"));
+
+            MainAppUI app = new MainAppUI(graph, floors, defaultFloor, compass);
             graphData.closeConnection();
             splashscreen.setProgress(50, "Loading....");
             Thread.sleep(10);
@@ -59,6 +66,9 @@ public class AppLauncher{
             e.printStackTrace();
             System.exit(-1);
         } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        catch (IOException e){
             e.printStackTrace();
         }
     }

@@ -785,7 +785,7 @@ public class MainAppUI extends JFrame{
             @Override
             public void mouseReleased(MouseEvent e) {
 
-                animate(sidePanel, !isClosed);
+                animate(sidePanel, !isClosed, 350);
                 isClosed = !isClosed;
             }
         });
@@ -981,21 +981,21 @@ public class MainAppUI extends JFrame{
     }
 
     //Animate the panel
-    private void animate(JPanel panel, boolean closing){
-        int totalTime = 350 / 10; //350
+    private void animate(JPanel panel, boolean closing, int stepTranslation){
+        int totalTime = 350 / stepTranslation; //350
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
                 if (closing) {
-                    panel.setBounds(panel.getX() - 10, panel.getY(), panel.getWidth(), panel.getHeight());
-                    mapView.setBounds(mapView.getX() - 10, mapView.getY(), mapView.getWidth() +
-                            10, mapView.getHeight());
+                    panel.setBounds(panel.getX() - stepTranslation, panel.getY(), panel.getWidth(), panel.getHeight());
+                    mapView.setBounds(mapView.getX() - stepTranslation, mapView.getY(), mapView.getWidth() +
+                            stepTranslation, mapView.getHeight());
                     mapView.validate();
                     time++;
                 } else {
-                    panel.setBounds(panel.getX() + 10, panel.getY(), panel.getWidth(), panel.getHeight());
-                    mapView.setBounds(mapView.getX() + 10, mapView.getY(), mapView.getWidth() - 10,
-                            mapView.getHeight());
+                    panel.setBounds(panel.getX() + stepTranslation, panel.getY(), panel.getWidth(), panel.getHeight());
+                    mapView.setBounds(mapView.getX() + stepTranslation, mapView.getY(), mapView.getWidth()
+                            - stepTranslation, mapView.getHeight());
                     mapView.validate();
                     panel.validate();
                     time++;

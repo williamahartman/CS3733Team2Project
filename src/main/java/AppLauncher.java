@@ -25,7 +25,9 @@ public class AppLauncher{
             Database graphData = new Database();
 
             LocationGraph graph = graphData.createGraph();
+            splashscreen.setProgress(25, "Initializing....");
             HashMap<Integer, MapImage> floors = graphData.getMaps();
+            splashscreen.setProgress(40, "Initializing....");
             int defaultFloor = graphData.getDefaultFloor();
 
             MainAppUI app = new MainAppUI(graph, floors, defaultFloor);
@@ -36,6 +38,7 @@ public class AppLauncher{
 
             app.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             app.setMinimumSize(new Dimension(1024, 768));
+            splashscreen.setProgress(70, "Loading....");
             app.setExtendedState(JFrame.MAXIMIZED_BOTH);
             splashscreen.setProgress(90, "Starting Application....");
             Thread.sleep(10);

@@ -262,7 +262,7 @@ public class Instruction {
                         if (i == listSize - 2) {
                             temp = this.make2Decimal(l2);
                             curInst = curInst + "Go " + temp + " feet. You have arrived at your destination.";
-                            //System.out.println("i" + ":" + i + curInst);
+                            System.out.println("i" + ":" + i + curInst);
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
                                     //curInst = curInst + "Continue straight. ";
@@ -292,7 +292,13 @@ public class Instruction {
                             totalDistance += temp;
                             //instruction.add("Go " + temp + " feet.\n");
                             currentInst = currentInst + "Go " + temp + " feet. You have arrived at your destination.";
-                            //System.out.println("i" + ":" + i + currentInst);
+                            System.out.println("i" + ":" + i + currentInst);
+
+                            String tempStr = instruction.get(prev);
+                            tempStr = tempStr + currentInst;
+                            System.out.println("Adding: " + tempStr);
+                            instruction.remove(prev);
+                            instruction.put(prev, tempStr);
 
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
@@ -305,12 +311,12 @@ public class Instruction {
                         }
                         //System.out.println("GO: " + currentInst);
                         if (!curInst.isEmpty() && !instruction.containsKey(cur)) {
-                            //System.out.println("Adding go inst");
+                            System.out.println("Adding go inst");
                             instruction.put(cur, currentInst);
                         } else if (!curInst.isEmpty()) {
                             String tempStr = instruction.get(cur);
                             tempStr = tempStr + currentInst;
-                            //System.out.println("Adding: " + tempStr);
+                            System.out.println("Adding: " + tempStr);
                             instruction.remove(cur);
                             instruction.put(cur, tempStr);
                         }

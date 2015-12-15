@@ -84,31 +84,6 @@ public class LocationGraphTest {
     }
 
     @Test
-    public void searchLocationByNameTests() {
-        LocationGraph graph = new LocationGraph();
-        Location loc1 = new Location(new Point2D.Double(0, 0), 0, new String[] {"A"});
-
-        //In single item graph search for present and absent strings
-        graph.addLocation(loc1, new HashMap<>());
-        assertEquals("Search for A (1 item)", new ArrayList<>(Arrays.asList(loc1)),
-                graph.searchLocationByName("A"));
-        assertEquals("Search for A (1 item)", new ArrayList<>(),
-                graph.searchLocationByName("X"));
-
-        Location loc2 = new Location(new Point2D.Double(0, 0), 0, new String[] {"ATest", "B"});
-        HashMap<Location, List<EdgeAttribute>> connections = new HashMap<>();
-        connections.put(loc1, new ArrayList<>());
-
-        //In a multi-item graph, search for present and absent strings
-        graph.addLocation(loc2, connections);
-        assertEquals("Search for A (2 item)", true,
-                graph.searchLocationByName("A").contains(loc1) &&
-                        graph.searchLocationByName("A").contains(loc2));
-        assertEquals("Search for X (2 item)", new ArrayList<>(),
-                graph.searchLocationByName("X"));
-    }
-
-    @Test
     public void filterOutAttributeTests() {
         //TODO write tests for this, or change how it works
     }

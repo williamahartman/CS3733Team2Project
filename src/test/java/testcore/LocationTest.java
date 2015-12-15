@@ -15,26 +15,6 @@ import static org.junit.Assert.assertEquals;
  * This class holds test cases for edge. Make one test method per actual method.
  */
 public class LocationTest {
-    @Test
-    public void namesIncludeTests() {
-        Location test1 = new Location(new Point2D.Double(0, 0), 0, new String[0]);
-        Location test2 = new Location(new Point2D.Double(0, 0), 0, new String[] {"A"});
-        Location test3 = new Location(new Point2D.Double(0, 0), 0, new String[] {"A1"});
-        Location test4 = new Location(new Point2D.Double(0, 0), 0, new String[] {"A", "B"});
-        Location test5 = new Location(new Point2D.Double(0, 0), 0, new String[] {"A1", "B"});
-
-        assertEquals("[] for A", false, test1.namesInclude("A"));
-        assertEquals("[A] for A", true, test2.namesInclude("A"));
-        assertEquals("[A] for B", false, test2.namesInclude("B"));
-        assertEquals("[A] for A1", false, test2.namesInclude("A1"));
-        assertEquals("[A1] for A", true, test3.namesInclude("A"));
-        assertEquals("[A B] for A", true, test4.namesInclude("A"));
-        assertEquals("[A B] for B", true, test4.namesInclude("B"));
-        assertEquals("[A B] for C", false, test4.namesInclude("C"));
-        assertEquals("[A B] for A1", false, test4.namesInclude("A1"));
-        assertEquals("[A1 B] for A", true, test5.namesInclude("A"));
-        assertEquals("[A1 B] for A1", true, test5.namesInclude("A1"));
-    }
 
     @Test
     public void makeAdjacentToTests() {

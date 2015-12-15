@@ -15,7 +15,6 @@ import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -920,22 +919,6 @@ public class MainAppUI extends JFrame{
             locButton.repaint();
         }
     }
-
-    private Location searchSelectedName(String selectedName){
-        Location result = null;
-        try {
-            //if there is no entering
-            if (selectedName.length() > 0) {
-                //search the name in nameLList for all locations in the graph
-                List<Location> loc = graph.searchLocationByName(selectedName);
-                result = addSearchToView(loc);
-            }
-        } catch (Exception ex) {
-            //JOptionPane.showMessageDialog(this, "Enter a Location to Search."); //handle NullPointerException
-        }
-        return result;
-    }
-
 
     private Location searchExactName(String selectedName){
         Location result = null;

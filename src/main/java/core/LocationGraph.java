@@ -166,18 +166,6 @@ public class LocationGraph {
     }
 
     /**
-     * Return a list of locations whose names contain or are equal to the passed String.
-     *
-     * @param searchString The String that will be searched for.
-     * @return The list of Locations whose names contain the search string
-     */
-    public List<Location> searchLocationByName(String searchString) {
-        ArrayList<Location> result = new ArrayList<>();
-        locationList.stream().filter(loc -> loc.namesInclude(searchString)).forEach(result::add);
-
-        return result;
-    }
-    /**
      * Return a list of locations whose names are equal to the passed String.
      *
      * @param searchString The String that will be searched for.

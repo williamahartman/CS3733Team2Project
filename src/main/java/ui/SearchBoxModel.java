@@ -41,7 +41,7 @@ public class SearchBoxModel extends AbstractListModel
 
     public void updateModel(String str){
         nameInList.clear();
-        allNames.stream().filter(name->name.toLowerCase().startsWith(str.toLowerCase())).forEach(nameInList::add);
+        allNames.stream().filter(name->name.toLowerCase().contains(str.toLowerCase())).forEach(nameInList::add);
         Collections.sort(nameInList);
         super.fireContentsChanged(this, 0, nameInList.size());
        // searchBox.hidePopup();

@@ -85,22 +85,6 @@ public class Location {
     }
 
     /**
-     * Returns whether or not any of the associated names for the location INCLUDE the search
-     * string (as a substring or an equivalent String). Case insensitive.
-     *
-     * @param searchName The string that is searched for
-     * @return Whether or not the searched name is included in the associated names.
-     */
-    public boolean namesInclude(String searchName) {
-        for (String s: nameList) {
-            if (s.toLowerCase().contains(searchName.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Returns whether or not any of the associated names for the location is exactly same to the search
      * string (as a substring or an equivalent String). Case insensitive.
      *

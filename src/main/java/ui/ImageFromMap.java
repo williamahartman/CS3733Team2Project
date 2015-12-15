@@ -1,12 +1,9 @@
 package ui;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
 
 /**
  * Created by Scott on 12/6/2015.

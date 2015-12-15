@@ -1,10 +1,6 @@
 package ui;
-import com.sun.glass.ui.SystemClipboard;
 import com.sun.speech.freetts.Voice;
 import com.sun.speech.freetts.VoiceManager;
-import com.sun.speech.freetts.*;
-
-import java.io.File;
 import java.util.Properties;
 
 /**

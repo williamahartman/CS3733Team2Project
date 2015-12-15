@@ -58,7 +58,7 @@ public class MainAppUI extends JFrame{
     private String locToSearch;
     private String emailToSend;
 
-    private JPanel directions;
+    private JList<Direction> directions;
     private JScrollPane scrollPane;
 
     private JButton clearButton;
@@ -520,18 +520,6 @@ public class MainAppUI extends JFrame{
         routeInfo.setVisible(true);
         routeInfo.setEditable(false);
 
-        // NEW
-        directions = new JPanel();
-        //directions.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        directions.setLayout(new BoxLayout(directions, BoxLayout.Y_AXIS));
-        //directions.setPreferredSize(new Dimension(300, 250));
-        directions.setVisible(true);
-
-        scrollPane = new JScrollPane(directions);
-        //scrollPane.setLayout(new ScrollPaneLayout());
-        scrollPane.setPreferredSize(new Dimension(300, 250));
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
         gps = new JTextArea();
         gps.setVisible(true);
         gps.setEditable(false);
@@ -940,10 +928,20 @@ public class MainAppUI extends JFrame{
         text.setPreferredSize(new Dimension(300, 150));
         text.setMaximumSize(new Dimension(300, 150));
 
+
+        // NEW
+        directions = new JList<Direction>();
+        directions.setLayout(new BoxLayout(directions, BoxLayout.Y_AXIS));
+        directions.setVisible(true);
+        directions.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        directions.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+        directions.setVisibleRowCount(-1);
+        //directions.setPreferredSize(new Dimension(300, 250));
+
         scrollPane = new JScrollPane(directions);
-        scrollPane.setPreferredSize(new Dimension(300, 200));
-        //scrollPane.setMaximumSize(new Dimension(300, 200));
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(300, 250));
+
 
         JCheckBox textToVoice = new JCheckBox("Audio: Read step-by-step directions");
         textToVoice.addMouseListener(new MouseAdapter() {

@@ -55,8 +55,6 @@ public class DevTools extends JPanel {
     private JFormattedTextField field2 = new JFormattedTextField();
     private JFormattedTextField field3 = new JFormattedTextField();
 
-    private int dbChanges;
-
     private JLabel databaseChanges = new JLabel("<html>Number of changes<br>" +
             "since last save<br>" +
             "to database: 0");
@@ -84,7 +82,7 @@ public class DevTools extends JPanel {
         setLayout(new BorderLayout());
         this.add(createEditor());
 
-        refreshGraph();
+        mapView.refreshGraph();
     }
 
     /**
@@ -116,14 +114,13 @@ public class DevTools extends JPanel {
                     dblist.addedLocation(locAdd);
 
                     //Set last buttonClicked to the location we just added
-                    mapView.updateGraph(graph);
+                    updateMapView();
                     mapView.getLocationButtonList().forEach(locationButton -> {
                         if (locationButton.getAssociatedLocation() == locAdd) {
                             lastButtonClicked = locationButton;
                         }
                     });
-                    refreshGraph();
-                    mapPanel.repaint();
+                    updateMapView();
                 }
             }
         };
@@ -149,28 +146,28 @@ public class DevTools extends JPanel {
         stairsHL.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                refreshGraph();
+                updateMapView();
             }
         });
 
         elevatorHL.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                refreshGraph();
+                updateMapView();
             }
         });
 
         notHandicapHL.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                refreshGraph();
+                updateMapView();
             }
         });
 
         indoorsHL.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
-                refreshGraph();
+                updateMapView();
             }
         });
 
@@ -215,7 +212,7 @@ public class DevTools extends JPanel {
                     dblist.updatedLocation(lastButtonClicked.getAssociatedLocation());
                 }
 
-                refreshGraph();
+                updateMapView();
             }
         });
 
@@ -416,13 +413,29 @@ public class DevTools extends JPanel {
     public MouseAdapter buildEditListener(LocationGraph lg) {
         return new MouseAdapter() {
             private boolean pointIsBeingDragged;
+            private double oldX;
+            private double oldY;
 
             /**
              * Indicate that a drag has started
              */
             @Override
             public void mouseDragged(MouseEvent e) {
+                Location clicked = ((LocationButton) e.getSource()).getAssociatedLocation();
+                if (!pointIsBeingDragged) {
+                    oldX = clicked.getPosition().x;
+                    oldY = clicked.getPosition().y;
+                }
+
+                Point2D mousePos = mapView.getMapPanel().getMousePosition();
+                Point2D.Double doubleMousePos = new Point2D.Double(
+                        mousePos.getX() / mapView.getMapPanel().getWidth(),
+                        mousePos.getY() / mapView.getMapPanel().getHeight());
+
+                clicked.setPosition(doubleMousePos.x, doubleMousePos.y);
+                mapView.refreshGraph();
                 pointIsBeingDragged = true;
+
             }
 
             /**
@@ -448,12 +461,14 @@ public class DevTools extends JPanel {
                         dblist.addedEdge(newEdge);
                     }
 
+                    clicked.setPosition(oldX, oldY);
+
                     dblist.removedLocation(clicked);
                     dblist.addedLocation(newLoc);
                     graph.removeLocation(clicked);
                     graph.addLocation(newLoc, new HashMap<>());
 
-                    refreshGraph();
+                    updateMapView();
                     //Make the dragged button get selected
                     List<LocationButton> newButtons = mapView.getLocationButtonList();
                     for (int i = 0; i < newButtons.size(); i++) {
@@ -462,9 +477,7 @@ public class DevTools extends JPanel {
                             break;
                         }
                     }
-                    refreshGraph();
 
-                    mapView.repaint();
                     pointIsBeingDragged = false;
                 }
             }
@@ -506,7 +519,7 @@ public class DevTools extends JPanel {
                             }
                         }
                     }
-                    refreshGraph();
+                    updateMapView();
                     //A* the edge
                     if (originalButton != null && lastButtonClicked != null &&
                             originalButton.getAssociatedLocation().getFloorNumber() ==
@@ -527,11 +540,10 @@ public class DevTools extends JPanel {
     /**
      * Redraws the graph with colors and stuff.
      */
-    public void refreshGraph() {
-        mapView.updateGraph(graph);
+    public void updateMapView() {
+        mapView.setGraph(graph);
 
         updateHighlightedEdges();
-
         //Search for the new button that will be last button clicked
         mapView.getLocationButtonList().forEach(loc -> {
             if (lastButtonClicked != null &&
@@ -543,10 +555,9 @@ public class DevTools extends JPanel {
         if (lastButtonClicked != null) {
             lastButtonClicked.setBgColor(mapView.getStyle().getPreviousSelectedColor());
         }
-
         mapView.repaint();
 
-        dbChanges = dblist.getRemoveEdgeList().size() +
+        int dbChanges = dblist.getRemoveEdgeList().size() +
                 dblist.getAddEdgeList().size() +
                 dblist.getAddLocList().size() +
                 dblist.getRemoveLocList().size() +
@@ -632,12 +643,12 @@ public class DevTools extends JPanel {
 
     public void setLocationGraph(LocationGraph graph) {
         this.graph = graph;
+        wipeChangeList();
+        updateMapView();
     }
 
     private void updateHighlightedEdges(){
-        for (Edge e:  graph.edgeByFloorNumber(mapView.getFloorNumber())){
-            //TODO make changes in checkboxes result in style change
-
+        for (Edge e:  graph.getAllEdges()){
             if ((stairsHL.isSelected() && e.hasAttribute(EdgeAttribute.STAIRS)) ||
                 (elevatorHL.isSelected() && e.hasAttribute(EdgeAttribute.ELEVATOR)) ||
                 (notHandicapHL.isSelected() && e.hasAttribute(EdgeAttribute.NOT_HANDICAP_ACCESSIBLE)) ||
@@ -645,6 +656,6 @@ public class DevTools extends JPanel {
                 mapView.addToHighlightList(e);
             }
         }
-        mapView.repaint();
+        mapView.refreshGraph();
     }
 }

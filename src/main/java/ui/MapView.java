@@ -3,13 +3,17 @@ package ui;
 import com.kitfox.svg.SVGUniverse;
 import com.kitfox.svg.app.beans.SVGIcon;
 import core.Edge;
+import core.EdgeAttribute;
 import core.Location;
 import core.LocationGraph;
 import core.MapImage;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.*;
 import java.util.List;
 
@@ -24,17 +28,14 @@ public class MapView extends JPanel {
     private static final double MINIMUM_ZOOM = 2;
     private static final double MAXIMUM_ZOOM = 50;
     private static final double ZOOM_SPEED = 0.25;
-    //TODO make un-named points bigger in edit mode
 
     private JScrollPane scrollPane;
     private JPanel mapPanel;
     private JSlider floorSlider;
     private double zoomFactor;
 
-    //TODO locationList is redundant with locationButtonList
-    private List<Edge> graphEdgeList; //The list of edges from the represented graph
-    private List<Edge> edgeHighlightList; //The list of edge that will be highlighted when drawn
-    private List<Location> locationList; //The list of locations from the represented graph
+    private LocationGraph graph;
+    private List<Edge> edgeHighlightList;
     private List<LocationButton> locationButtonList;
     private List<List<Location>> routeLists;
     private List<Location> searchList;
@@ -50,7 +51,7 @@ public class MapView extends JPanel {
     private int svgHeight;
 
     private EventListener buttonListener;
-    private LocationGraph graph;
+
     /**
      * Constructor.
      *
@@ -66,6 +67,7 @@ public class MapView extends JPanel {
         this.style = viewStyle;
         this.searchList = new ArrayList<>();
         this.routeLists = new ArrayList<>();
+        this.edgeHighlightList = new ArrayList<>();
         this.locationButtonList = new ArrayList<>();
         this.zoomFactor = DEFAULT_ZOOM;
         this.svgList = maps;
@@ -102,6 +104,7 @@ public class MapView extends JPanel {
 
                 //Draw edges
                 g2d.setStroke(new BasicStroke(4));
+                List<Edge> graphEdgeList = graph.edgeByFloorNumber(currentFloorNumber);
                 if (style.isDrawAllEdges()) {
                     for (Edge e : graphEdgeList) {
                         g2d.setColor(style.getEdgeColor());
@@ -177,13 +180,8 @@ public class MapView extends JPanel {
             JSlider source = (JSlider) e.getSource();
             if (!source.getValueIsAdjusting()) {
                 currentFloorNumber = source.getValue();
-
-                List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
-                updateGraph(graph);
-                routeLists = backUpList;
-                updateButtonAttributes();
-
+                refreshGraph();
             }
         });
         floorSlider.setToolTipText("Change the displayed floor.");
@@ -203,8 +201,7 @@ public class MapView extends JPanel {
         mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
         zoomIncrementBy(0);
 
-        updateGraph(graph);
-        repaint();
+        refreshGraph();
     }
 
     /**
@@ -296,8 +293,6 @@ public class MapView extends JPanel {
 
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
-
-                repaint();
             }
             @Override
             public void mousePressed(MouseEvent e) {
@@ -329,14 +324,13 @@ public class MapView extends JPanel {
 
                     zoomIncrementBy(e.getWheelRotation() * -ZOOM_SPEED);
                     validate();
-                    updateButtonAttributes();
+                    refreshGraph();
 
                     Point newViewportPos = new Point();
                     newViewportPos.x = (int) ((xPosFrac * getCurrentPixelSize().getWidth()) - (viewportWidth / 2.0));
                     newViewportPos.y = (int) ((yPosFrac * getCurrentPixelSize().getHeight()) - (viewportHeight / 2.0));
 
                     mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
-
                     repaint();
                 }
             }
@@ -386,10 +380,21 @@ public class MapView extends JPanel {
             });
         }
     }
-    public void clearFromSearchList()
+    public void clearSearchList()
     {
         searchList.clear();
     }
+    public void clearRoutes() {
+        for (List<Location> locList: routeLists) {
+            locList.clear();
+        }
+        routeLists.clear();
+    }
+    public void clearHighlight()
+    {
+        edgeHighlightList.clear();
+    }
+
 
     public void addToHighlightList(Edge e) {
         edgeHighlightList.add(e);
@@ -439,6 +444,7 @@ public class MapView extends JPanel {
         mapPanel.removeAll();
         locationButtonList.clear();
 
+        List<Location> locationList = graph.getAllLocations();
         for (Location loc: locationList) {
             LocationButton currentButton = new LocationButton(loc, getStyle().getLocationColor());
             mapPanel.add(currentButton);
@@ -455,7 +461,8 @@ public class MapView extends JPanel {
                     locButton.addMouseMotionListener((MouseAdapter) buttonListener);
                     locButton.addMouseWheelListener((MouseAdapter) buttonListener);
                 } else {
-                    System.err.println("Unsupported listener type " + buttonListener.getClass());
+                    System.err.println("Unsupported listener type " + buttonListener.getClass() +
+                            ". Add a case for this type in MapView.java");
                 }
             }
         }
@@ -471,9 +478,8 @@ public class MapView extends JPanel {
      *
      * @param graph The graph whose edges will be displayed
      */
-    public void updateGraph(LocationGraph graph) {
-        this.graphEdgeList = graph.edgeByFloorNumber(currentFloorNumber);
-        this.locationList = graph.locationByFloorNumber(currentFloorNumber);
+    public void setGraph(LocationGraph graph) {
+        this.graph = graph;
         this.routeLists = new ArrayList<>();
         this.searchList = new ArrayList<>();
         this.edgeHighlightList = new ArrayList<>();
@@ -481,6 +487,12 @@ public class MapView extends JPanel {
         addButtons();
         updateButtonAttributes();
         setCurrentImage();
+        repaint();
+    }
+
+    public void refreshGraph() {
+        updateButtonAttributes();
+        repaint();
     }
 
     public void setSvgList(HashMap<Integer, MapImage> svgList) {
@@ -498,7 +510,7 @@ public class MapView extends JPanel {
         }
     }
 
-    public void updateButtonAttributes() {
+    private void updateButtonAttributes() {
         for (LocationButton locButton: locationButtonList) {
             Location loc = locButton.getAssociatedLocation();
 
@@ -511,10 +523,20 @@ public class MapView extends JPanel {
                 int buttonSize = (int) style.getUnnamedButtonSize();
                 locButton.setBounds(xPos - (buttonSize / 2), yPos - (buttonSize / 2), buttonSize, buttonSize);
             } else {
+                int buttonSize = (int) style.getNamedButtonSize();
+                if (loc.getEdges() != null){
+                    for (Edge e:loc.getEdges()){
+                        if (!e.hasAttribute(EdgeAttribute.INDOORS)){
+                            buttonSize = (int) style.getNamedButtonSize();
+                            break;
+                        } else {
+                            buttonSize = (int) style.getUnnamedButtonSize() + 2;
+                        }
+                    }
+                }
                 int xPos = (int) (loc.getPosition().x * getCurrentPixelSize().width);
                 int yPos = (int) (loc.getPosition().y * getCurrentPixelSize().height);
 
-                int buttonSize = (int) style.getNamedButtonSize();
                 locButton.setBounds(xPos - (buttonSize / 2), yPos - (buttonSize / 2), buttonSize, buttonSize);
             }
 
@@ -538,15 +560,22 @@ public class MapView extends JPanel {
             if (searchList.contains(loc)) {
                 locButton.setBgColor(style.getSearchResultColor());
             }
-
+            //Highlight highlight Edge buttons
+            for (Edge e: edgeHighlightList) {
+                if (e.getNode1() == loc || e.getNode2() == loc) {
+                    locButton.setBgColor(style.getEdgeHighlightColor());
+                }
+            }
 
             //Set visibility
-            if (style.isDrawAllPoints()) {
+            boolean locOnCurrentFloor = loc.getFloorNumber() == currentFloorNumber;
+            if (style.isDrawAllPoints() && locOnCurrentFloor) {
                 locButton.setVisible(true);
             } else {
                 locButton.setVisible(false);
             }
-            if (style.isDrawNamedPoints() && loc.getNameList().length > 0) {
+
+            if (style.isDrawNamedPoints() && loc.getNameList().length > 0 && locOnCurrentFloor) {
                 locButton.setVisible(true);
                 String toolTip = "<html><p>" + loc.getNameList()[0] + "</p>";
 
@@ -556,8 +585,6 @@ public class MapView extends JPanel {
                 }
                 locButton.setToolTipText(toolTip);
             }
-
-            repaint();
         }
     }
     //Make the passed button even bigger
@@ -583,12 +610,12 @@ public class MapView extends JPanel {
                        + instruct.stepByStepInstruction(ll, scaleX, scaleY).get(step + 1);
                if (current.getFloorNumber() != currentFloorNumber)
                {
+                   currentFloorNumber = current.getFloorNumber();
+                   floorSlider.setValue(currentFloorNumber);
                    setFloor(current.getFloorNumber());
 
-                   List<List<Location>> backUpList = routeLists;
                    setCurrentImage();
-                   updateGraph(graph);
-                   routeLists = backUpList;
+                   refreshGraph();
 
                    updateButtonAttributes();
                    repaint();
@@ -625,47 +652,43 @@ public class MapView extends JPanel {
                    {
                        setFloor(current.getFloorNumber());
 
-     List<List<Location>> backUpList = routeLists;
-     setCurrentImage();
-     updateGraph(graph);
-     routeLists = backUpList;
-     updateButtonAttributes();
-     repaint();
-     }
-     for (LocationButton locButton : locationButtonList) {
-     if (locButton.getAssociatedLocation().equals(current)) {
-     locButton.setBgColor(new Color(250, 118, 0));
-     searchList.add(locButton.getAssociatedLocation());
-     repaint();
-     }
-     if (locButton.getAssociatedLocation().equals(previous)) {
-     locButton.setBgColor(style.getRouteLocationColor());
-     searchList.remove(locButton.getAssociatedLocation());
-     repaint();
-     }
-     }
-     } else {
-     for (LocationButton locButton : locationButtonList) {
-     if (way == true) {
-     if (locButton.getAssociatedLocation().equals(current)) {
-     locButton.setBgColor(new Color(250, 118, 0));
-     searchList.add(locButton.getAssociatedLocation());
-     repaint();
-     }
-     }
-     else {
-     if (locButton.getAssociatedLocation().equals(current)) {
-     locButton.setBgColor(new Color(250, 118, 0));
-     searchList.remove(locButton.getAssociatedLocation());
-     repaint();
-     }
-     }
-     }
-     }
-     }
-     }
-     return textStep;
-     }
+                       setCurrentImage();
+                       refreshGraph();
+                   }
+                   for (LocationButton locButton : locationButtonList) {
+                       if (locButton.getAssociatedLocation().equals(current)) {
+                           locButton.setBgColor(new Color(250, 118, 0));
+                           searchList.add(locButton.getAssociatedLocation());
+                           repaint();
+                       }
+                       if (locButton.getAssociatedLocation().equals(previous)) {
+                           locButton.setBgColor(style.getRouteLocationColor());
+                           searchList.remove(locButton.getAssociatedLocation());
+                           repaint();
+                       }
+                   }
+               } else {
+                   for (LocationButton locButton : locationButtonList) {
+                       if (way == true) {
+                           if (locButton.getAssociatedLocation().equals(current)) {
+                               locButton.setBgColor(new Color(250, 118, 0));
+                               searchList.add(locButton.getAssociatedLocation());
+                               repaint();
+                           }
+                       }
+                       else {
+                           if (locButton.getAssociatedLocation().equals(current)) {
+                               locButton.setBgColor(new Color(250, 118, 0));
+                               searchList.remove(locButton.getAssociatedLocation());
+                               repaint();
+                           }
+                       }
+                   }
+               }
+           }
+       }
+        return textStep;
+    }
 
      /**
      * Sets the listener that will be associated with all buttons in the MapView.

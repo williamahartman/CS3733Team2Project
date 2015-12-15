@@ -207,6 +207,11 @@ public class Location {
     public Point2D.Double getPosition() {
         return position;
     }
+
+    public void setPosition(double posX, double posY) {
+        position.setLocation(posX, posY);
+    }
+
     public String[] getNameList(){
         return nameList;
     }

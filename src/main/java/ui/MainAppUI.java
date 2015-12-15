@@ -983,6 +983,7 @@ public class MainAppUI extends JFrame{
         scrollPane.getViewport().setView(directions);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setPreferredSize(new Dimension(300, 250));
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.black));
 
         JCheckBox textToVoice = new JCheckBox("Audio: Read step-by-step directions");
         textToVoice.addMouseListener(new MouseAdapter() {

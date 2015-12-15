@@ -21,7 +21,14 @@ class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
             new ImageIcon(getClass().getClassLoader().getResource("resources/hardLeftIcon.png"));*/
     ImageIcon leftIcon; /*=
             new ImageIcon(getClass().getClassLoader().getResource("resources/leftIcon.png"));*/
-    ImageIcon dummyIcon;
+    ImageIcon eastIcon;
+    ImageIcon northEastIcon;
+    ImageIcon southEastIcon;
+    ImageIcon westIcon;
+    ImageIcon northWestIcon;
+    ImageIcon southWestIcon;
+    ImageIcon northIcon;
+    ImageIcon southIcon;
     public String html1 = "<html><body style='width: ";
     public String html2 = "px'>";
     public String html3 = "</html>";
@@ -52,7 +59,7 @@ class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
         } else if (s.contains("left")) {
             setIcon(leftIcon);
         } else {
-            setIcon(dummyIcon);
+
         }
 
         //this.setBorder(BorderFactory.createBevelBorder(1, Color.BLUE, Color.cyan, Color.BLUE, Color.cyan));
@@ -60,8 +67,8 @@ class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
 
         if (isSelected) {
             //setBorder(BorderFactory.createLineBorder(new Color(4, 206, 220), 4));
-            setBorder(BorderFactory.createLineBorder(Color.black, 4));
-            setBackground(new Color(137, 228, 228));
+            setBorder(BorderFactory.createLineBorder(new Color(94, 186, 0), 3));
+            //setBackground(new Color(137, 228, 228));
             //setBackground(new Color(247, 247, 148));
         } else {
             setBorder(BorderFactory.createLineBorder(Color.lightGray, 3));

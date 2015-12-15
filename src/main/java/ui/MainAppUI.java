@@ -589,7 +589,7 @@ public class MainAppUI extends JFrame{
                         //listInst[count] = new Direction(entry.getValue());
                         //listModel.addElement(new Direction(entry.getValue()));
 
-                        System.out.println(count + ": " + entry.getValue());
+                        //System.out.println(count + ": " + entry.getValue());
                         listModel.addElement(entry.getValue());
                     }
 

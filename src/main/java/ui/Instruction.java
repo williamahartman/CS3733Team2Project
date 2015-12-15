@@ -128,38 +128,38 @@ public class Instruction {
                             //System.out.print("In if for v2y\n");
                             if (vector2.getX() > 0) {
                                 //System.out.print("In if for v2y east\n");
-                                curInst = curInst + "Head East. ";
+                                curInst = curInst + "Head East.";
                             } else if (vector2.getY() < 0) {
-                                curInst = curInst + "Head West. ";
+                                curInst = curInst + "Head West.";
                             }
                             instruction.put(cur, curInst);
                         } else if (vector2.getY() > 0) {
                             //System.out.print("In if for north\n");
                             if (deg < 22.5) {
-                                curInst = curInst + "Head East. ";
+                                curInst = curInst + "Head East.";
                             } else if (deg >= 22.5 && deg <= 67.5) {
-                                curInst = curInst + "Head North East. ";
+                                curInst = curInst + "Head North East.";
                             } else if (deg > 67.5 && deg < 112.5) {
-                                curInst = curInst + "Head North. ";
+                                curInst = curInst + "Head North.";
                             } else if (deg >= 112.5 && deg <= 157.5) {
-                                curInst = curInst + "Head North West. ";
+                                curInst = curInst + "Head North West.";
                             } else if (deg > 157.5) {
-                                curInst = curInst + "Head West. ";
+                                curInst = curInst + "Head West.";
                             }
                             //System.out.println("put heading NORTH");
 
                         } else if (vector2.getY() < 0) {
                             //System.out.print("In if for south\n");
                             if (deg < 22.5) {
-                                curInst = curInst + "Head East. ";
+                                curInst = curInst + "Head East.";
                             } else if (deg >= 22.5 && deg <= 67.5) {
-                                curInst = curInst + "Head South East. ";
+                                curInst = curInst + "Head South East.";
                             } else if (deg > 67.5 && deg < 112.5) {
-                                curInst = curInst + "Head South. ";
+                                curInst = curInst + "Head South.";
                             } else if (deg >= 112.5 && deg <= 157.5) {
-                                curInst = curInst + "Head South West. ";
+                                curInst = curInst + "Head South West.";
                             } else if (deg > 157.5) {
-                                curInst = curInst + "Head West. ";
+                                curInst = curInst + "Head West.";
                             }
                             //System.out.println("put heading SOUTH: " + curInst);
                             //addFirstDirection(locCurrent, locNext, deg, curInst, "South");
@@ -238,7 +238,7 @@ public class Instruction {
 
                         String prevInst = instruction.get(prev);
                         if (prevInst != null) {
-                            prevInst = prevInst + "Go " + temp + " feet. ";
+                            prevInst = prevInst + "<br>" + "Go " + temp + " feet. ";
                             instruction.remove(prev);
                             instruction.put(prev, prevInst);
                             //System.out.println("i" + ":" + i + prevInst);
@@ -261,8 +261,8 @@ public class Instruction {
                         //if next location is at the end of the location list
                         if (i == listSize - 2) {
                             temp = this.make2Decimal(l2);
-                            curInst = curInst + "Go " + temp + " feet. You have arrived at your destination.";
-                            System.out.println("i" + ":" + i + curInst);
+                            curInst = curInst + "Go " + temp + " feet.<br> You have arrived at your destination.";
+                            //System.out.println("i" + ":" + i + curInst);
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
                                     //curInst = curInst + "Continue straight. ";
@@ -291,12 +291,12 @@ public class Instruction {
                             temp = this.make2Decimal(distance);
                             totalDistance += temp;
                             //instruction.add("Go " + temp + " feet.\n");
-                            currentInst = currentInst + "Go " + temp + " feet. You have arrived at your destination.";
-                            System.out.println("i" + ":" + i + currentInst);
+                            currentInst = currentInst + "Go " + temp + " feet.<br> You have arrived at your destination.";
+                            //System.out.println("i" + ":" + i + currentInst);
 
                             String tempStr = instruction.get(prev);
-                            tempStr = tempStr + currentInst;
-                            System.out.println("Adding: " + tempStr);
+                            tempStr = tempStr + "<br>" + currentInst;
+                            //System.out.println("Adding: " + tempStr);
                             instruction.remove(prev);
                             instruction.put(prev, tempStr);
 
@@ -311,12 +311,12 @@ public class Instruction {
                         }
                         //System.out.println("GO: " + currentInst);
                         if (!curInst.isEmpty() && !instruction.containsKey(cur)) {
-                            System.out.println("Adding go inst");
+                            //System.out.println("Adding go inst");
                             instruction.put(cur, currentInst);
                         } else if (!curInst.isEmpty()) {
                             String tempStr = instruction.get(cur);
                             tempStr = tempStr + currentInst;
-                            System.out.println("Adding: " + tempStr);
+                            //System.out.println("Adding: " + tempStr);
                             instruction.remove(cur);
                             instruction.put(cur, tempStr);
                         }

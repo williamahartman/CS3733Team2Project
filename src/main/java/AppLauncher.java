@@ -18,7 +18,7 @@ public class AppLauncher{
         try {
             //Set up loading screen
             JSplash splashscreen = new JSplash(AppLauncher.class.getResource ("Aztec_Wash.png"),
-                    true, true, false, "AZTEC WASH Mapper", null, Color.BLACK, Color.BLUE);
+                    true, true, false, "", null, Color.BLACK, Color.BLUE);
             splashscreen.splashOn();
             splashscreen.setProgress(15, "Initializing....");
             Thread.sleep(10);

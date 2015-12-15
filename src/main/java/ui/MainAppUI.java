@@ -207,10 +207,57 @@ public class MainAppUI extends JFrame{
         JMenuItem vintageStyle = new JMenuItem("Vintage Style");
         JMenuItem colorBlindStyle = new JMenuItem("Colorblind Accessible Style");
 
+        // -- ABOUT MENU STARTS HERE -- //
+
+        JMenu help = new JMenu("Help");
+        help.addChangeListener(e -> {
+            menuBar.repaint();
+        });
+        JMenuItem about = new JMenuItem("About");
+        about.addActionListener(e -> {
+            JDialog aboutFrame = new JDialog();
+            aboutFrame.setTitle("About");
+            aboutFrame.setLayout(new FlowLayout());
+            aboutFrame.setVisible(true);
+            aboutFrame.setMinimumSize(new Dimension(400, 300));
+            JPanel aboutPanel = new JPanel(new FlowLayout());
+            aboutPanel.setMinimumSize(new Dimension(400, 300));
+            JLabel aboutLabel = new JLabel("<html><center>Worcester Polytechnic Institute<br>" +
+                    "CS3733 2015 B-Term<br>" +
+                    "<br>" +
+                    "<u>Developed by Team AZTEC WASH:</u><br><br>" +
+                    "<b>Alex Locke</b><br>[Map Artist / UI Designer]<br><br>" +
+                    "<b>Zoe Ding</b><br>[A* Specialist / Search Algorithm Specialist]<br><br>" +
+                    "<b>Tom Farro</b><br>[Project Manager / Developer Tools Specialist]<br><br>" +
+                    "<b>Elizabeth Tomko</b><br>[Test Engineer / Documentation Specialist]<br><br>" +
+                    "<b>Callum Taylor</b><br>[A* Specialist / Software Engineer]<br><br>" +
+                    "<b>Will Hartman</b><br>[Lead Software Engineer]<br><br>" +
+                    "<b>Alora Hillman</b><br>[Developer Tools Specialist / UI Designer]<br><br>" +
+                    "<b>Scott Iwanicki</b><br>[Database Specialist / Software Engineer]<br><br>" +
+                    "<b>Holly Nguyen</b><br>[Database Specialist / Project Manager]<br>" +
+                    "<br>" +
+                    "<u>Special Thanks to:</u><br><br>" +
+                    "Coach <b>Caitlin Malone</b> and Prof. <b>Wilson Wong</b><br>" +
+                    "</center></html>");
+            aboutPanel.add(aboutLabel);
+            aboutFrame.add(aboutPanel);
+            aboutFrame.pack();
+            about.repaint();
+        });
+        help.add(about);
+        JMenuItem tutorial = new JMenuItem("Tutorial");
+        about.addActionListener(e -> {
+
+        });
+        help.add(tutorial);
+
+        // -- ABOUT MENU ENDS HERE -- //
+
         //Sets up menu hierarchy
         setJMenuBar(menuBar);
         menuBar.add(editMenu);
         menuBar.add(view);
+        menuBar.add(help);
         view.add(toggleEdges);
         view.add(showNodes);
         view.add(changeStyle);

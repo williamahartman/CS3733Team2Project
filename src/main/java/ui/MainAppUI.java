@@ -7,6 +7,7 @@ import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -16,6 +17,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -66,7 +69,7 @@ public class MainAppUI extends JFrame{
     private Location tempLoc;
     private List<Location> multiLoc;
     private int desNum;
-
+    private boolean isClosed = false;
 
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
@@ -84,6 +87,8 @@ public class MainAppUI extends JFrame{
     private Color oldEndColor;
 
     private int stepCount = 0;
+    private int time = 0;
+
 
     /**
      * Constructor.
@@ -818,6 +823,19 @@ public class MainAppUI extends JFrame{
             }
         });
 
+        JButton closeWindow = new JButton("<<<");
+        closeWindow.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+                animate(sidePanel, !isClosed, 350);
+                isClosed = !isClosed;
+            }
+        });
+        mapView.getFloorSliderPanel().add(closeWindow, BorderLayout.PAGE_START);
+        //mapView.add(closeWindow, BorderLayout.PAGE_START);
+        closeWindow.setPreferredSize(new Dimension(40, 40));
+
         //Add elements to the search panel
         sidePanel.add(searchInfo);
         sidePanel.add(searchDropDownList);
@@ -843,10 +861,12 @@ public class MainAppUI extends JFrame{
         sidePanel.add(editRoutePrefs);
 
 
+
         //Set layout and add
         setLayout(new BorderLayout());
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
+
         add(devToolsPanel, BorderLayout.EAST);
 
         clearState();
@@ -981,5 +1001,38 @@ public class MainAppUI extends JFrame{
         }
         return result;
     }
+
+    //Animate the panel
+    private void animate(JPanel panel, boolean closing, int stepTranslation){
+        int totalTime = 350 / stepTranslation; //350
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                if (closing) {
+                    panel.setBounds(panel.getX() - stepTranslation, panel.getY(), panel.getWidth(), panel.getHeight());
+                    mapView.setBounds(mapView.getX() - stepTranslation, mapView.getY(), mapView.getWidth() +
+                            stepTranslation, mapView.getHeight());
+                    mapView.validate();
+                    time++;
+                } else {
+                    panel.setBounds(panel.getX() + stepTranslation, panel.getY(), panel.getWidth(), panel.getHeight());
+                    mapView.setBounds(mapView.getX() + stepTranslation, mapView.getY(), mapView.getWidth()
+                            - stepTranslation, mapView.getHeight());
+                    mapView.validate();
+                    panel.validate();
+                    time++;
+                }
+
+                if (time >= totalTime) {
+                    time = 0;
+                    timer.cancel();
+                    mapView.validate();
+                }
+            }
+        }, 0, 5);
+
+    }
+
+
 
 }

@@ -46,6 +46,7 @@ public class MapView extends JPanel {
     private int svgHeight;
 
     private EventListener buttonListener;
+    private JPanel floorSliderPanel = new JPanel(new BorderLayout());
 
     /**
      * Constructor.
@@ -183,13 +184,24 @@ public class MapView extends JPanel {
         });
         floorSlider.setToolTipText("Change the displayed floor.");
         floorSlider.setPreferredSize(new Dimension(50, 500));
-        JPanel floorSliderPanel = new JPanel();
+
         floorSliderPanel.add(floorSlider);
         floorSlider.update(getGraphics());
 
         setLayout(new BorderLayout());
         add(scrollPane);
         add(floorSliderPanel, BorderLayout.WEST);
+
+        JButton returnToDefaultFloor = new JButton("<html>Return to<br>" +
+                "default<br>" +
+                "floor");
+        returnToDefaultFloor.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                floorSlider.setValue(defaultFloor);
+            }
+        });
+        floorSliderPanel.add(returnToDefaultFloor, BorderLayout.PAGE_END);
 
         //Scroll to start point
         Point newViewportPos = new Point();
@@ -750,4 +762,6 @@ public class MapView extends JPanel {
     public void setDefaultFloor(int defaultFloorNumber) {
         this.defaultFloorNumber = defaultFloorNumber;
     }
+
+    public JPanel getFloorSliderPanel() { return floorSliderPanel; }
 }

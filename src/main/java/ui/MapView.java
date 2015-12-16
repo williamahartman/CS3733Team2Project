@@ -223,6 +223,7 @@ public class MapView extends JPanel {
         double yPos = vpp.y + paneHeight - 120;
 
         this.compass.setBounds((int) xPos, (int) yPos, 120, 120);
+        revalidate();
     }
 
     /**
@@ -309,6 +310,7 @@ public class MapView extends JPanel {
             public void mouseDragged(MouseEvent e) {
                 Point vpp = scrollPane.getViewport().getViewPosition();
                 vpp.translate(mouseStartX - e.getXOnScreen(), mouseStartY - e.getYOnScreen());
+                positionCompass();
                 mapPanel.scrollRectToVisible(new Rectangle(vpp, scrollPane.getViewport().getSize()));
                 positionCompass();
                 mouseStartX = e.getXOnScreen();

@@ -196,8 +196,9 @@ public class MapView extends JPanel {
 
         JButton returnToDefaultFloor = new JButton();
         try {
-            //Image home = Toolkit.getDefaultToolkit().getImage("ui/home.png");
-            returnToDefaultFloor.setIcon(new ImageIcon(ImageIO.read(getClass().getResource("home.png"))));
+            ImageIcon house = new ImageIcon(ImageIO.read(getClass().getResource("home.png")));
+            Image house1 = house.getImage().getScaledInstance(30, 30, java.awt.Image.SCALE_SMOOTH);
+            returnToDefaultFloor.setIcon(new ImageIcon(house1));
         }
         catch (IOException ex) {
 

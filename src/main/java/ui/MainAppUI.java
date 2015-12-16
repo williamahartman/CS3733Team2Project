@@ -1110,6 +1110,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(searchInfo);
         sidePanel.add(searchDropDownList);
         sidePanel.add(new JLabel(""), FlowLayout.RIGHT);
+        sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(addToStart);
         sidePanel.add(addToDestination);
         sidePanel.add(Box.createHorizontalStrut(10));

@@ -55,9 +55,7 @@ public class DevTools extends JPanel {
     private JFormattedTextField field2 = new JFormattedTextField();
     private JFormattedTextField field3 = new JFormattedTextField();
 
-    private JLabel databaseChanges = new JLabel("<html>Number of changes<br>" +
-            "since last save<br>" +
-            "to database: 0");
+    private JLabel databaseChanges = new JLabel("<html>Number of changes since last save to database: 0");
 
 
     private JCheckBox stairsHL = new JCheckBox("Stairs");
@@ -363,7 +361,7 @@ public class DevTools extends JPanel {
         panel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel2.setPreferredSize(new Dimension(330, 50));
 
-        panelLayout.add(panel1, BorderLayout.PAGE_START);
+        panelLayout.add(panel1, BorderLayout.NORTH); //PAGE_START
         JSeparator separator1 = new JSeparator(SwingConstants.HORIZONTAL);
         separator1.setPreferredSize(new Dimension(330, 5));
         panelLayout.add(separator1, BorderLayout.LINE_END);
@@ -563,9 +561,7 @@ public class DevTools extends JPanel {
                 dblist.getRemoveLocList().size() +
                 dblist.getUpdateEdgeList().size() +
                 dblist.getUpdateLocList().size();
-        databaseChanges.setText("<html>Number of changes<br>" +
-                "since last save<br>" +
-                "to database: " + dbChanges);
+        databaseChanges.setText("<html>Number of changes since last save to database: " + dbChanges);
     }
 
     /**

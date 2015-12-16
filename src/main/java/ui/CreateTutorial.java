@@ -1,9 +1,11 @@
 package ui;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 /**
  * Created by will on 12/15/15.
@@ -79,12 +81,24 @@ public class CreateTutorial implements ActionListener{
         tutorialSidePanel.add(viewButton);
 
         tutorialWindow.add(tutorialSidePanel, BorderLayout.WEST);
-        ImageIcon pic1 = new ImageIcon("src/main/resources/pic1.png");
-        ImageIcon pic2 = new ImageIcon("src/main/resources/pic2.png");
-        ImageIcon pic3 = new ImageIcon("src/main/resources/pic3.png");
-        ImageIcon pic4 = new ImageIcon("src/main/resources/pic4.png");
-        ImageIcon pic5 = new ImageIcon("src/main/resources/pic5.png");
-        ImageIcon pic6 = new ImageIcon("src/main/resources/pic6.png");
+
+        ImageIcon pic1;
+        ImageIcon pic2;
+        ImageIcon pic3;
+        ImageIcon pic4;
+        ImageIcon pic5;
+        ImageIcon pic6;
+        try {
+            pic1 = new ImageIcon(ImageIO.read(getClass().getResource("pic1.png")));
+            pic2 = new ImageIcon(ImageIO.read(getClass().getResource("pic2.png")));
+            pic3 = new ImageIcon(ImageIO.read(getClass().getResource("pic3.png")));
+            pic4 = new ImageIcon(ImageIO.read(getClass().getResource("pic4.png")));
+            pic5 = new ImageIcon(ImageIO.read(getClass().getResource("pic5.png")));
+            pic6 = new ImageIcon(ImageIO.read(getClass().getResource("pic6.png")));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return;
+        }
 
         JLabel pic = new JLabel(pic1);
 

@@ -6,19 +6,16 @@ import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Created by Scott on 12/6/2015.
  */
 public class Email extends Thread{
     private String recvEmail;
-    private List<String> directions;
+    private HashMap<StartEnd, String> directions;
 
-    public Email(String addr, List<String> instructions) throws AddressException{
+    public Email(String addr, HashMap<StartEnd, String> instructions) throws AddressException{
         InternetAddress emailAddr = new InternetAddress(addr);
         emailAddr.validate();
         recvEmail = addr;
@@ -61,26 +58,28 @@ public class Email extends Thread{
                         return new PasswordAuthentication(username, password);
                     }
                 });
-        Iterator<String> iter = directions.iterator();
+        //Iterator<String> iter = directions.iterator();
         int stepNum = 0;
         int imageNum = 0;
         List<String> imagePaths = new ArrayList<>();
         String instructions = "";
-        while (iter.hasNext()){
-            String direction = iter.next();
-            if (!direction.equals("Continue straight\n") && !direction.equals("")) {
-                instructions += ("<p>" + direction + "</p>");
-
-                File image = new File(directory + "image" + stepNum + ".jpeg");
-                if (image.exists() && !image.isDirectory()) {
-                    instructions += ("<img src=\"cid:image" + imageNum + "\">");
-                    imagePaths.add(directory + "image" + stepNum + ".jpeg");
-                    imageNum++;
-                }
+        for (Map.Entry <StartEnd, String> entry : directions.entrySet()) {
+            String direction = entry.getValue();
+            instructions += ("<p>" + direction + "</p>");
+            File image = new File(directory + "image" + imageNum + ".jpeg");
+            if(image.exists())
+            {
+                System.out.println("exists");
+            }
+            if (image.exists() && !image.isDirectory()) {
+                System.out.println("Image!");
+                instructions += ("<img src=\"cid:image" + imageNum + "\">");
+                imagePaths.add(directory + "image" + imageNum + ".jpeg");
+                imageNum++;
+            }
                 stepNum++;
             }
 
-        }
         // Create a default MimeMessage object.
         Message message = new MimeMessage(session);
         try {

@@ -46,6 +46,7 @@ public class MapView extends JPanel {
     private SVGIcon svg;
     private int svgWidth;
     private int svgHeight;
+    int emailCount = 0;
 
     private EventListener buttonListener;
     private JPanel floorSliderPanel = new JPanel(new BorderLayout());
@@ -622,7 +623,6 @@ public class MapView extends JPanel {
                                Location prevStart, Location prevEnd,
                                Location current, Location next, boolean emailMode) {
         String textStep = "";
-        int emailCount = 0;
         StartEnd pairPrev = new StartEnd(prevStart, prevEnd);
         StartEnd pair = new StartEnd(current, next);
 
@@ -633,7 +633,7 @@ public class MapView extends JPanel {
             String directions = locMap.get(pair);
             textStep = directions;
             Location cur = pair.getStart(); // Get current location
-
+            currentFloorNumber = cur.getFloorNumber();
             if (pair.getStart().getFloorNumber() != currentFloorNumber) {
                 //System.out.println("Should change floors");
                 currentFloorNumber = current.getFloorNumber();
@@ -654,6 +654,7 @@ public class MapView extends JPanel {
                     ImageFromMap img = new ImageFromMap();
                     img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
                     emailCount++;
+                    System.out.println("IMAGE1");
                 }
             }
             if (prevStart == current) {
@@ -675,6 +676,7 @@ public class MapView extends JPanel {
                     ImageFromMap img = new ImageFromMap();
                     img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
                     emailCount++;
+                    System.out.println("IMAGE2");
                 }
             } else if (current == next) {
                 for (LocationButton locButton : locationButtonList) {
@@ -699,11 +701,12 @@ public class MapView extends JPanel {
 
                 updateButtonAttributes();
                 repaint();
-
+                setPosAndZoom();
                 if (emailMode) {
                     ImageFromMap img = new ImageFromMap();
                     img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
                     emailCount++;
+                    System.out.println("IMAGE3");
                 }
             } else {
 

@@ -821,7 +821,7 @@ public class MainAppUI extends JFrame{
                     //System.out.println("Step count 0 - MAIN APP UI");
 
                     text = mapView.stepByStepHM(hm, route.get(stepCount), route.get(stepCount),
-                            route.get(stepCount), route.get(stepCount + 1), true);
+                            route.get(stepCount), route.get(stepCount + 1), false);
 
                     String temp = directions.getModel().getElementAt(stepCount + 1);
                     directions.setSelectedValue(temp, true);
@@ -830,10 +830,10 @@ public class MainAppUI extends JFrame{
                     //System.out.println("Step count: " + stepCount);
                     if (stepCount == (route.size() - 1)) {
                         text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
-                                route.get(stepCount), route.get(stepCount), true);
+                                route.get(stepCount), route.get(stepCount), false);
                     } else {
                         text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
-                                route.get(stepCount), route.get(stepCount + 1), true);
+                                route.get(stepCount), route.get(stepCount + 1), false);
                     }
 
                     while (text.equals("")) {
@@ -842,17 +842,17 @@ public class MainAppUI extends JFrame{
 
                         if (stepCount < (route.size() - 1)) {
                             text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
-                                    route.get(stepCount), route.get(stepCount + 1), true);
+                                    route.get(stepCount), route.get(stepCount + 1), false);
                         } else {
                             text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
-                                    route.get(stepCount), route.get(stepCount), true);
+                                    route.get(stepCount), route.get(stepCount), false);
                         }
                     }
 
                     if (stepCount > 0) {
                         //System.out.println("Set previous border empty: " + compCount);
                         String tempPrev = directions.getModel().getElementAt(compCount);
-                        directions.setSelectedValue(tempPrev, false);
+                        directions.setSelectedValue(tempPrev, true);
                     }
                     String temp = directions.getModel().getElementAt(compCount + 1);
                     directions.setSelectedValue(temp, true);
@@ -1014,24 +1014,38 @@ public class MainAppUI extends JFrame{
                         hm = instruct.stepByStepInstruction(route, scaleX, scaleY);
 
                         List<String> totals = instruct.getTotals();
-                        for (int i = 0; i < totals.size(); i++) {
-                            instructions.add(totals.get(i));
-                        }
                         for (Map.Entry<StartEnd, String> entry : hm.entrySet()) {
                             instructions.add(entry.getValue());
                         }
-
+                        for (int i = 0; i < totals.size(); i++) {
+                            instructions.add(totals.get(i));
+                        }
                         //// TODO: 12/12/15 FIX email stuff
-                        Email email = new Email(emailToSend, instructions);
-                        for (int i = 0; i < route.size(); i++) {
-                            mapView.stepByStep(i, true, true);
+                        Email email = new Email(emailToSend, hm);
+                        int count = 0;
+                        Map.Entry<StartEnd, String>prev = hm.entrySet().iterator().next();
+                        for (Map.Entry<StartEnd, String> entry : hm.entrySet()) {
+                            if(count == 0) {
+                                mapView.stepByStepHM(hm, entry.getKey().getStart(), entry.getKey().getEnd(),
+                                        entry.getKey().getStart(), entry.getKey().getEnd(), true);
+                                prev = entry;
+                            }
+                            else
+                            {
+                                mapView.stepByStepHM(hm, prev.getKey().getStart(), prev.getKey().getEnd(),
+                                        entry.getKey().getStart(), entry.getKey().getEnd(), true);
+                                prev = entry;
+                            }
                             mapView.clearSearchList();
                             try {
                                 Thread.sleep(1);
                             } catch (InterruptedException ex){
                                 ex.printStackTrace();
                             }
+                            count++;
+
                         }
+
                         email.sendEmail();
                     }
                 }

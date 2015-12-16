@@ -80,7 +80,6 @@ public class Instruction {
             if (locCurrent.getFloorNumber() != locPrev.getFloorNumber()) {
                 //System.out.println("if statement 1");
                 for (Edge e : locCurrent.getEdges()) {
-                    System.out.println("for loop");
                     if (e.getNode1().equals(locCurrent) && e.getNode2().equals(locPrev) ||
                             e.getNode1().equals(locPrev) && e.getNode2().equals(locCurrent)) {
                         //System.out.println("if statement 2");

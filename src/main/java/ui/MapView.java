@@ -327,6 +327,7 @@ public class MapView extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 setCursor(new Cursor(Cursor.HAND_CURSOR));
+                positionCompass();
             }
 
             @Override

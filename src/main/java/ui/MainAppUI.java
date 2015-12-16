@@ -6,16 +6,18 @@ import dev.DevPassword;
 import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.awt.event.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
+import java.util.Timer;
 
 /**
  * This class will build a frame that is pre-populated panels and buttons.
@@ -50,13 +52,17 @@ public class MainAppUI extends JFrame{
     private String locToSearch;
     private String emailToSend;
 
+    private JList<String> directions;
+    private JScrollPane scrollPane;
+    //private Direction[] listInst;
+    private DefaultListModel listModel;
+
     private JButton clearButton;
     private JButton makeAStarRoute;
     private JButton emailButton;
 
 
     private JComboBox searchDropDownList;
-    private JComboBox searchBox;
 
     private JLabel searchInfo;
     private JLabel endLocInfo;
@@ -66,7 +72,7 @@ public class MainAppUI extends JFrame{
     private Location tempLoc;
     private List<Location> multiLoc;
     private int desNum;
-
+    private boolean isClosed = false;
 
     private DevTools devToolsPanel;
     private MouseListener devToolClickListener;
@@ -82,8 +88,13 @@ public class MainAppUI extends JFrame{
     //in and out of devmode
     private Color oldStartColor;
     private Color oldEndColor;
+    private Color BACKGROUND_COLOR = new Color(190, 30, 30);
 
     private int stepCount = 0;
+    private int time = 0;
+    private int compCount = 0;
+    private int prevStep = 0;
+    private int rows = 0;
 
     /**
      * Constructor.
@@ -133,6 +144,13 @@ public class MainAppUI extends JFrame{
         startPoint = null;
         endPoint = null;
         route = new ArrayList<>();
+        mapView.setButtonListener(buildRouteSelectListener());
+//        mapView.getMapPanel().setBackground(BACKGROUND_COLOR);
+//        mapView.getScrollPane().setBackground(BACKGROUND_COLOR);
+//        //mapView.getSliderPanel().setBackground(BACKGROUND_COLOR);
+//        mapView.getScrollPane().getHorizontalScrollBar().setBackground(BACKGROUND_COLOR);
+//        mapView.getScrollPane().getVerticalScrollBar().setBackground(BACKGROUND_COLOR);
+
     }
 
     /**
@@ -141,6 +159,7 @@ public class MainAppUI extends JFrame{
     public void setUpMainApp() {
         //Set up menubar
         JPanel sidePanel = new JPanel();
+        //sidePanel.setBackground(new Color(190, 30, 30));
         JMenuBar menuBar = new JMenuBar();
         JMenu editMenu = new JMenu("Edit");
         editMenu.addChangeListener(e -> menuBar.repaint());
@@ -245,11 +264,13 @@ public class MainAppUI extends JFrame{
             about.repaint();
         });
         help.add(about);
+        help.addChangeListener(e -> menuBar.repaint());
         JMenuItem tutorial = new JMenuItem("Tutorial");
-        about.addActionListener(e -> {
-
-        });
+        tutorial.addActionListener(new CreateTutorial());
         help.add(tutorial);
+
+        //'Help' contains tutorial
+        menuBar.add(help);
 
         // -- ABOUT MENU ENDS HERE -- //
 
@@ -553,13 +574,22 @@ public class MainAppUI extends JFrame{
         routeInfo.setVisible(true);
         routeInfo.setEditable(false);
 
+        listModel = new DefaultListModel();
+        directions = new JList(listModel);
+        directions.setCellRenderer(new DirCellRenderer(200));
+        directions.setFixedCellHeight(40);
+        //listInst = new Direction[0];
+        //directions = new JList(listInst);
+
         gps = new JTextArea();
         gps.setVisible(true);
         gps.setEditable(false);
+        gps.setLineWrap(true);
+        gps.setWrapStyleWord(true);
 
         clearButton = new JButton("Clear Selections");
-        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
-        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 40));
+        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 40));
         clearButton.setToolTipText("Remove the previously selected start and end points");
         clearButton.addActionListener(e -> clearState());
 
@@ -572,26 +602,53 @@ public class MainAppUI extends JFrame{
                 refreshMap();
                 mapView.clearRoutes();
                 route.clear();
+                listModel.removeAllElements();
 
                 //changed makeAStarRoute to makeMultipleRoute
                 route = graph.makeMultipleRoute(attributeManager, multiLoc);
                 List<Location> routeTime = graph.makeMultipleRoute(attributeManager, multiLoc);
                 if (route.size() > 0) {
                     stepCount = 0;
+                    compCount = 0;
+                    prevStep = 0;
                     mapView.addRoute(routeTime);
                     gps.setText("");
                     Instruction instruct = new Instruction();
                     int count = 0;
-
                     int scaleX = mapView.getCurrentMapImage().getScaleX();
                     int scaleY = mapView.getCurrentMapImage().getScaleY();
-                    for (String str : instruct.stepByStepInstruction(routeTime, scaleX, scaleY)) {
-                        if (!str.equals("Continue straight\n") && !str.equals(""))
-                        {
-                            count++;
-                            gps.append(count + ") " + str);
-                        }
+
+                    // CHANGED FROM routeTime to route
+                    LinkedHashMap<StartEnd, String> hm =
+                            instruct.stepByStepInstruction(route, scaleX, scaleY);
+                    rows = hm.size();
+                    //System.out.println("HashMap size: " + rows);
+
+                    //listInst = new Direction[rows + 5];
+                    String str = "<html>";
+
+                    List<String> totals = instruct.getTotals();
+                    for (int i = 0; i < totals.size(); i++) {
+                        //listInst[count] = new Direction(totals.get(i));
+                        //listModel.addElement(new Direction(totals.get(i)));
+
+                        str = str + totals.get(i) + "<br>";
+                        count++;
                     }
+                    str = str + "</html>";
+                    listModel.addElement(str);
+
+                    for (Map.Entry<StartEnd, String> entry : hm.entrySet()) {
+                        count++;
+                        // Set up text pane to add directions to
+                        //listInst[count] = new Direction(entry.getValue());
+                        //listModel.addElement(new Direction(entry.getValue()));
+
+                        //System.out.println(count + ": " + entry.getValue());
+                        listModel.addElement(entry.getValue());
+                    }
+
+                    //directions = new JList(listInst);
 
                     repaint();
                     startPoint = null;
@@ -700,17 +757,112 @@ public class MainAppUI extends JFrame{
             }
         });
 
+        MouseListener mouseListener = new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                //System.out.println("Clicked on item in directions");
+/*
+                // Get string of selected item
+                int index = directions.locationToIndex(e.getPoint());
+                String selectedStr = directions.getModel().getElementAt(index);
+                System.out.println("Selected: " + selectedStr);
+
+                String text = "";
+                Instruction instruct = new Instruction();
+                LinkedHashMap<StartEnd, String> hm = instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
+                //stepCount = 0;
+                int step = 0;
+
+                text = mapView.directionClick(hm, route.get(step), route.get(step + 1), selectedStr);
+                step++;
+
+                int prev = step;
+
+                while (!selectedStr.contains(text)) {
+                    System.out.println("Going through list");
+
+                    text = mapView.directionClick(hm, route.get(step), route.get(step + 1), selectedStr);
+
+                    System.out.println("Text: " + text);
+                }
+*/
+            }
+        };
+        directions.addMouseListener(mouseListener);
+
         //Back and forward buttons
         JButton stepForwardOnRouteButton = new JButton("Next Step");
+        try {
+            ImageIcon arrow = new ImageIcon(ImageIO.read(getClass().getResource("forwardArrow.png")));
+            Image arrowFor = arrow.getImage().getScaledInstance(30, 20, java.awt.Image.SCALE_SMOOTH);
+            stepForwardOnRouteButton.setIcon(new ImageIcon(arrowFor));
+            stepForwardOnRouteButton.setHorizontalTextPosition(JButton.LEFT);
+        }
+        catch (IOException ex){
+
+        }
         stepForwardOnRouteButton.setPreferredSize(new Dimension(150, 30));
         stepForwardOnRouteButton.setMaximumSize(new Dimension(150, 30));
         stepForwardOnRouteButton.setToolTipText("Go Forward One Step");
         stepForwardOnRouteButton.addActionListener(e ->
         {
-            if (stepCount < route.size())
-            {
-                gps.setText(mapView.stepByStep(stepCount, true, false));
+            //System.out.println("Route size: " + route.size());
+            mapView.clearSearchList();
+
+            if (stepCount < route.size()) {
+                String text;
+                Instruction instruct = new Instruction();
+                int scaleX = mapView.getCurrentMapImage().getScaleX();
+                int scaleY = mapView.getCurrentMapImage().getScaleY();
+                LinkedHashMap<StartEnd, String> hm = instruct.stepByStepInstruction(route, scaleX, scaleY);
+
+                prevStep = stepCount;
+
+                if (stepCount == 0) {
+                    //System.out.println("Step count 0 - MAIN APP UI");
+
+                    text = mapView.stepByStepHM(hm, route.get(stepCount), route.get(stepCount),
+                            route.get(stepCount), route.get(stepCount + 1), true);
+
+                    String temp = directions.getModel().getElementAt(stepCount + 1);
+                    directions.setSelectedValue(temp, true);
+
+                } else {
+                    //System.out.println("Step count: " + stepCount);
+                    if (stepCount == (route.size() - 1)) {
+                        text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
+                                route.get(stepCount), route.get(stepCount), true);
+                    } else {
+                        text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
+                                route.get(stepCount), route.get(stepCount + 1), true);
+                    }
+
+                    while (text.equals("")) {
+                        stepCount++;
+                        //System.out.println("Step check: " + stepCount);
+
+                        if (stepCount < (route.size() - 1)) {
+                            text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
+                                    route.get(stepCount), route.get(stepCount + 1), true);
+                        } else {
+                            text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
+                                    route.get(stepCount), route.get(stepCount), true);
+                        }
+                    }
+
+                    if (stepCount > 0) {
+                        //System.out.println("Set previous border empty: " + compCount);
+                        String tempPrev = directions.getModel().getElementAt(compCount);
+                        directions.setSelectedValue(tempPrev, false);
+                    }
+                    String temp = directions.getModel().getElementAt(compCount + 1);
+                    directions.setSelectedValue(temp, true);
+
+                }
+
+                prevStep = stepCount;
                 stepCount++;
+                compCount++;
+
                 TextToVoice tv = new TextToVoice(gps.getText());
                 if (voiceDirections) {
                     tv.start();
@@ -718,15 +870,88 @@ public class MainAppUI extends JFrame{
             }
         });
         JButton stepBackOnRouteButton = new JButton("Previous Step");
+        try {
+            ImageIcon arrow = new ImageIcon(ImageIO.read(getClass().getResource("backwardArrow.png")));
+            Image arrowFor = arrow.getImage().getScaledInstance(30, 20, java.awt.Image.SCALE_SMOOTH);
+            stepBackOnRouteButton.setIcon(new ImageIcon(arrowFor));
+            stepBackOnRouteButton.setHorizontalTextPosition(JButton.RIGHT);
+        }
+        catch (IOException ex){
+
+        }
         stepBackOnRouteButton.setPreferredSize(new Dimension(150, 30));
         stepBackOnRouteButton.setMaximumSize(new Dimension(150, 30));
         stepBackOnRouteButton.setToolTipText("Go Back One Step");
         stepBackOnRouteButton.addActionListener(e ->
         {
-            if (stepCount > 0)
-            {
+            mapView.clearSearchList();
+            if (stepCount >= 0) {
+                String text;
+                Instruction instruct = new Instruction();
+
+                int scaleX = mapView.getCurrentMapImage().getScaleX();
+                int scaleY = mapView.getCurrentMapImage().getScaleY();
+                LinkedHashMap<StartEnd, String> hm = instruct.stepByStepInstruction(route, scaleX, scaleY);
+
                 stepCount--;
-                gps.setText(mapView.stepByStep(stepCount, false, false));
+                compCount--;
+                if (stepCount < 0) {
+                    stepCount = 0;
+                    compCount = 0;
+                }
+
+                if (stepCount == 0) {
+                    //System.out.println("Step count 0 - MAIN APP UI");
+
+                    text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep + 1),
+                            route.get(stepCount), route.get(stepCount + 1), true);
+
+                    String temp = directions.getModel().getElementAt(stepCount + 1);
+                    directions.setSelectedValue(temp, true);
+
+                } else {
+                    prevStep = stepCount;
+                    //System.out.println("Step count: " + stepCount);
+                    if (stepCount == (route.size() - 1)) {
+                        text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep),
+                                route.get(stepCount - 1), route.get(stepCount), true);
+                    } else {
+                        text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep),
+                                route.get(stepCount - 1), route.get(stepCount), true);
+                    }
+
+                    while (text.equals("")) {
+                        stepCount--;
+                        //System.out.println("Step check: " + stepCount);
+
+                        if (stepCount > 0 && stepCount < (route.size() - 1)) {
+                            text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep),
+                                    route.get(stepCount - 1), route.get(stepCount), true);
+                        } else if (!(stepCount != 0)) {
+                            text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep + 1),
+                                    route.get(stepCount - 1), route.get(stepCount), true);
+                        }
+                    }
+
+                    if (stepCount > 0) {
+                        //System.out.println("Set previous border empty: " + (compCount + 1));
+                        String tempPrev = directions.getModel().getElementAt(compCount + 1);
+                        directions.setSelectedValue(tempPrev, false);
+                    }
+
+                    if (compCount != 0) {
+                        String temp = directions.getModel().getElementAt(compCount);
+                        directions.setSelectedValue(temp, true);
+                    }
+
+                }
+                prevStep = stepCount;
+                //System.out.println("Previous step at end: " + prevStep);
+
+                TextToVoice tv = new TextToVoice(gps.getText());
+                if (voiceDirections) {
+                    tv.start();
+                }
             }
 
         });
@@ -779,11 +1004,24 @@ public class MainAppUI extends JFrame{
                     //search the name in nameLList for all locations in the graph
                     if (emailToSend.length() > 0) {
 
-                        Instruction instruct = new Instruction();
+                        List<String> instructions = new ArrayList<>();
 
+                        Instruction instruct = new Instruction();
                         int scaleX = mapView.getCurrentMapImage().getScaleX();
                         int scaleY = mapView.getCurrentMapImage().getScaleY();
-                        List<String> instructions = instruct.stepByStepInstruction(route, scaleX, scaleY);
+
+                        LinkedHashMap<StartEnd, String> hm;
+                        hm = instruct.stepByStepInstruction(route, scaleX, scaleY);
+
+                        List<String> totals = instruct.getTotals();
+                        for (int i = 0; i < totals.size(); i++) {
+                            instructions.add(totals.get(i));
+                        }
+                        for (Map.Entry<StartEnd, String> entry : hm.entrySet()) {
+                            instructions.add(entry.getValue());
+                        }
+
+                        //// TODO: 12/12/15 FIX email stuff
                         Email email = new Email(emailToSend, instructions);
                         for (int i = 0; i < route.size(); i++) {
                             mapView.stepByStep(i, true, true);
@@ -802,13 +1040,28 @@ public class MainAppUI extends JFrame{
                         "Incorrect!", JOptionPane.ERROR_MESSAGE);
             }
             emailButton.setEnabled(true);
-
         });
 
-        JScrollPane text = new JScrollPane(gps);
-        text.setPreferredSize(new Dimension(300, 200));
-        text.setMaximumSize(new Dimension(300, 200));
+        EdgeWeightMenu edgeWeightPanel = new EdgeWeightMenu(attributeManager);
 
+        JScrollPane text = new JScrollPane(gps);
+        text.setPreferredSize(new Dimension(300, 150));
+        text.setMaximumSize(new Dimension(300, 150));
+
+
+        // NEW
+        directions.setVisible(true);
+        //directions.setEnabled(false);
+        directions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        directions.setLayoutOrientation(JList.VERTICAL);
+        directions.setVisibleRowCount(-1);
+        //directions.setPreferredSize(new Dimension(300, 250));
+
+        scrollPane = new JScrollPane();
+        scrollPane.getViewport().setView(directions);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setPreferredSize(new Dimension(300, 250));
+        scrollPane.setBorder(BorderFactory.createLineBorder(Color.black));
 
         JCheckBox textToVoice = new JCheckBox("Audio: Read step-by-step directions");
         textToVoice.addMouseListener(new MouseAdapter() {
@@ -817,6 +1070,38 @@ public class MainAppUI extends JFrame{
                     voiceDirections = textToVoice.isSelected();
             }
         });
+
+        JButton closeWindow = new JButton();
+        Image arrow1;
+        Image arrow2;
+        try {
+            ImageIcon arrow = new ImageIcon(ImageIO.read(getClass().getResource("arrow-19.png")));
+            arrow1 = arrow.getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+            ImageIcon oppArrow = new ImageIcon(ImageIO.read(getClass().getResource("arrow2.png")));
+            arrow2 = oppArrow.getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+            closeWindow.setIcon(new ImageIcon(arrow1));
+            closeWindow.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseReleased(MouseEvent e) {
+
+                    animate(sidePanel, !isClosed, 350);
+                    if (isClosed){
+                        closeWindow.setIcon(new ImageIcon(arrow1));
+                    } else {
+                        closeWindow.setIcon(new ImageIcon(arrow2));
+                    }
+                    isClosed = !isClosed;
+
+                }
+            });
+        }
+        catch (IOException ex) {
+
+        }
+
+        mapView.getFloorSliderPanel().add(closeWindow, BorderLayout.PAGE_START);
+        //mapView.add(closeWindow, BorderLayout.PAGE_START);
+        closeWindow.setPreferredSize(new Dimension(40, 40));
 
         //Add elements to the search panel
         sidePanel.add(searchInfo);
@@ -832,7 +1117,8 @@ public class MainAppUI extends JFrame{
         sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(makeAStarRoute);
         sidePanel.add(clearButton, BorderLayout.SOUTH);
-        sidePanel.add(text);
+        //sidePanel.add(text);
+        sidePanel.add(scrollPane);
         sidePanel.add(stepBackOnRouteButton);
         sidePanel.add(stepForwardOnRouteButton);
         sidePanel.add(emailText);
@@ -843,10 +1129,12 @@ public class MainAppUI extends JFrame{
         sidePanel.add(editRoutePrefs);
 
 
+
         //Set layout and add
         setLayout(new BorderLayout());
         add(mapView);
         add(sidePanel, BorderLayout.WEST);
+
         add(devToolsPanel, BorderLayout.EAST);
 
         clearState();
@@ -870,7 +1158,15 @@ public class MainAppUI extends JFrame{
         emailButton.setEnabled(false);
         clearButton.setEnabled(false);
 
-        gps.setText("");
+        multipleDestination.removeAllItems();
+
+        /*if (directions != null) {
+            directions.removeAll();
+            directions.revalidate();
+            directions.repaint();
+        }*/
+
+        listModel.removeAllElements();
 
         mapView.setGraph(graph);
         refreshMap();
@@ -981,5 +1277,38 @@ public class MainAppUI extends JFrame{
         }
         return result;
     }
+
+    //Animate the panel
+    private void animate(JPanel panel, boolean closing, int stepTranslation){
+        int totalTime = 350 / stepTranslation; //350
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                if (closing) {
+                    panel.setBounds(panel.getX() - stepTranslation, panel.getY(), panel.getWidth(), panel.getHeight());
+                    mapView.setBounds(mapView.getX() - stepTranslation, mapView.getY(), mapView.getWidth() +
+                            stepTranslation, mapView.getHeight());
+                    mapView.validate();
+                    time++;
+                } else {
+                    panel.setBounds(panel.getX() + stepTranslation, panel.getY(), panel.getWidth(), panel.getHeight());
+                    mapView.setBounds(mapView.getX() + stepTranslation, mapView.getY(), mapView.getWidth()
+                            - stepTranslation, mapView.getHeight());
+                    mapView.validate();
+                    panel.validate();
+                    time++;
+                }
+
+                if (time >= totalTime) {
+                    time = 0;
+                    timer.cancel();
+                    mapView.validate();
+                }
+            }
+        }, 0, 5);
+
+    }
+
+
 
 }

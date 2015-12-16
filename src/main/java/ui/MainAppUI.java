@@ -622,7 +622,7 @@ public class MainAppUI extends JFrame{
                     LinkedHashMap<StartEnd, String> hm =
                             instruct.stepByStepInstruction(route, scaleX, scaleY);
                     rows = hm.size();
-                    System.out.println("HashMap size: " + rows);
+                    //System.out.println("HashMap size: " + rows);
 
                     //listInst = new Direction[rows + 5];
                     String str = "<html>";
@@ -759,7 +759,7 @@ public class MainAppUI extends JFrame{
 
         MouseListener mouseListener = new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                System.out.println("Clicked on item in directions");
+                //System.out.println("Clicked on item in directions");
 /*
                 // Get string of selected item
                 int index = directions.locationToIndex(e.getPoint());
@@ -805,7 +805,7 @@ public class MainAppUI extends JFrame{
         stepForwardOnRouteButton.setToolTipText("Go Forward One Step");
         stepForwardOnRouteButton.addActionListener(e ->
         {
-            System.out.println("Route size: " + route.size());
+            //System.out.println("Route size: " + route.size());
             mapView.clearSearchList();
 
             if (stepCount < route.size()) {
@@ -818,20 +818,17 @@ public class MainAppUI extends JFrame{
                 prevStep = stepCount;
 
                 if (stepCount == 0) {
-                    System.out.println("Step count 0 - MAIN APP UI");
+                    //System.out.println("Step count 0 - MAIN APP UI");
 
                     text = mapView.stepByStepHM(hm, route.get(stepCount), route.get(stepCount),
                             route.get(stepCount), route.get(stepCount + 1), true);
 
                     String temp = directions.getModel().getElementAt(stepCount + 1);
                     directions.setSelectedValue(temp, true);
-                    //setBorder(BorderFactory.createLineBorder(Color.green, 3));
-                    //JPanel temp = (JPanel) directions.getComponent(stepCount + 1);
-                    //temp.setBorder(BorderFactory.createLineBorder(Color.blue, 3));
 
                 } else {
-                    System.out.println("Step count: " + stepCount);
-                    if (stepCount == route.size()) {
+                    //System.out.println("Step count: " + stepCount);
+                    if (stepCount == (route.size() - 1)) {
                         text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
                                 route.get(stepCount), route.get(stepCount), true);
                     } else {
@@ -841,25 +838,24 @@ public class MainAppUI extends JFrame{
 
                     while (text.equals("")) {
                         stepCount++;
-                        System.out.println("Step check: " + stepCount);
+                        //System.out.println("Step check: " + stepCount);
 
-                        if (stepCount <= route.size()) {
+                        if (stepCount < (route.size() - 1)) {
                             text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
                                     route.get(stepCount), route.get(stepCount + 1), true);
+                        } else {
+                            text = mapView.stepByStepHM(hm, route.get(prevStep - 1), route.get(prevStep),
+                                    route.get(stepCount), route.get(stepCount), true);
                         }
                     }
 
                     if (stepCount > 0) {
-                        System.out.println("Set previous border empty: " + compCount);
+                        //System.out.println("Set previous border empty: " + compCount);
                         String tempPrev = directions.getModel().getElementAt(compCount);
                         directions.setSelectedValue(tempPrev, false);
-                        //JPanel tempPrev = (JPanel) directions.getComponent(compCount);
-                        //tempPrev.setBorder(BorderFactory.createLineBorder(Color.black));
                     }
                     String temp = directions.getModel().getElementAt(compCount + 1);
                     directions.setSelectedValue(temp, true);
-                    //JPanel temp = (JPanel) directions.getComponent(compCount + 1);
-                    //temp.setBorder(BorderFactory.createLineBorder(Color.blue, 3));
 
                 }
 
@@ -899,52 +895,58 @@ public class MainAppUI extends JFrame{
 
                 stepCount--;
                 compCount--;
+                if (stepCount < 0) {
+                    stepCount = 0;
+                    compCount = 0;
+                }
 
                 if (stepCount == 0) {
-                    System.out.println("Step count 0 - MAIN APP UI");
+                    //System.out.println("Step count 0 - MAIN APP UI");
 
                     text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep + 1),
                             route.get(stepCount), route.get(stepCount + 1), true);
 
                     String temp = directions.getModel().getElementAt(stepCount + 1);
                     directions.setSelectedValue(temp, true);
-                    //JPanel temp = (JPanel) directions.getComponent(stepCount + 1);
-                    //temp.setBorder(BorderFactory.createLineBorder(Color.blue, 3));
 
                 } else {
                     prevStep = stepCount;
-                    System.out.println("Step count: " + stepCount);
-                    text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep + 1),
-                            route.get(stepCount - 1), route.get(stepCount), true);
+                    //System.out.println("Step count: " + stepCount);
+                    if (stepCount == (route.size() - 1)) {
+                        text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep),
+                                route.get(stepCount - 1), route.get(stepCount), true);
+                    } else {
+                        text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep),
+                                route.get(stepCount - 1), route.get(stepCount), true);
+                    }
 
                     while (text.equals("")) {
                         stepCount--;
-                        System.out.println("Step check: " + stepCount);
+                        //System.out.println("Step check: " + stepCount);
 
-                        if (!(stepCount == 0)) {
+                        if (stepCount > 0 && stepCount < (route.size() - 1)) {
+                            text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep),
+                                    route.get(stepCount - 1), route.get(stepCount), true);
+                        } else if (!(stepCount != 0)) {
                             text = mapView.stepByStepHM(hm, route.get(prevStep), route.get(prevStep + 1),
                                     route.get(stepCount - 1), route.get(stepCount), true);
                         }
                     }
 
                     if (stepCount > 0) {
-                        System.out.println("Set previous border empty: " + (compCount + 1));
+                        //System.out.println("Set previous border empty: " + (compCount + 1));
                         String tempPrev = directions.getModel().getElementAt(compCount + 1);
                         directions.setSelectedValue(tempPrev, false);
-                        //JPanel tempPrev = (JPanel) directions.getComponent(compCount + 1);
-                        //tempPrev.setBorder(BorderFactory.createLineBorder(Color.black));
                     }
 
                     if (compCount != 0) {
                         String temp = directions.getModel().getElementAt(compCount);
                         directions.setSelectedValue(temp, true);
-                        //JPanel temp = (JPanel) directions.getComponent(compCount);
-                        //temp.setBorder(BorderFactory.createLineBorder(Color.blue, 3));
                     }
 
                 }
                 prevStep = stepCount;
-                System.out.println("Previous step at end: " + prevStep);
+                //System.out.println("Previous step at end: " + prevStep);
 
                 TextToVoice tv = new TextToVoice(gps.getText());
                 if (voiceDirections) {

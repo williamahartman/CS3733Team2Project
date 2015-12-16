@@ -635,9 +635,9 @@ public class MapView extends JPanel {
             Location cur = pair.getStart(); // Get current location
 
             if (pair.getStart().getFloorNumber() != currentFloorNumber) {
-                System.out.println("Should change floors");
+                //System.out.println("Should change floors");
                 currentFloorNumber = current.getFloorNumber();
-                System.out.println("Floor: " + currentFloorNumber);
+                //System.out.println("Floor: " + currentFloorNumber);
                 floorSlider.setValue(currentFloorNumber);
                 repaint();
 
@@ -660,11 +660,11 @@ public class MapView extends JPanel {
                 //System.out.println("First time through - step count is 0");
                 setPosAndZoom();
 
-                System.out.println("Previous = current");
+                //System.out.println("Previous = current");
 
                 for (LocationButton locButton : locationButtonList) {
                     if (locButton.getAssociatedLocation().equals(current)) {
-                        System.out.println("Set current with arrow");
+                        //System.out.println("Set current with arrow");
                         locButton.setBgColor(new Color(250, 118, 0));
                         searchList.add(locButton.getAssociatedLocation());
                         repaint();
@@ -679,16 +679,16 @@ public class MapView extends JPanel {
             } else if (current == next) {
                 for (LocationButton locButton : locationButtonList) {
                     if (locButton.getAssociatedLocation().equals(current)) {
-                        System.out.println("Set current with arrow");
+                        //System.out.println("Set current with arrow");
                         locButton.setBgColor(new Color(250, 118, 0));
                         searchList.add(locButton.getAssociatedLocation());
                         repaint();
                     }
                 }
             } else if (pairPrev.getStart().getFloorNumber() != pair.getEnd().getFloorNumber()) {
-                System.out.println("Should change floors");
+                //System.out.println("Should change floors");
                 currentFloorNumber = current.getFloorNumber();
-                System.out.println("Floor: " + currentFloorNumber);
+                //System.out.println("Floor: " + currentFloorNumber);
                 floorSlider.setValue(currentFloorNumber);
                 repaint();
 
@@ -716,7 +716,7 @@ public class MapView extends JPanel {
                     repaint();
                 }
                 if (locButton.getAssociatedLocation().equals(pairPrev.getStart())) {
-                    System.out.println("Remove from search list");
+                    //System.out.println("Remove from search list");
                     locButton.setBgColor(style.getRouteLocationColor());
                     searchList.remove(locButton.getAssociatedLocation());
                     repaint();

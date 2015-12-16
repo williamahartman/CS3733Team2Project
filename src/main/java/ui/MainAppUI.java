@@ -550,6 +550,7 @@ public class MainAppUI extends JFrame{
                 resetMap(this.mapView);
                 //clearState(mapView);
                 route.clear();
+                listModel.removeAllElements();
 
                 //changed makeAStarRoute to makeMultipleRoute
                 route = graph.makeMultipleRoute(attributeManager, multiLoc);

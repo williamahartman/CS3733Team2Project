@@ -2,6 +2,8 @@ package ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.*;
 import java.util.*;
 
 /**
@@ -9,18 +11,12 @@ import java.util.*;
  */
 class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
     //Need images
-    ImageIcon slightRightIcon =
-            new ImageIcon("slightRightIcon.png", "slight right");
-    ImageIcon hardRightIcon; /* =
-            new ImageIcon(getClass().getClassLoader().getResource("resources/hardRightIcon.png"));*/
-    ImageIcon rightIcon; /* =
-            new ImageIcon(getClass().getClassLoader().getResource("resources/rightIcon.png"));*/
-    ImageIcon slightLeftIcon; /* =
-            new ImageIcon(getClass().getClassLoader().getResource("resources/slightLeftIcon.png"));*/
-    ImageIcon hardLeftIcon; /* =
-            new ImageIcon(getClass().getClassLoader().getResource("resources/hardLeftIcon.png"));*/
-    ImageIcon leftIcon; /*=
-            new ImageIcon(getClass().getClassLoader().getResource("resources/leftIcon.png"));*/
+    ImageIcon slightRightIcon;
+    //ImageIcon hardRightIcon;
+    ImageIcon rightIcon;
+    ImageIcon slightLeftIcon;
+    //ImageIcon hardLeftIcon;
+    ImageIcon leftIcon;
     ImageIcon eastIcon;
     ImageIcon northEastIcon;
     ImageIcon southEastIcon;
@@ -29,12 +25,43 @@ class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
     ImageIcon southWestIcon;
     ImageIcon northIcon;
     ImageIcon southIcon;
+    ImageIcon extraIcon;
     public String html1 = "<html><body style='width: ";
     public String html2 = "px'>";
     public String html3 = "</html>";
     private int width;
 
     public DirCellRenderer (int width) {
+        try {
+            slightRightIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("slightRightIcon.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            rightIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("rightIcon.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            slightLeftIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("slightLeftIcon.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            leftIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("leftIcon.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            eastIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("east.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            southEastIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("se.png")).getScaledInstance(20, 30, Image.SCALE_SMOOTH));
+            northEastIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("ne.png")).getScaledInstance(20, 30, Image.SCALE_SMOOTH));
+            westIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("west.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            southWestIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("sw.png")).getScaledInstance(20, 30, Image.SCALE_SMOOTH));
+            northWestIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("nw.png")).getScaledInstance(20, 30, Image.SCALE_SMOOTH));
+            northIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("north.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            southIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("south.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            extraIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("Smiley.svg.png")).getScaledInstance(18, 18, Image.SCALE_SMOOTH));
+        } catch (Exception e) {
+            System.out.println("DID NOT WORK OH NO");
+        }
         this.width = width;
     }
 
@@ -46,20 +73,43 @@ class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
         String s = html1 + String.valueOf(width) + html2 + value.toString() + html3;
         setText(s);
 
-        if (s.contains("slightly right")) {
+        if (value.toString().contains("North East")) {
+            setIcon(northEastIcon);
+        } else if (value.toString().contains("North West")) {
+            setIcon(northWestIcon);
+        } else if (value.toString().contains("South East")) {
+            setIcon(southEastIcon);
+        } else if (value.toString().contains("South West")) {
+            setIcon(southWestIcon);
+        } else if (value.toString().contains("North")) {
+            setIcon(northIcon);
+        } else if (value.toString().contains("South")) {
+            setIcon(southIcon);
+        } else if (value.toString().contains("East")) {
+            setIcon(eastIcon);
+        } else if (value.toString().contains("West")) {
+            setIcon(westIcon);
+        } else if (value.toString().contains("slightly right")) {
+            //System.out.println(value.toString() + "Set slightly right icon");
             setIcon(slightRightIcon);
-        } else if (s.contains("slightly left")) {
+        } else if (value.toString().contains("slightly left")) {
+            //System.out.println(value.toString() + "Set slightly left icon");
             setIcon(slightLeftIcon);
-        } else if (s.contains("hard right")) {
-            setIcon(hardRightIcon);
-        } else if (s.contains("hard left")) {
-            setIcon(hardLeftIcon);
-        } else if (s.contains("right")) {
+        } else if (value.toString().contains("hard right")) {
+            //System.out.println(value.toString() + "Set hard right icon");
             setIcon(rightIcon);
-        } else if (s.contains("left")) {
+        } else if (value.toString().contains("hard left")) {
+            //System.out.println(value.toString() + "Set hard left icon");
+            setIcon(leftIcon);
+        } else if (value.toString().contains("right")) {
+            //System.out.println(value.toString() + "Set right icon");
+            setIcon(rightIcon);
+        } else if (value.toString().contains("left")) {
+            //System.out.println(value.toString() + "Set left icon");
             setIcon(leftIcon);
         } else {
-
+            setIcon(extraIcon);
+            //System.out.println("Cell: In else");
         }
 
         //this.setBorder(BorderFactory.createBevelBorder(1, Color.BLUE, Color.cyan, Color.BLUE, Color.cyan));

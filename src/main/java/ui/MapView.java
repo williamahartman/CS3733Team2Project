@@ -626,7 +626,6 @@ public class MapView extends JPanel {
         String textStep = "";
         StartEnd pairPrev = new StartEnd(prevStart, prevEnd);
         StartEnd pair = new StartEnd(current, next);
-
         //System.out.println("In step by step");
 
         if (locMap.containsKey(pair)) {
@@ -654,7 +653,6 @@ public class MapView extends JPanel {
                 if (emailMode) {
                     ImageFromMap img = new ImageFromMap();
                     img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
-                    emailCount++;
                     System.out.println("IMAGE1");
                 }
             }
@@ -676,7 +674,6 @@ public class MapView extends JPanel {
                 if (emailMode) {
                     ImageFromMap img = new ImageFromMap();
                     img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
-                    emailCount++;
                     System.out.println("IMAGE2");
                 }
             } else if (current == next) {
@@ -706,7 +703,6 @@ public class MapView extends JPanel {
                 if (emailMode) {
                     ImageFromMap img = new ImageFromMap();
                     img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
-                    emailCount++;
                     System.out.println("IMAGE3");
                 }
             } else {
@@ -727,7 +723,7 @@ public class MapView extends JPanel {
                 }
             }
         }
-
+        emailCount++;
         return textStep;
     }
 

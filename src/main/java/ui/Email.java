@@ -66,7 +66,7 @@ public class Email extends Thread{
         for (Map.Entry <StartEnd, String> entry : directions.entrySet()) {
             String direction = entry.getValue();
             instructions += ("<p>" + direction + "</p>");
-            File image = new File(directory + "image" + imageNum + ".jpeg");
+            File image = new File(directory + "image" + stepNum + ".jpeg");
             if(image.exists())
             {
                 System.out.println("exists");
@@ -74,7 +74,7 @@ public class Email extends Thread{
             if (image.exists() && !image.isDirectory()) {
                 System.out.println("Image!");
                 instructions += ("<img src=\"cid:image" + imageNum + "\">");
-                imagePaths.add(directory + "image" + imageNum + ".jpeg");
+                imagePaths.add(directory + "image" + stepNum + ".jpeg");
                 imageNum++;
             }
                 stepNum++;

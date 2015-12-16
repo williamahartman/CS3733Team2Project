@@ -616,6 +616,153 @@ public class MapView extends JPanel {
         locationButton.setToolTipText(tooltip);
     }
 
+
+    public String stepByStepHM(LinkedHashMap<StartEnd, String> locMap,
+                               Location prevStart, Location prevEnd,
+                               Location current, Location next, boolean emailMode) {
+        String textStep = "";
+        int emailCount = 0;
+        StartEnd pairPrev = new StartEnd(prevStart, prevEnd);
+        StartEnd pair = new StartEnd(current, next);
+
+        //System.out.println("In step by step");
+
+        if (locMap.containsKey(pair)) {
+            // Get text
+            String directions = locMap.get(pair);
+            textStep = directions;
+            Location cur = pair.getStart(); // Get current location
+
+            if (pair.getStart().getFloorNumber() != currentFloorNumber) {
+                System.out.println("Should change floors");
+                currentFloorNumber = current.getFloorNumber();
+                System.out.println("Floor: " + currentFloorNumber);
+                floorSlider.setValue(currentFloorNumber);
+                repaint();
+
+                List<List<Location>> backUpList = routeLists;
+                setCurrentImage();
+                //updateGraph();
+                routeLists = backUpList;
+
+                updateButtonAttributes();
+                repaint();
+                setPosAndZoom();
+            }
+            if (prevStart == current) {
+                //System.out.println("First time through - step count is 0");
+                setPosAndZoom();
+
+                System.out.println("Previous = current");
+
+                for (LocationButton locButton : locationButtonList) {
+                    if (locButton.getAssociatedLocation().equals(current)) {
+                        System.out.println("Set current with arrow");
+                        locButton.setBgColor(new Color(250, 118, 0));
+                        searchList.add(locButton.getAssociatedLocation());
+                        repaint();
+                    }
+                }
+
+                ImageFromMap img = new ImageFromMap();
+                img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
+                emailCount++;
+            } else if (current == next) {
+                for (LocationButton locButton : locationButtonList) {
+                    if (locButton.getAssociatedLocation().equals(current)) {
+                        System.out.println("Set current with arrow");
+                        locButton.setBgColor(new Color(250, 118, 0));
+                        searchList.add(locButton.getAssociatedLocation());
+                        repaint();
+                    }
+                }
+            } else if (pairPrev.getStart().getFloorNumber() != pair.getEnd().getFloorNumber()) {
+                System.out.println("Should change floors");
+                currentFloorNumber = current.getFloorNumber();
+                System.out.println("Floor: " + currentFloorNumber);
+                floorSlider.setValue(currentFloorNumber);
+                repaint();
+
+                List<List<Location>> backUpList = routeLists;
+                setCurrentImage();
+                //updateGraph(graph);
+                routeLists = backUpList;
+
+                updateButtonAttributes();
+                repaint();
+
+                if (emailMode) {
+                    ImageFromMap img = new ImageFromMap();
+                    img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
+                    emailCount++;
+                }
+            } else {
+
+            }
+            //System.out.println("Should happen in second call");
+            for (LocationButton locButton : locationButtonList) {
+                if (locButton.getAssociatedLocation().equals(current)) {
+                    locButton.setBgColor(new Color(250, 118, 0));
+                    searchList.add(locButton.getAssociatedLocation());
+                    repaint();
+                }
+                if (locButton.getAssociatedLocation().equals(pairPrev.getStart())) {
+                    System.out.println("Remove from search list");
+                    locButton.setBgColor(style.getRouteLocationColor());
+                    searchList.remove(locButton.getAssociatedLocation());
+                    repaint();
+                }
+            }
+        }
+
+        return textStep;
+    }
+
+    public String directionClick(LinkedHashMap<StartEnd, String> locMap,
+                               Location current, Location next, String str) {
+        String textStep = "";
+        int emailCount = 0;
+        StartEnd pair = new StartEnd(current, next);
+
+        if (locMap.containsKey(pair)) {
+            // Get text
+            String directions = locMap.get(pair);
+            textStep = directions;
+
+            Location cur = pair.getStart(); // Get current location
+
+            if (pair.getStart().getFloorNumber() != currentFloorNumber) {
+                System.out.println("Should change floors");
+                currentFloorNumber = current.getFloorNumber();
+                System.out.println("Floor: " + currentFloorNumber);
+                floorSlider.setValue(currentFloorNumber);
+                repaint();
+
+                List<List<Location>> backUpList = routeLists;
+                setCurrentImage();
+                //updateGraph(graph);
+                routeLists = backUpList;
+
+                updateButtonAttributes();
+                repaint();
+                setPosAndZoom();
+            }
+
+            if (textStep.contains(str)) {
+                for (LocationButton locButton : locationButtonList) {
+                    if (locButton.getAssociatedLocation().equals(current)) {
+                        System.out.println("Set current with arrow");
+                        locButton.setBgColor(new Color(250, 118, 0));
+                        searchList.add(locButton.getAssociatedLocation());
+                        repaint();
+                    }
+                }
+            }
+        }
+
+        return textStep;
+    }
+
     public String stepByStep(int step, boolean way, boolean emailMode)
     {
         String textStep = "";

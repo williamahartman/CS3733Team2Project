@@ -10,11 +10,17 @@ import core.Edge;
  * Created by ziyanding on 11/19/15.
  */
 public class Instruction {
-    private List<String> instruction;
+    //private List<String> instruction;
+    private LinkedHashMap<StartEnd, String> instruction;
+    private List<String> totals;
     private double totalDistance;
     private int count;
+    private StartEnd prev;
+
     public Instruction(){
-        this.instruction = new ArrayList<>();
+        //this.instruction = new ArrayList<>();
+        this.totals = new ArrayList<>();
+        this.instruction = new LinkedHashMap<>();
         this.totalDistance = 0;
         this.count = 0;
     }
@@ -27,29 +33,22 @@ public class Instruction {
      * @param scaleY The height of the map in feet
      * @return The list of step by step instructions
      */
-
-    public List<String> stepByStepInstruction(List<Location> locList, int scaleX, int scaleY) {
+    public LinkedHashMap<StartEnd, String> stepByStepInstruction(List<Location> locList, int scaleX, int scaleY) {
         totalDistance = 0.0;
         int flag; //records the relation between previous edge and next edge
         int flag2 = 0; //records the relation between previous edge and the edge before previous edge
+        int flagInit = 0; //checks whether "straight" direction has been added after N/S/E/W direction
         double distance = 0; //records the sum of distance after previous turning
         //double distance2 = 0; //stores the distance between previous location and current location
         int listSize = locList.size();
         int temp; //used to add appropriate distance to the instruction
 
-        //if there is no location in location list
-        if (listSize == 0) {
-            instruction.add("Can't find route between these two locations.");
-            return instruction;
-        }
-        //if there is only one location in location list
-        else if (listSize == 1 || (locList.get(listSize - 1) == locList.get(0))) {
-            instruction.add("You have arrived at your destination.");
-            return instruction;
-        }
         //if there are more than one location in location list
-        else {
+        //else {
             for (int i = 0; i < (listSize - 1); i++) {
+                String curInst = "";
+                String currentInst = "";
+
                 Location locPrev = locList.get(i);
                 //if i is not 0, set locPrev to the previous location
                 if (i != 0) {
@@ -64,6 +63,15 @@ public class Instruction {
                 double locNextX = locNext.getPosition().getX(); //x value of next location
                 double locNextY = -locNext.getPosition().getY(); //y value of next location
 
+                // To be used to add to the hashmap
+                StartEnd cur = new StartEnd(locCurrent, locNext);
+                /*if (i != 0) {
+                    prev = new StartEnd(locPrev, locCurrent);
+                } else {
+                    prev = cur;
+                }*/
+                //System.out.print("Init StartEnd and strings\n");
+
                 //vector1 is parallel to vector pointing from current location to previous location
                 //the tail of vector1 is (0, 0)
                 Point2D.Double vector1 = new Point2D.Double((locPrevX - locCurrentX), (locPrevY - locCurrentY));
@@ -71,20 +79,21 @@ public class Instruction {
                 //the tail of vector2 is (0, 0)
                 Point2D.Double vector2 = new Point2D.Double((locNextX - locCurrentX), (locNextY - locCurrentY));
                 if (locCurrent.getFloorNumber() != locPrev.getFloorNumber()) {
-                    System.out.println("if statement 1");
-                    for (Edge e: locCurrent.getEdges()) {
+                    //System.out.println("if statement 1");
+                    for (Edge e : locCurrent.getEdges()) {
                         System.out.println("for loop");
                         if (e.getNode1().equals(locCurrent) && e.getNode2().equals(locPrev) ||
                                 e.getNode1().equals(locPrev) && e.getNode2().equals(locCurrent)) {
-                            System.out.println("if statement 2");
+                            //System.out.println("if statement 2");
                             if (e.hasAttribute(EdgeAttribute.STAIRS)
                                     && locCurrent.getFloorNumber() == locPrev.getFloorNumber() + 1) {
-                                instruction.add("Go up the stairs\n");
-                                instruction.add("");
+                                instruction.put(cur, "Go up the stairs\n");
+                                //instruction.add("");
                             } else if (e.hasAttribute(EdgeAttribute.STAIRS)
                                     && locCurrent.getFloorNumber() == locPrev.getFloorNumber() - 1) {
-                                instruction.add("Go down the stairs\n");
-                                instruction.add("");
+                                instruction.put(cur, "Go up the stairs\n");
+                                //                            instruction.add("Go down the stairs\n");
+                                //                            instruction.add("");
                             } else if (e.hasAttribute(EdgeAttribute.ELEVATOR)) {
                                 String elevatorFloorText = "";
                                 int floorDif = locCurrent.getFloorNumber() - locPrev.getFloorNumber();
@@ -96,17 +105,15 @@ public class Instruction {
                                     elevatorFloorText += floorDif == 1 ? "" : "s";
                                 }
 
-                                instruction.add(elevatorFloorText + "\n");
-                                instruction.add("");
-                            }
-                            else
-                            {
+                                instruction.put(cur, elevatorFloorText);
+
+                            } else {
                                 //do nothing
                             }
                         }
                     }
-
                 } else {
+                    //System.out.print("In else statement\n");
                     if (i == 0) {
                         //vector3 is a vector point from (0, 0) to (1, 0)
                         Point2D.Double vector3 = new Point2D.Double(1, 0);
@@ -118,17 +125,52 @@ public class Instruction {
                         double deg = Math.toDegrees(
                                 Math.acos((1 + vector2Length * vector2Length - l * l) / (2 * vector2Length)));
                         if (vector2.getY() == 0) {
+                            //System.out.print("In if for v2y\n");
                             if (vector2.getX() > 0) {
-                                instruction.add("Head East\n");
+                                //System.out.print("In if for v2y east\n");
+                                curInst = curInst + "Head East. ";
                             } else if (vector2.getY() < 0) {
-                                instruction.add("Head West\n");
+                                curInst = curInst + "Head West. ";
                             }
+                            instruction.put(cur, curInst);
                         } else if (vector2.getY() > 0) {
-                            addFirstDirection(deg, "North");
+                            //System.out.print("In if for north\n");
+                            if (deg < 22.5) {
+                                curInst = curInst + "Head East. ";
+                            } else if (deg >= 22.5 && deg <= 67.5) {
+                                curInst = curInst + "Head North East. ";
+                            } else if (deg > 67.5 && deg < 112.5) {
+                                curInst = curInst + "Head North. ";
+                            } else if (deg >= 112.5 && deg <= 157.5) {
+                                curInst = curInst + "Head North West. ";
+                            } else if (deg > 157.5) {
+                                curInst = curInst + "Head West. ";
+                            }
+                            //System.out.println("put heading NORTH");
+
                         } else if (vector2.getY() < 0) {
-                            addFirstDirection(deg, "South");
+                            //System.out.print("In if for south\n");
+                            if (deg < 22.5) {
+                                curInst = curInst + "Head East. ";
+                            } else if (deg >= 22.5 && deg <= 67.5) {
+                                curInst = curInst + "Head South East. ";
+                            } else if (deg > 67.5 && deg < 112.5) {
+                                curInst = curInst + "Head South. ";
+                            } else if (deg >= 112.5 && deg <= 157.5) {
+                                curInst = curInst + "Head South West. ";
+                            } else if (deg > 157.5) {
+                                curInst = curInst + "Head West. ";
+                            }
+                            //System.out.println("put heading SOUTH: " + curInst);
+                            //addFirstDirection(locCurrent, locNext, deg, curInst, "South");
                         }
+                        if (!curInst.isEmpty()) {
+                            //System.out.println("Adding heading inst");
+                            instruction.put(cur, curInst);
+                        }
+                        //System.out.print(instruction.get(cur));
                     }
+
                     String turn = "";
                     //determines if the vector2 rotates counterclockwise or clockwise from vector1
                     //math function v1 * v2 = |v1||v2|sin(x)
@@ -136,12 +178,15 @@ public class Instruction {
                     //sin(x) is negative if it rotates clockwise, sin(x) is positive if it rotates counterclockwise
                     //sin(x) is 0 if it rotates 180 degree
                     if (cross < 0) { //clockwise
+                        //System.out.println("i" + ":" + i + "Set flag to 1\n");
                         flag = 1; //left
                         turn = "left";
                     } else if (cross > 0) { //counterclockwise
+                        //System.out.println("i" + ":" + i + "Set flag to 2\n");
                         flag = 2; //right
                         turn = "right";
                     } else {
+                        //System.out.println("i" + ":" + i + " Set flag to 3\n");
                         flag = 3; //straight
                     }
 
@@ -161,6 +206,7 @@ public class Instruction {
                         double degree = Math.toDegrees(Math.acos((l1 * l1 + l2 * l2 - l3 * l3) / (2 * l1 * l2)));
                         if (degree >= 170 || degree <= 10) {
                             flag = 3; //treats the small turn as going straight
+                            //System.out.println("i" + ":" + i + "Should be straight\n");
                         } else if (degree > 120 && degree < 170) {
                             str = " slightly ";
                         } else if (degree < 60 && degree > 10) {
@@ -169,8 +215,11 @@ public class Instruction {
                     }
                     //if it is time to turn
                     if (flag == 1 || flag == 2) {
+                        //System.out.println("Time to turn\n");
+                        flagInit = 1;
+
                         if (flag2 == 1) {
-                            //if previous step is going straight, then add up all distance after last turing
+                            //if previous step is going straight, then add up all distance after last turning
                             distance += l1;
                         } else {
                             //if previous step is turning
@@ -178,31 +227,60 @@ public class Instruction {
                         }
                         temp = this.make2Decimal(distance);
                         totalDistance += temp;
-                        instruction.add("Go " + temp + " feet.\n");
+
+                        //StartEnd check = new StartEnd(locPrev, locCurrent);
+                        /*if (prev != cur) {
+                            System.out.println("Check: " + instruction.containsValue("Head East. "));
+                            System.out.println("Check2: " + instruction.containsKey(new StartEnd(locPrev, locCurrent)));
+                            System.out.println("Check2: " + instruction.containsKey(prev));
+                            System.out.println("CurrentStart: " + cur.getStart().getPosition());
+                            System.out.println("PreviousStart: " + prev.getStart().getPosition());
+                        }*/
+
+                        String prevInst = instruction.get(prev);
+                        if (prevInst != null) {
+                            prevInst = prevInst + "<br>" + "Go " + temp + " feet. ";
+                            instruction.remove(prev);
+                            instruction.put(prev, prevInst);
+                            //System.out.println("i" + ":" + i + prevInst);
+                        } else {
+                          //System.out.println("UH OH PREV WAS NULL");
+                        }
+
                         for (int j = 0; j < count; j++) {
                             if (i != 0) {
-                                instruction.add("Continue straight\n");
-                                instruction.add("");
+                                //curInst = curInst + "Continue straight. ";
+                                //System.out.println("i" + ":" + i + curInst);
                             }
                         }
+                        //curInst = curInst + "Continue straight. ";
                         count = 0;
-                        instruction.add("Turn" + str + turn + "\n");
+
+                        curInst = "Turn" + str + turn + ". ";
+                        //curInst = curInst + "Turn" + str + turn + ". ";
+                        //System.out.println("i" + ":" + i + curInst);
                         //if next location is at the end of the location list
                         if (i == listSize - 2) {
                             temp = this.make2Decimal(l2);
-                            instruction.add("Go " + temp + " feet.\n");
+                            curInst = curInst + "Go " + temp + " feet.<br> You have arrived at your destination.";
+                            //System.out.println("i" + ":" + i + curInst);
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
-                                    instruction.add("Continue straight\n");
-                                    instruction.add("");
+                                    //curInst = curInst + "Continue straight. ";
+                                    //System.out.println("i" + ":" + i + curInst);
                                 }
                             }
                             totalDistance += temp;
-
+                        }
+                        if (!curInst.isEmpty()) {
+                            //System.out.println("Adding go/turn: " + curInst);
+                            instruction.put(cur, curInst);
                         }
                         flag2 = 0;
                         distance = 0;
-                    } else {
+                        prev = cur;
+                    }
+                    else {
                         //this step is going straight, add the distance between previous location and current location
                         distance += l1;
                         if (i != 0) {
@@ -213,28 +291,114 @@ public class Instruction {
                             distance += l2;
                             temp = this.make2Decimal(distance);
                             totalDistance += temp;
-                            instruction.add("Go " + temp + " feet.\n");
+                            //instruction.add("Go " + temp + " feet.\n");
+                            currentInst = currentInst + "Go " + temp + " feet.<br> You have arrived at your destination.";
+                            System.out.println("i" + ":" + i + currentInst);
+
+                            if (flagInit != 0) {
+                                String tempStr = instruction.get(prev);
+                                tempStr = tempStr + "<br>" + currentInst;
+                                System.out.println("Adding: " + tempStr);
+                                instruction.remove(prev);
+                                instruction.put(prev, tempStr);
+                            }
+
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
-                                    instruction.add("Continue straight\n");
-                                    instruction.add("");
+                                    //instruction.add("Continue straight\n");
+                                    //instruction.add("");
+                                    //currentInst = currentInst + "Continue straight. ";
+                                    //System.out.println("i" + ":" + i + currentInst);
                                 }
                             }
                         }
+                        //System.out.println("GO: " + currentInst);
+                        if (!curInst.isEmpty() && !instruction.containsKey(cur)) {
+                            //System.out.println("Adding go inst");
+                            instruction.put(cur, currentInst);
+                        } else if (!curInst.isEmpty()) {
+                            String tempStr = instruction.get(cur);
+                            tempStr = tempStr + currentInst;
+                            System.out.println("Adding: " + tempStr);
+                            instruction.remove(cur);
+                            instruction.put(cur, tempStr);
+                        }
+
                         flag2 = 1;
+                        if (i == 0) {
+                            //Set the prev equal to the current if going through loop for first time
+                            prev = cur;
+                        }
                     }
                 }
             }
 
-            instruction.add("You arrive at your destination.\n");
+            //totals.add("You have arrived at your destination.\n");
             totalDistance = this.make2Decimal(totalDistance);
-            instruction.add("The total distance is " + (int) totalDistance + " feet.\n");
+            totals.add("Total distance: " + (int) totalDistance + " feet\n");
+
             //human's average walking speed is 3.1 miles per hour/16,368 feet per hour/273 feet per minute
             int timeNeed = (int) (totalDistance / 237);
-            instruction.add("On average it takes " + timeNeed + " minutes to arrive at your destination.\n");
+            totals.add("Average arrival time: " + timeNeed + " minutes \n");
+
             return instruction;
         }
+
+   // }
+
+    public List<String> getTotals() {
+        return totals;
     }
+
+    /**
+     * adds the first instruction.
+     * @param cur current location to add to hashmap
+     * @param next next location to add to hashmap
+     * @param deg degree between the vector2(parallel to the vector pointing from current location to next location)
+     *            and x-axis
+     * @param direction a possible direction
+     */
+
+    private void addFirstDirection(Location cur, Location next, double deg, String current, String direction) {
+        /*if (deg < 10) {
+            instruction.add("Head East\n");
+        } else if (deg >= 10 && deg <= 80) {
+            instruction.add("Head " + direction + " East\n");
+        } else if (deg > 80 && deg < 100) {
+            instruction.add("Head " + direction + "\n");
+        } else if (deg >= 100 && deg <= 170) {
+            instruction.add("Head " + direction + " West\n");
+        } else if (deg > 170) {
+            instruction.add("Head West\n");
+        }*/
+        StartEnd mapLoc = new StartEnd(cur, next);
+        if (deg < 22.5) {
+            //instruction.add("Head East\n");
+            current = current + "Head East. ";
+        } else if (deg >= 22.5 && deg <= 67.5) {
+            //instruction.add("Head " + direction + " East\n");
+            current = current + "Head North East";
+        } else if (deg > 67.5 && deg < 112.5) {
+            //instruction.add("Head " + direction + "\n");
+            current = current + "Head North";
+        } else if (deg >= 112.5 && deg <= 157.5) {
+            //instruction.add("Head " + direction + " West\n");
+            current = current + "Head North West";
+        } else if (deg > 157.5) {
+            //instruction.add("Head West\n");
+            current = current + "Head West";
+        }
+        System.out.println("put heading");
+        instruction.put(mapLoc, current);
+    }
+
+    /*public List<String> getInstruction(){
+        return instruction;
+    }*/
+    public HashMap<StartEnd, String> getInstruction(){
+        return instruction;
+    }
+
     /**
      *
      * A helper function to make the distance be two decimal number.
@@ -254,30 +418,5 @@ public class Instruction {
         double y2 = pos2.y * scaleY;
 
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-    }
-
-    /**
-     * adds the first instruction.
-     * @param deg degree between the vector2(parallel to the vector pointing from current location to next location)
-     *            and x-axis
-     * @param direction a possible direction
-     */
-
-    private void addFirstDirection(double deg, String direction) {
-        if (deg < 10) {
-            instruction.add("Head East\n");
-        } else if (deg >= 10 && deg <= 80) {
-            instruction.add("Head " + direction + " East\n");
-        } else if (deg > 80 && deg < 100) {
-            instruction.add("Head " + direction + "\n");
-        } else if (deg >= 100 && deg <= 170) {
-            instruction.add("Head " + direction + " West\n");
-        } else if (deg > 170) {
-            instruction.add("Head West\n");
-        }
-    }
-
-    public List<String> getInstruction(){
-        return instruction;
     }
 }

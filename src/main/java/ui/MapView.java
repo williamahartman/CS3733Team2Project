@@ -3,12 +3,14 @@ package ui;
 import com.kitfox.svg.app.beans.SVGIcon;
 import core.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.io.IOException;
 import java.util.*;
 import java.util.List;
 
@@ -192,9 +194,17 @@ public class MapView extends JPanel {
         add(scrollPane);
         add(floorSliderPanel, BorderLayout.WEST);
 
-        JButton returnToDefaultFloor = new JButton("<html>Return to<br>" +
-                "default<br>" +
-                "floor");
+        JButton returnToDefaultFloor = new JButton();
+        try {
+            //Image home = Toolkit.getDefaultToolkit().getImage("ui/home.png");
+            returnToDefaultFloor.setIcon(new ImageIcon(ImageIO.read(getClass().getResource("home.png"))));
+        }
+        catch (IOException ex) {
+
+        }
+
+
+
         returnToDefaultFloor.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {

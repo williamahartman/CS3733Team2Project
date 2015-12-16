@@ -6,12 +6,14 @@ import dev.DevPassword;
 import dev.DevTools;
 import org.jb2011.lnf.beautyeye.BeautyEyeLNFHelper;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
@@ -82,6 +84,7 @@ public class MainAppUI extends JFrame{
     //in and out of devmode
     private Color oldStartColor;
     private Color oldEndColor;
+    private Color BACKGROUND_COLOR = new Color(190, 30, 30);
 
     private int stepCount = 0;
     private int time = 0;
@@ -135,6 +138,13 @@ public class MainAppUI extends JFrame{
         startPoint = null;
         endPoint = null;
         route = new ArrayList<>();
+        mapView.setButtonListener(buildRouteSelectListener());
+//        mapView.getMapPanel().setBackground(BACKGROUND_COLOR);
+//        mapView.getScrollPane().setBackground(BACKGROUND_COLOR);
+//        //mapView.getSliderPanel().setBackground(BACKGROUND_COLOR);
+//        mapView.getScrollPane().getHorizontalScrollBar().setBackground(BACKGROUND_COLOR);
+//        mapView.getScrollPane().getVerticalScrollBar().setBackground(BACKGROUND_COLOR);
+
     }
 
     /**
@@ -143,6 +153,7 @@ public class MainAppUI extends JFrame{
     public void setUpMainApp() {
         //Set up menubar
         JPanel sidePanel = new JPanel();
+        //sidePanel.setBackground(new Color(190, 30, 30));
         JMenuBar menuBar = new JMenuBar();
         JMenu editMenu = new JMenu("Edit");
         editMenu.addChangeListener(e -> menuBar.repaint());
@@ -704,6 +715,15 @@ public class MainAppUI extends JFrame{
 
         //Back and forward buttons
         JButton stepForwardOnRouteButton = new JButton("Next Step");
+        try {
+            ImageIcon arrow = new ImageIcon(ImageIO.read(getClass().getResource("forwardArrow.png")));
+            Image arrowFor = arrow.getImage().getScaledInstance(30, 20, java.awt.Image.SCALE_SMOOTH);
+            stepForwardOnRouteButton.setIcon(new ImageIcon(arrowFor));
+            stepForwardOnRouteButton.setHorizontalTextPosition(JButton.LEFT);
+        }
+        catch (IOException ex){
+
+        }
         stepForwardOnRouteButton.setPreferredSize(new Dimension(150, 30));
         stepForwardOnRouteButton.setMaximumSize(new Dimension(150, 30));
         stepForwardOnRouteButton.setToolTipText("Go Forward One Step");
@@ -720,6 +740,15 @@ public class MainAppUI extends JFrame{
             }
         });
         JButton stepBackOnRouteButton = new JButton("Previous Step");
+        try {
+            ImageIcon arrow = new ImageIcon(ImageIO.read(getClass().getResource("backwardArrow.png")));
+            Image arrowFor = arrow.getImage().getScaledInstance(30, 20, java.awt.Image.SCALE_SMOOTH);
+            stepBackOnRouteButton.setIcon(new ImageIcon(arrowFor));
+            stepBackOnRouteButton.setHorizontalTextPosition(JButton.RIGHT);
+        }
+        catch (IOException ex){
+
+        }
         stepBackOnRouteButton.setPreferredSize(new Dimension(150, 30));
         stepBackOnRouteButton.setMaximumSize(new Dimension(150, 30));
         stepBackOnRouteButton.setToolTipText("Go Back One Step");
@@ -820,15 +849,34 @@ public class MainAppUI extends JFrame{
             }
         });
 
-        JButton closeWindow = new JButton("<<<");
-        closeWindow.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e) {
+        JButton closeWindow = new JButton();
+        Image arrow1;
+        Image arrow2;
+        try {
+            ImageIcon arrow = new ImageIcon(ImageIO.read(getClass().getResource("arrow-19.png")));
+            arrow1 = arrow.getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+            ImageIcon oppArrow = new ImageIcon(ImageIO.read(getClass().getResource("arrow2.png")));
+            arrow2 = oppArrow.getImage().getScaledInstance(20, 20, java.awt.Image.SCALE_SMOOTH);
+            closeWindow.setIcon(new ImageIcon(arrow1));
+            closeWindow.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseReleased(MouseEvent e) {
 
-                animate(sidePanel, !isClosed, 350);
-                isClosed = !isClosed;
-            }
-        });
+                    animate(sidePanel, !isClosed, 350);
+                    if (isClosed){
+                        closeWindow.setIcon(new ImageIcon(arrow1));
+                    } else {
+                        closeWindow.setIcon(new ImageIcon(arrow2));
+                    }
+                    isClosed = !isClosed;
+
+                }
+            });
+        }
+        catch (IOException ex) {
+
+        }
+
         mapView.getFloorSliderPanel().add(closeWindow, BorderLayout.PAGE_START);
         //mapView.add(closeWindow, BorderLayout.PAGE_START);
         closeWindow.setPreferredSize(new Dimension(40, 40));

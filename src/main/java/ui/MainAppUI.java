@@ -863,7 +863,8 @@ public class MainAppUI extends JFrame{
                 stepCount++;
                 compCount++;
 
-                TextToVoice tv = new TextToVoice(gps.getText());
+                text = text.replace("<br>", "");
+                TextToVoice tv = new TextToVoice(text);
                 if (voiceDirections) {
                     tv.start();
                 }
@@ -947,13 +948,12 @@ public class MainAppUI extends JFrame{
                 }
                 prevStep = stepCount;
                 //System.out.println("Previous step at end: " + prevStep);
-
-                TextToVoice tv = new TextToVoice(gps.getText());
+                text = text.replace("<br>", "");
+                TextToVoice tv = new TextToVoice(text);
                 if (voiceDirections) {
                     tv.start();
                 }
             }
-
         });
 
         //Edge Prefs Panel

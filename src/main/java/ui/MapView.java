@@ -307,13 +307,10 @@ public class MapView extends JPanel {
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                positionCompass();
-
                 Point vpp = scrollPane.getViewport().getViewPosition();
-
                 vpp.translate(mouseStartX - e.getXOnScreen(), mouseStartY - e.getYOnScreen());
                 mapPanel.scrollRectToVisible(new Rectangle(vpp, scrollPane.getViewport().getSize()));
-
+                positionCompass();
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
             }

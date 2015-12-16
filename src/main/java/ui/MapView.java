@@ -526,8 +526,9 @@ public class MapView extends JPanel {
         //If floors were deleted (the list got smaller) and the old current floor number is gone,
         //move down to a floor that exists.
         if (currentFloorNumber > svgList.size() - 1) {
-            currentFloorNumber = svgList.size() - 1;
-            floorSlider.setValue(currentFloorNumber);
+            setFloor(svgList.size() - 1);
+        } else {
+            setFloor(currentFloorNumber);
         }
     }
 
@@ -925,6 +926,7 @@ public class MapView extends JPanel {
     public void setFloor(int currentFloorNumber) {
         this.currentFloorNumber = currentFloorNumber;
         floorSlider.setValue(currentFloorNumber);
+        setCurrentImage();
         repaint();
     }
 

@@ -185,7 +185,14 @@ public class MainAppUI extends JFrame{
                     mapView.setDefaultFloor(graphData.getDefaultFloor());
                     mapView.setFloor(mapView.getDefaultFloorNumber());
 
-                    refreshMap();
+                    mapView.setGraph(graph);
+                    devToolsPanel.setLocationGraph(graph);
+                    SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations(), mapView);
+                    searchDropDownList.setModel(model);
+
+                    if (devToolsPanel.getDevMode()) {
+                        refreshMap();
+                    }
                     graphData.closeConnection();
                 } catch (SQLException exception) {
                     JOptionPane.showMessageDialog(mapView.getParent(),
@@ -194,10 +201,6 @@ public class MainAppUI extends JFrame{
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
-            mapView.setGraph(graph);
-            devToolsPanel.setLocationGraph(graph);
-            SearchBoxModel model = new SearchBoxModel(searchDropDownList, graph.getNamedLocations(), mapView);
-            searchDropDownList.setModel(model);
 
             updateStartEndColors();
         });
@@ -1121,6 +1124,7 @@ public class MainAppUI extends JFrame{
         sidePanel.add(searchInfo);
         sidePanel.add(searchDropDownList);
         sidePanel.add(new JLabel(""), FlowLayout.RIGHT);
+        sidePanel.add(Box.createHorizontalStrut(10));
         sidePanel.add(addToStart);
         sidePanel.add(addToDestination);
         sidePanel.add(Box.createHorizontalStrut(10));

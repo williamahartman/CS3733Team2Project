@@ -120,7 +120,7 @@ public class Database {
 
         //query for inserting the node into the database
         String query = "INSERT INTO mapData.NODES (POS_X, POS_Y, FLOOR_NUM, IMAGE ) VALUES " +
-                "(" + x + "," + y + "," + floorNum + "," + imagePath + ")";
+                "(" + x + "," + y + "," + floorNum + ",\"" + imagePath + "\")";
         String getID = "SELECT NODE_ID FROM mapData.NODES WHERE" +
                 "(POS_X = " + x + ") AND (POS_Y = " + y + ")" +
                 " AND (FLOOR_NUM = " + '"' + floorNum + '"' + ")";

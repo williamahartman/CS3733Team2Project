@@ -26,6 +26,8 @@ class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
     ImageIcon northIcon;
     ImageIcon southIcon;
     ImageIcon extraIcon;
+    ImageIcon elevatorIcon;
+    ImageIcon stairsIcon;
     public String html1 = "<html><body style='width: ";
     public String html2 = "px'>";
     public String html3 = "</html>";
@@ -59,6 +61,10 @@ class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
                     new ImageIcon(ImageIO.read(getClass().getResource("south.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
             extraIcon =
                     new ImageIcon(ImageIO.read(getClass().getResource("Smiley.svg.png")).getScaledInstance(18, 18, Image.SCALE_SMOOTH));
+            elevatorIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("elevator.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
+            stairsIcon =
+                    new ImageIcon(ImageIO.read(getClass().getResource("stairs.png")).getScaledInstance(20, 20, Image.SCALE_SMOOTH));
         } catch (Exception e) {
             System.out.println("DID NOT WORK OH NO");
         }
@@ -107,6 +113,10 @@ class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
         } else if (value.toString().contains("left")) {
             //System.out.println(value.toString() + "Set left icon");
             setIcon(leftIcon);
+        } else if (value.toString().contains("elevator")) {
+            setIcon(elevatorIcon);
+        } else if (value.toString().contains("stairs")) {
+            setIcon(stairsIcon);
         } else {
             setIcon(extraIcon);
             //System.out.println("Cell: In else");

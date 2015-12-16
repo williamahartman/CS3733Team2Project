@@ -632,7 +632,7 @@ public class MapView extends JPanel {
 
                 List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
-                updateGraph(graph);
+                //updateGraph();
                 routeLists = backUpList;
 
                 updateButtonAttributes();
@@ -675,7 +675,7 @@ public class MapView extends JPanel {
 
                 List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
-                updateGraph(graph);
+                //updateGraph(graph);
                 routeLists = backUpList;
 
                 updateButtonAttributes();
@@ -730,7 +730,7 @@ public class MapView extends JPanel {
 
                 List<List<Location>> backUpList = routeLists;
                 setCurrentImage();
-                updateGraph(graph);
+                //updateGraph(graph);
                 routeLists = backUpList;
 
                 updateButtonAttributes();

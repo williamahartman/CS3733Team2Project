@@ -1,9 +1,6 @@
 package ui;
 
-import core.EdgeAttribute;
-import core.EdgeAttributeManager;
-import core.Location;
-import core.LocationGraph;
+import core.*;
 import database.Database;
 import dev.DevPassword;
 import dev.DevTools;
@@ -789,12 +786,14 @@ public class MainAppUI extends JFrame{
         stepForwardOnRouteButton.addActionListener(e ->
         {
             System.out.println("Route size: " + route.size());
-            mapView.clearFromSearchList();
+            mapView.clearSearchList();
 
             if (stepCount < route.size()) {
                 String text;
                 Instruction instruct = new Instruction();
-                LinkedHashMap<StartEnd, String> hm = instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
+                int scaleX = mapView.getCurrentMapImage().getScaleX();
+                int scaleY = mapView.getCurrentMapImage().getScaleY();
+                LinkedHashMap<StartEnd, String> hm = instruct.stepByStepInstruction(route, scaleX, scaleY);
 
                 prevStep = stepCount;
 
@@ -860,11 +859,14 @@ public class MainAppUI extends JFrame{
         stepBackOnRouteButton.setToolTipText("Go Back One Step");
         stepBackOnRouteButton.addActionListener(e ->
         {
-            mapView.clearFromSearchList();
+            mapView.clearSearchList();
             if (stepCount >= 0) {
                 String text;
                 Instruction instruct = new Instruction();
-                LinkedHashMap<StartEnd, String> hm = instruct.stepByStepInstruction(route, MAP_SCALE_X, MAP_SCALE_Y);
+
+                int scaleX = mapView.getCurrentMapImage().getScaleX();
+                int scaleY = mapView.getCurrentMapImage().getScaleY();
+                LinkedHashMap<StartEnd, String> hm = instruct.stepByStepInstruction(route, scaleX, scaleY);
 
                 stepCount--;
                 compCount--;
@@ -977,8 +979,6 @@ public class MainAppUI extends JFrame{
                         int scaleX = mapView.getCurrentMapImage().getScaleX();
                         int scaleY = mapView.getCurrentMapImage().getScaleY();
 
-                        int scaleX = mapView.getCurrentMapImage().getScaleX();
-                        int scaleY = mapView.getCurrentMapImage().getScaleY();
                         LinkedHashMap<StartEnd, String> hm;
                         hm = instruct.stepByStepInstruction(route, scaleX, scaleY);
 

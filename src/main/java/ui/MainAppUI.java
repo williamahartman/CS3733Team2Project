@@ -577,8 +577,8 @@ public class MainAppUI extends JFrame{
         gps.setWrapStyleWord(true);
 
         clearButton = new JButton("Clear Selections");
-        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 60));
-        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 60));
+        clearButton.setPreferredSize(new Dimension(SIDEPANEL_WIDTH, 40));
+        clearButton.setMaximumSize(new Dimension(SIDEPANEL_WIDTH, 40));
         clearButton.setToolTipText("Remove the previously selected start and end points");
         clearButton.addActionListener(e -> clearState());
 
@@ -1020,6 +1020,7 @@ public class MainAppUI extends JFrame{
 
         // NEW
         directions.setVisible(true);
+        //directions.setEnabled(false);
         directions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         directions.setLayoutOrientation(JList.VERTICAL);
         directions.setVisibleRowCount(-1);

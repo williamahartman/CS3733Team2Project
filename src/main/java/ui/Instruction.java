@@ -91,9 +91,12 @@ public class Instruction {
                                 //instruction.add("");
                             } else if (e.hasAttribute(EdgeAttribute.STAIRS)
                                     && locCurrent.getFloorNumber() == locPrev.getFloorNumber() - 1) {
-                                instruction.put(cur, "Go up the stairs\n");
+                                instruction.put(cur, "Go down the stairs\n");
                                 //                            instruction.add("Go down the stairs\n");
                                 //                            instruction.add("");
+                            } else if (e.hasAttribute(EdgeAttribute.STAIRS)
+                                    && locCurrent.getFloorNumber() == locPrev.getFloorNumber()) {
+                                instruction.put(cur, "Take the stairs\n");
                             } else if (e.hasAttribute(EdgeAttribute.ELEVATOR)) {
                                 String elevatorFloorText = "";
                                 int floorDif = locCurrent.getFloorNumber() - locPrev.getFloorNumber();
@@ -263,7 +266,7 @@ public class Instruction {
                         if (i == listSize - 2) {
                             temp = this.make2Decimal(l2);
                             curInst = curInst + "Go " + temp + " feet.<br> You have arrived at your destination.";
-                            //System.out.println("i" + ":" + i + curInst);
+                            System.out.println("Go" + ":" + i + curInst);
                             for (int j = 0; j < count; j++) {
                                 if (i != 0) {
                                     //curInst = curInst + "Continue straight. ";
@@ -293,12 +296,12 @@ public class Instruction {
                             totalDistance += temp;
                             //instruction.add("Go " + temp + " feet.\n");
                             currentInst = currentInst + "Go " + temp + " feet.<br> You have arrived at your destination.";
-                            System.out.println("i" + ":" + i + currentInst);
+                            //System.out.println("i2" + ":" + i + currentInst);
 
                             if (flagInit != 0) {
                                 String tempStr = instruction.get(prev);
-                                tempStr = tempStr + "<br>" + currentInst;
-                                System.out.println("Adding: " + tempStr);
+                                tempStr = tempStr + currentInst;
+                                //System.out.println("Adding1: " + tempStr);
                                 instruction.remove(prev);
                                 instruction.put(prev, tempStr);
                             }
@@ -319,7 +322,7 @@ public class Instruction {
                         } else if (!curInst.isEmpty()) {
                             String tempStr = instruction.get(cur);
                             tempStr = tempStr + currentInst;
-                            System.out.println("Adding: " + tempStr);
+                            //System.out.println("Adding2: " + tempStr);
                             instruction.remove(cur);
                             instruction.put(cur, tempStr);
                         }

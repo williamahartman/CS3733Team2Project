@@ -638,6 +638,12 @@ public class MapView extends JPanel {
                 updateButtonAttributes();
                 repaint();
                 setPosAndZoom();
+
+                if (emailMode) {
+                    ImageFromMap img = new ImageFromMap();
+                    img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
+                    emailCount++;
+                }
             }
             if (prevStart == current) {
                 //System.out.println("First time through - step count is 0");
@@ -654,9 +660,11 @@ public class MapView extends JPanel {
                     }
                 }
 
-                ImageFromMap img = new ImageFromMap();
-                img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
-                emailCount++;
+                if (emailMode) {
+                    ImageFromMap img = new ImageFromMap();
+                    img.saveComponentAsJPEG(this, "image" + emailCount + ".jpeg");
+                    emailCount++;
+                }
             } else if (current == next) {
                 for (LocationButton locButton : locationButtonList) {
                     if (locButton.getAssociatedLocation().equals(current)) {

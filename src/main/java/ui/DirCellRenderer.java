@@ -117,7 +117,9 @@ class DirCellRenderer extends JLabel implements ListCellRenderer<Object> {
 
         if (isSelected) {
             //setBorder(BorderFactory.createLineBorder(new Color(4, 206, 220), 4));
-            setBorder(BorderFactory.createLineBorder(new Color(94, 186, 0), 3));
+            //setBorder(BorderFactory.createLineBorder(new Color(94, 186, 0), 3));
+            setBorder(BorderFactory.createLineBorder(new Color(0, 140, 0), 3));
+            //setBorder(BorderFactory.createLineBorder(Color.blue, 3));
             //setBackground(new Color(137, 228, 228));
             //setBackground(new Color(247, 247, 148));
         } else {

@@ -74,6 +74,13 @@ public class Database {
                 EDGE_ID int not null,
                 ATTRIBUTE varchar(30) not null);
 
+        CREATE TABLE mapData.DEFAULT_FLOOR(
+                FLOOR_NUM int not null UNIQUE);
+
+        ALTER TABLE mapData.DEFAULT_FLOOR
+            ADD FOREIGN KEY (FLOOR_NUM)
+            REFERENCES mapData.MAPS(FLOOR_NUM);
+
         grant select on mapData.* to 'user'@'%' identified by 'guest';
         */
     }

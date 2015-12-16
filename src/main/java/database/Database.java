@@ -35,7 +35,7 @@ public class Database {
             System.exit(-1);
         }
         con = DriverManager.getConnection("jdbc:mysql://" +
-                        "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
+                        "aztecwash.cr7zfhdgbrfc.us-west-2.rds.amazonaws.com:3306",
                 "user", "guest");
 
         //ACTUAL READ ONLY USER IS USERNAME: user PASSWORD: guest
@@ -103,7 +103,7 @@ public class Database {
             System.exit(-1);
         }
         con = DriverManager.getConnection("jdbc:mysql://" +
-                        "aztecwash.cly9e1vwzwlp.us-west-2.rds.amazonaws.com:3306",
+                        "aztecwash.cr7zfhdgbrfc.us-west-2.rds.amazonaws.com:3306",
                 username, password);
     }
 

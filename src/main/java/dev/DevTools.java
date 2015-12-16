@@ -10,12 +10,15 @@ import database.DatabaseList;
 import ui.LocationButton;
 import ui.MapView;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.io.IOException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -306,18 +309,26 @@ public class DevTools extends JPanel {
         JButton saveToDatabase = new JButton("Save to database");
         saveToDatabase.setToolTipText("Commit the changes made to the online database.");
         saveToDatabase.addActionListener(listener -> {
+            JSplash devSplash = new JSplash(DevTools.class.getResource("BrokeEverything.png"),
+                    true, true, false, " ", null, Color.BLACK, Color.BLUE);
+            devSplash.splashOn();
+            devSplash.setProgress(15, "Initializing....");
+            URL newUrl = DevTools.class.getResource("BrokeEverything.png");
             try {
                 //URL newUrl = DevTools.class.getResource("BrokeEverything.png");
-                JSplash devSplash = new JSplash(getClass().getResource("dev/BrokeEverything.png"),
-                        false, false, false, " ", null, null, null);
-                devSplash.splashOn();
-                Thread.sleep(1);
+//                JSplash devSplash = new JSplash(getClass().getResource("BrokeEverything.png"),
+//                        true, true, false, " ", null, Color.BLACK, Color.BLUE);
+//                JSplash devSplash = new JSplash(DevTools.class.getResource("BrokeEverything.png"),
+//                        true, true, false, " ", null, Color.BLACK, Color.BLUE);
+//                devSplash.splashOn();
+//                devSplash.setProgress(15, "Initializing....");
+                Thread.sleep(5000);
                 Database graphData = new Database();
                 graphData.updateDB(dblist);
                 graphData.closeConnection();
-                devSplash.splashOff();
 
                 dblist = new DatabaseList();
+                devSplash.splashOff();
             } catch (SQLException exception) {
                 JOptionPane.showMessageDialog(mapView.getParent(),
                         "Failed to connect to the online database (be on the internet!)",

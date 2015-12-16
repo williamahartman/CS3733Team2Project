@@ -209,13 +209,20 @@ public class MapView extends JPanel {
         zoomIncrementBy(0);
 
         refreshGraph();
+        positionCompass();
 
-        //Set up the compass
-        mapPanel.add(this.compass);
-        Rectangle rect = mapPanel.getVisibleRect();
-        double paneHeight = rect.getHeight();
+        repaint();
+    }
+
+    private void positionCompass() {
+        Point vpp = scrollPane.getViewport().getViewPosition();
+        Rectangle rect = scrollPane.getViewport().getViewRect();
         double paneWidth = rect.getWidth();
-        this.compass.setBounds((int) paneHeight - 120, (int) paneWidth - 120, 120, 120);
+        double paneHeight = rect.getHeight();
+        double xPos = vpp.x + paneWidth - 120;
+        double yPos = vpp.y + paneHeight - 120;
+
+        this.compass.setBounds((int) xPos, (int) yPos, 120, 120);
     }
 
     /**
@@ -300,6 +307,8 @@ public class MapView extends JPanel {
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                positionCompass();
+
                 Point vpp = scrollPane.getViewport().getViewPosition();
 
                 vpp.translate(mouseStartX - e.getXOnScreen(), mouseStartY - e.getYOnScreen());
@@ -307,13 +316,6 @@ public class MapView extends JPanel {
 
                 mouseStartX = e.getXOnScreen();
                 mouseStartY = e.getYOnScreen();
-
-               /*
-                Rectangle rect = mapPanel.getVisibleRect();
-                double paneHeight = rect.getHeight();
-                double paneWidth = rect.getWidth();
-                compass.setBounds((int) paneHeight - 120, (int) paneWidth - 120, 120, 120);
-                */
             }
             @Override
             public void mousePressed(MouseEvent e) {
@@ -351,15 +353,10 @@ public class MapView extends JPanel {
                     newViewportPos.x = (int) ((xPosFrac * getCurrentPixelSize().getWidth()) - (viewportWidth / 2.0));
                     newViewportPos.y = (int) ((yPosFrac * getCurrentPixelSize().getHeight()) - (viewportHeight / 2.0));
 
+                    positionCompass();
+
                     mapPanel.scrollRectToVisible(new Rectangle(newViewportPos, scrollPane.getViewport().getSize()));
                     repaint();
-
-                    /*
-                    Rectangle rect = mapPanel.getVisibleRect();
-                    double paneHeight = rect.getHeight();
-                    double paneWidth = rect.getWidth();
-                    compass.setBounds((int) paneHeight - 120, (int) paneWidth - 120, 120, 120);
-                    */
                 }
             }
         };
@@ -471,6 +468,8 @@ public class MapView extends JPanel {
     private void addButtons() {
         mapPanel.removeAll();
         locationButtonList.clear();
+        mapPanel.add(compass);
+        positionCompass();
 
         List<Location> locationList = graph.getAllLocations();
         for (Location loc: locationList) {
@@ -513,13 +512,12 @@ public class MapView extends JPanel {
         this.edgeHighlightList = new ArrayList<>();
 
         addButtons();
-        updateButtonAttributes();
-        setCurrentImage();
-        repaint();
+        refreshGraph();
     }
 
     public void refreshGraph() {
         updateButtonAttributes();
+        positionCompass();
         repaint();
     }
 

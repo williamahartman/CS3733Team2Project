@@ -1,15 +1,14 @@
+import com.thehowtotutorial.splashscreen.JSplash;
 import core.LocationGraph;
 import core.MapImage;
 import database.Database;
 import ui.MainAppUI;
-import com.thehowtotutorial.splashscreen.JSplash;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.sql.SQLException;
 import java.util.HashMap;
 
